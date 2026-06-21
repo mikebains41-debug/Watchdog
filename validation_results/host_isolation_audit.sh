@@ -102,3 +102,6 @@ cat /proc/sys/vm/max_map_count
 echo "--- Virtual Memory and Hugepages Audit ---"
 cat /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null || echo "THP metrics hidden"
 cat /proc/meminfo | grep -i "huge"
+
+echo "--- Seccomp System-Call Filter Audit ---"
+grep -i "Seccomp" /proc/self/status
