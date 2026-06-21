@@ -1,0 +1,17 @@
+ii  curl                            8.5.0-2ubuntu10.9                 amd64        command line tool for transferring data with URL syntax
+ii  idle-python3.12                 3.12.3-1ubuntu0.13                all          IDE for Python (v3.12) using Tkinter
+ii  libcurl3t64-gnutls:amd64        8.5.0-2ubuntu10.9                 amd64        easy-to-use client-side URL transfer library (GnuTLS flavour)
+ii  libcurl4-openssl-dev:amd64      8.5.0-2ubuntu10.9                 amd64        development files and documentation for libcurl (OpenSSL flavour)
+ii  libcurl4t64:amd64               8.5.0-2ubuntu10.9                 amd64        easy-to-use client-side URL transfer library (OpenSSL flavour)
+ii  libpython3.12-dev:amd64         3.12.3-1ubuntu0.13                amd64        Header files and a static library for Python (v3.12)
+ii  libpython3.12-minimal:amd64     3.12.3-1ubuntu0.13                amd64        Minimal subset of the Python language (version 3.12)
+ii  libpython3.12-stdlib:amd64      3.12.3-1ubuntu0.13                amd64        Interactive high-level object-oriented language (standard library, version 3.12)
+ii  libpython3.12-testsuite         3.12.3-1ubuntu0.13                all          Testsuite for the Python standard library (v3.12)
+ii  libpython3.12t64:amd64          3.12.3-1ubuntu0.13                amd64        Shared Python runtime library (version 3.12)
+ii  openssl                         3.0.13-0ubuntu3.9                 amd64        Secure Sockets Layer toolkit - cryptographic utility
+ii  python3.12                      3.12.3-1ubuntu0.13                amd64        Interactive high-level object-oriented language (version 3.12)
+ii  python3.12-dev                  3.12.3-1ubuntu0.13                amd64        Header files and a static library for Python (v3.12)
+ii  python3.12-full                 3.12.3-1ubuntu0.13                amd64        Python Interpreter with complete class library (version 3.12)
+ii  python3.12-minimal              3.12.3-1ubuntu0.13                amd64        Minimal subset of the Python language (version 3.12)
+ii  python3.12-venv                 3.12.3-1ubuntu0.13                amd64        Interactive high-level object-oriented language (pyvenv binary, version 3.12)
+ii  sudo                            1.9.15p5-3ubuntu5.24.04.2         amd64        Provide limited super user privileges to specific users
