@@ -1,0 +1,21 @@
+{
+  "residual_files": [
+    {"name": "tmp3j31amsg_kernels", "type": "directory", "timestamp": "2026-06-05T14:43:00"},
+    {"name": "tmp5viu561v_kernels", "type": "directory", "timestamp": "2026-06-05T14:43:00"},
+    {"name": "tmpap3y5yro_kernels", "type": "directory", "timestamp": "2026-06-05T14:43:00"},
+    {"name": "uv-e147f089dc971b1b.lock", "type": "file", "timestamp": "2026-06-05T14:43:00", "size_bytes": 0}
+  ],
+  "gpu_topology_output": "GPU0-GPU1: NV18 (bonded NVLink)",
+  "nvidia_smi_global_polling": {
+    "requested_indices":,
+    "returned_indices":,
+    "status": "Cgroup execution filtering active"
+  },
+  "cc_compute_query_output": {
+    "CC_State": "OFF",
+    "Multi_GPU_Mode": "None",
+    "CPU_CC_Capabilities": "None",
+    "GPU_CC_Capabilities": "CC Capable",
+    "CC_GPUs_Ready_State": "Not Ready"
+  }
+}

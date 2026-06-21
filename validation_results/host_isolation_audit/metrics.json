@@ -1,0 +1,17 @@
+{
+  "instance_id": "41986069",
+  "datacenter": "317686",
+  "gpu_config": "2x H200 SXM",
+  "date": "2026-06-21",
+  "cc_state": "OFF",
+  "attempts": 3,
+  "network_capability_check": "PASS",
+  "raw_device_check": "PASS (Mitigated by cgroup)",
+  "visible_filesystem_gpu_nodes": 8,
+  "accessible_gpu_nodes": 2,
+  "gpu_interconnect": "NVLink NV18",
+  "residual_temp_files_found": 4,
+  "residual_temp_file_age_days": 16,
+  "metadata_server_leak": "NONE",
+  "kernel_log_leak": "NONE"
+}
