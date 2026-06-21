@@ -1,0 +1,261 @@
+--- CC mode status ---
+
+==============NVSMI CONF-COMPUTE LOG==============
+
+    CC State                   : OFF
+    Multi-GPU Mode             : None
+    CPU CC Capabilities        : None
+    GPU CC Capabilities        : CC Capable
+    CC GPUs Ready State        : Not Ready
+
+--- Network capability check ---
+PASS: Network isolated.
+--- Raw device check ---
+No raw block devices visible
+--- GPU topology ---
+	[4mGPU0	GPU1	CPU Affinity	NUMA Affinity	GPU NUMA ID[0m
+GPU0	 X 	NV18	0-47,96-143	0		N/A
+GPU1	NV18	 X 	0-47,96-143	0		N/A
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+--- Shared memory/temp check ---
+/dev/shm:
+total 0
+drwxrwxrwt 2 root root  40 Jun 21 17:06 .
+drwxr-xr-x 6 root root 600 Jun 21 17:06 ..
+
+/tmp:
+total 12
+drwxrwxrwt 1 root root  145 Jun 21 22:17 .
+drwxr-xr-x 1 root root 4096 Jun 21 17:36 ..
+drwxrwxrwx 2 root root   34 Jun 21 17:06 .tensorboard-info
+-rw-rw-r-- 1 root root  172 Jun 21 18:08 _vram_writer_child.py
+-rw-rw-r-- 1 root root  189 Jun 21 20:13 sigkill_child.py
+drwxrwxr-x 2 root root   30 Jun 21 17:06 supervisor-skip
+drwx------ 2 root root   10 Jun  5 14:43 tmp3j31amsg_kernels
+drwx------ 2 root root   10 Jun  5 14:43 tmp5viu561v_kernels
+drwx------ 2 root root   10 Jun  5 14:43 tmpap3y5yro_kernels
+drwx------ 2 root root   29 Jun 21 17:37 tmux-0
+-rw-rw-rw- 1 root root    0 Jun  5 14:43 uv-e147f089dc971b1b.lock
+--- Open network ports ---
+Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                  
+udp   UNCONN 0      0            0.0.0.0:44851      0.0.0.0:*                                            
+udp   UNCONN 0      0            0.0.0.0:21027      0.0.0.0:*                                            
+udp   UNCONN 0      0               [::]:21027         [::]:*                                            
+tcp   LISTEN 0      4096       127.0.0.1:18384      0.0.0.0:*                                            
+tcp   LISTEN 0      4096       127.0.0.1:20244      0.0.0.0:*    users:(("cloudflared",pid=1461,fd=8))   
+tcp   LISTEN 0      4096       127.0.0.1:20241      0.0.0.0:*    users:(("cloudflared",pid=1323,fd=12))  
+tcp   LISTEN 0      4096       127.0.0.1:20242      0.0.0.0:*    users:(("cloudflared",pid=1421,fd=12))  
+tcp   LISTEN 0      4096       127.0.0.1:20243      0.0.0.0:*    users:(("cloudflared",pid=1442,fd=12))  
+tcp   LISTEN 0      128          0.0.0.0:8080       0.0.0.0:*    users:(("jupyter-noteboo",pid=402,fd=6))
+tcp   LISTEN 0      4096       127.0.0.1:2019       0.0.0.0:*    users:(("caddy",pid=1380,fd=3))         
+tcp   LISTEN 0      128          0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=357,fd=4))           
+tcp   LISTEN 0      128        127.0.0.1:16006      0.0.0.0:*    users:(("tensorboard",pid=695,fd=10))   
+tcp   LISTEN 0      2048       127.0.0.1:11111      0.0.0.0:*    users:(("fastapi",pid=691,fd=14))       
+tcp   LISTEN 0      2048       127.0.0.1:11112      0.0.0.0:*    users:(("fastapi",pid=697,fd=13))       
+tcp   LISTEN 0      1024           [::1]:33243         [::]:*    users:(("server",pid=828,fd=6))         
+tcp   LISTEN 0      4096               *:30115            *:*                                            
+tcp   LISTEN 0      4096               *:6006             *:*    users:(("caddy",pid=1380,fd=6))         
+tcp   LISTEN 0      128             [::]:22            [::]:*    users:(("sshd",pid=357,fd=5))           
+tcp   LISTEN 0      4096               *:1111             *:*    users:(("caddy",pid=1380,fd=9))         
+tcp   LISTEN 0      4096               *:8384             *:*    users:(("caddy",pid=1380,fd=7))         
+--- Environment variables ---
+SHELL=/bin/bash
+NV_LIBCUBLAS_VERSION=12.8.4.1-1
+NVIDIA_VISIBLE_DEVICES=void
+UV_CACHE_DIR=/.uv/cache
+NV_NVML_DEV_VERSION=12.8.90-1
+NV_CUDNN_PACKAGE_NAME=libcudnn9-cuda-12
+PYTHONUNBUFFERED=1
+VAST_TCP_PORT_72299=30115
+NVM_INC=/opt/nvm/versions/node/v24.16.0/include/node
+TERM_PROGRAM_VERSION=3.4
+NV_LIBNCCL_DEV_PACKAGE=libnccl-dev=2.25.1-1+cuda12.8
+CONDA_EXE=/opt/miniforge3/bin/conda
+_CE_M=
+GPU_COUNT=2
+NV_LIBNCCL_DEV_PACKAGE_VERSION=2.25.1-1
+VAST_TCP_PORT_22=26879
+TMUX=/tmp/tmux-0/default,1532,0
+HOSTNAME=fbce0b3119f9
+PYTHON_VERSION=3.12
+UV_PYTHON_BIN_DIR=/.uv/python_bin
+NVIDIA_REQUIRE_CUDA=cuda>=12.8 brand=unknown,driver>=470,driver<471 brand=grid,driver>=470,driver<471 brand=tesla,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=vapps,driver>=470,driver<471 brand=vpc,driver>=470,driver<471 brand=vcs,driver>=470,driver<471 brand=vws,driver>=470,driver<471 brand=cloudgaming,driver>=470,driver<471 brand=unknown,driver>=535,driver<536 brand=grid,driver>=535,driver<536 brand=tesla,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=vapps,driver>=535,driver<536 brand=vpc,driver>=535,driver<536 brand=vcs,driver>=535,driver<536 brand=vws,driver>=535,driver<536 brand=cloudgaming,driver>=535,driver<536 brand=unknown,driver>=550,driver<551 brand=grid,driver>=550,driver<551 brand=tesla,driver>=550,driver<551 brand=nvidia,driver>=550,driver<551 brand=quadro,driver>=550,driver<551 brand=quadrortx,driver>=550,driver<551 brand=nvidiartx,driver>=550,driver<551 brand=vapps,driver>=550,driver<551 brand=vpc,driver>=550,driver<551 brand=vcs,driver>=550,driver<551 brand=vws,driver>=550,driver<551 brand=cloudgaming,driver>=550,driver<551 brand=unknown,driver>=560,driver<561 brand=grid,driver>=560,driver<561 brand=tesla,driver>=560,driver<561 brand=nvidia,driver>=560,driver<561 brand=quadro,driver>=560,driver<561 brand=quadrortx,driver>=560,driver<561 brand=nvidiartx,driver>=560,driver<561 brand=vapps,driver>=560,driver<561 brand=vpc,driver>=560,driver<561 brand=vcs,driver>=560,driver<561 brand=vws,driver>=560,driver<561 brand=cloudgaming,driver>=560,driver<561 brand=unknown,driver>=565,driver<566 brand=grid,driver>=565,driver<566 brand=tesla,driver>=565,driver<566 brand=nvidia,driver>=565,driver<566 brand=quadro,driver>=565,driver<566 brand=quadrortx,driver>=565,driver<566 brand=nvidiartx,driver>=565,driver<566 brand=vapps,driver>=565,driver<566 brand=vpc,driver>=565,driver<566 brand=vcs,driver>=565,driver<566 brand=vws,driver>=565,driver<566 brand=cloudgaming,driver>=565,driver<566
+NV_GPU=0,1
+NV_LIBCUBLAS_DEV_PACKAGE=libcublas-dev-12-8=12.8.4.1-1
+NV_NVTX_VERSION=12.8.90-1
+VAST_TCP_PORT_6006=21378
+VAST_DEVICE_IDXS=0,1
+NV_CUDA_CUDART_DEV_VERSION=12.8.90-1
+VAST_TCP_PORT_8080=31823
+NV_LIBCUSPARSE_VERSION=12.5.8.93-1
+NV_LIBNPP_VERSION=12.3.3.100-1
+SSH_PUBLIC_KEY=
+NCCL_VERSION=2.25.1-1
+UV_PYTHON_INSTALL_DIR=/.uv/python_install
+PWD=/workspace/gpu-core-private
+LOGNAME=root
+JUPYTER_TOKEN=f114f3ca790cf59401f5e4a3bba83756bdc23082e26bee1ba6596b8befa2d8c6
+NV_CUDNN_PACKAGE=libcudnn9-cuda-12=9.8.0.87-1
+CONDA_PREFIX=/venv/main
+NVIDIA_DRIVER_CAPABILITIES=all
+NV_NVPROF_DEV_PACKAGE=cuda-nvprof-12-8=12.8.90-1
+NV_LIBNPP_PACKAGE=libnpp-12-8=12.3.3.100-1
+PIP_BREAK_SYSTEM_PACKAGES=1
+NV_LIBNCCL_DEV_PACKAGE_NAME=libnccl-dev
+TCLLIBPATH=/usr/lib/tcltk/default
+OPEN_BUTTON_TOKEN=f114f3ca790cf59401f5e4a3bba83756bdc23082e26bee1ba6596b8befa2d8c6
+NV_LIBCUBLAS_DEV_VERSION=12.8.4.1-1
+NVIDIA_PRODUCT_NAME=CUDA
+CONTAINER_API_KEY=f888f73b7211854eda1b83b367b5f1e03e82d828d20fc254d076a92d63099530
+JUPYTER_DIR=/
+NV_LIBCUBLAS_DEV_PACKAGE_NAME=libcublas-dev-12-8
+NV_CUDA_CUDART_VERSION=12.8.90-1
+HOME=/root
+UV_NO_CACHE=1
+LANG=C.UTF-8
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+CUDA_VERSION=12.8.1
+NV_LIBCUBLAS_PACKAGE=libcublas-12-8=12.8.4.1-1
+OPEN_BUTTON_PORT=1111
+PYTORCH_VERSION=2.11.0
+NV_CUDA_NSIGHT_COMPUTE_DEV_PACKAGE=cuda-nsight-compute-12-8=12.8.1-1
+CONDA_PROMPT_MODIFIER=(main) 
+UV_LINK_MODE=copy
+SSH_CONNECTION=96.54.157.83 47006 172.17.0.2 22
+NV_LIBNPP_DEV_PACKAGE=libnpp-dev-12-8=12.3.3.100-1
+VAST_TCP_PORT_10200=31173
+VAST_TCP_PORT_10100=22723
+NV_LIBCUBLAS_PACKAGE_NAME=libcublas-12-8
+CONTAINER_ID=41986069
+WORKSPACE=/workspace
+NV_LIBNPP_DEV_VERSION=12.3.3.100-1
+NVM_DIR=/opt/nvm
+HF_HOME=/workspace/.hf_home
+_CONDA_EXE=/opt/miniforge3/bin/conda
+LESSCLOSE=/usr/bin/lesspipe %s %s
+_CONDA_ROOT=/opt/miniforge3
+CONTAINER_LABEL=C.41986069
+TERM=tmux-256color
+NV_LIBCUSPARSE_DEV_VERSION=12.5.8.93-1
+_CE_CONDA=
+LESSOPEN=| /usr/bin/lesspipe %s
+USER=root
+TMUX_PANE=%0
+LIBRARY_PATH=/usr/local/cuda/lib64/stubs
+NV_CUDNN_VERSION=9.8.0.87-1
+CONDA_SHLVL=1
+PORTAL_CONFIG=localhost:1111:11111:/:Instance Portal|localhost:8080:8080:/:Jupyter|localhost:8080:8080:/terminals/1:Jupyter Terminal|localhost:8384:18384:/:Syncthing|localhost:6006:16006:/:Tensorboard
+VAST_CONTAINER_USER=root
+SHLVL=3
+NVM_CD_FLAGS=
+VAST_TCP_PORT_8384=28807
+NV_CUDA_LIB_VERSION=12.8.1-1
+NVARCH=x86_64
+VAST_CONTAINERLABEL=C.41986069
+VAST_TCP_PORT_1111=21303
+NV_CUDNN_PACKAGE_DEV=libcudnn9-dev-cuda-12=9.8.0.87-1
+CONDA_PYTHON_EXE=/opt/miniforge3/bin/python
+NV_LIBNCCL_PACKAGE=libnccl2=2.25.1-1+cuda12.8
+PUBLIC_IPADDR=208.64.254.179
+SSH_CLIENT=96.54.157.83 47006 22
+CONDA_DEFAULT_ENV=/venv/main
+NV_CUDA_NSIGHT_COMPUTE_VERSION=12.8.1-1
+DEBUGINFOD_URLS=https://debuginfod.ubuntu.com 
+NV_NVPROF_VERSION=12.8.90-1
+CUDA_HOME=/usr/local/cuda
+PATH=/venv/main/bin:/opt/miniforge3/condabin:/opt/nvm/versions/node/v24.16.0/bin:/opt/instance-tools/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+NV_LIBNCCL_PACKAGE_NAME=libnccl2
+NV_LIBNCCL_PACKAGE_VERSION=2.25.1-1
+NVM_BIN=/opt/nvm/versions/node/v24.16.0/bin
+SSH_TTY=/dev/pts/3
+IMAGE_TYPE=vast
+DEBIAN_FRONTEND=noninteractive
+DATA_DIRECTORY=/workspace/
+PYTORCH_BACKEND=cu128
+OLDPWD=/workspace/Watchdog
+TERM_PROGRAM=tmux
+_=/usr/bin/printenv
+--- Kernel ring buffer ---
+dmesg: read kernel buffer failed: Operation not permitted
+--- GPU device node permissions ---
+crw-rw-rw- 1 root root 195, 254 Jun 21 17:06 /dev/nvidia-modeset
+crw-rw-rw- 1 root root 507,   0 Jun 21 17:06 /dev/nvidia-uvm
+crw-rw-rw- 1 root root 507,   1 Jun 21 17:06 /dev/nvidia-uvm-tools
+crw-rw-rw- 1 root root 195,   0 Jun 21 17:06 /dev/nvidia0
+crw-rw-rw- 1 root root 195,   1 Jun 21 17:06 /dev/nvidia1
+crw-rw-rw- 1 root root 195,   2 Jun 21 17:06 /dev/nvidia2
+crw-rw-rw- 1 root root 195,   3 Jun 21 17:06 /dev/nvidia3
+crw-rw-rw- 1 root root 195,   4 Jun 21 17:06 /dev/nvidia4
+crw-rw-rw- 1 root root 195,   5 Jun 21 17:06 /dev/nvidia5
+crw-rw-rw- 1 root root 195,   6 Jun 21 17:06 /dev/nvidia6
+crw-rw-rw- 1 root root 195,   7 Jun 21 17:06 /dev/nvidia7
+crw-rw-rw- 1 root root 195, 255 Jun 21 17:06 /dev/nvidiactl
+
+/dev/nvidia-caps:
+total 0
+drwxr-xr-x 2 root root     80 Jun 21 17:06 .
+drwxr-xr-x 6 root root    600 Jun 21 17:06 ..
+cr-------- 1 root root 510, 1 Jun 21 17:06 nvidia-cap1
+cr--r--r-- 1 root root 510, 2 Jun 21 17:06 nvidia-cap2
+--- Nvidia/cuda IPC sockets ---
+/var/run/nvidia-fabricmanager
+/var/run/nvidia-ctk-hook
+--- Metadata server check ---
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+curl: (7) Failed to connect to 172.17.0.1 port 80 after 0 ms: Couldn't connect to server
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
+curl: (28) Connection timed out after 3002 milliseconds
+--- GPU device functional access check (rented indices only expected) ---
+index, name, power.draw [W], memory.used [MiB], utilization.gpu [%]
+0, NVIDIA H200, 78.21 W, 0 MiB, 0 %
+1, NVIDIA H200, 79.59 W, 0 MiB, 0 %
+--- PID Namespace Audit ---
+46
+root       68930   68902  0 22:33 pts/4    00:00:00 grep -E containerd|dockerd|libvirtd|kvm
+--- Local Network / DNS Leak Audit ---
+# Generated by Docker Engine.
+# This file can be edited; Docker Engine will not make further changes once it
+# has been modified.
+
+nameserver 8.8.8.8
+search .
+
+# Based on host file: '/run/systemd/resolve/resolv.conf' (legacy)
+# Overrides: []
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::	ip6-localnet
+ff00::	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+172.17.0.2	fbce0b3119f9
+--- Sandbox Profile Audit ---
+uid=0(root) gid=0(root) groups=0(root)
+docker-default (enforce)
+NoNewPrivs:	0
+--- Advanced Boundary Capability Audit ---
+CapBnd:	00000000a80425fb
+--- Advanced Real-time IPC Namespace Audit ---
+
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+
+------ Shared Memory Segments --------
+key        shmid      owner      perms      bytes      nattch     status      
+
+------ Semaphore Arrays --------
+key        semid      owner      perms      nsems     
+
