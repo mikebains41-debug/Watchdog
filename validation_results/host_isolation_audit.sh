@@ -76,3 +76,7 @@ echo "--- NVIDIA Driver and MPS IPC Audit ---"
 ls -la /tmp/.nvidia-mps 2>/dev/null || echo "No global MPS socket leaked in /tmp"
 ls -la /dev/shm/cuda_injection_* 2>/dev/null || echo "No active CUDA injection handles visible"
 cat /proc/driver/nvidia/gpus/*/information 2>/dev/null || echo "GPU system info files restricted"
+
+echo "--- Storage Mount and UID Mapping Audit ---"
+mount | grep -E "workspace|docker|overlay" | head -n 5
+cat /proc/self/uid_map 2>/dev/null || echo "UID map file restricted"
