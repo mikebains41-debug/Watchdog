@@ -1,0 +1,24 @@
+=== TENANT B: Scanning fresh VRAM allocations for Tenant A's marker ===
+Attempt 1: marker occurrences found = 0
+Attempt 2: marker occurrences found = 0
+Attempt 3: marker occurrences found = 0
+Attempt 4: marker occurrences found = 0
+Attempt 5: marker occurrences found = 0
+Attempt 6: marker occurrences found = 0
+Attempt 7: marker occurrences found = 0
+Attempt 8: marker occurrences found = 0
+Attempt 9: marker occurrences found = 0
+Attempt 10: marker occurrences found = 0
+Attempt 11: marker occurrences found = 0
+Attempt 12: marker occurrences found = 0
+Attempt 13: marker occurrences found = 0
+Attempt 14: marker occurrences found = 0
+Attempt 15: marker occurrences found = 0
+Attempt 16: marker occurrences found = 0
+Attempt 17: marker occurrences found = 0
+Attempt 18: marker occurrences found = 0
+Attempt 19: marker occurrences found = 0
+Attempt 20: marker occurrences found = 0
+
+=== RESULT: total marker occurrences across 20 attempts = 0 ===
+CLEAN - no marker recovered, isolation holds for this test
