@@ -105,3 +105,12 @@ cat /proc/meminfo | grep -i "huge"
 
 echo "--- Seccomp System-Call Filter Audit ---"
 grep -i "Seccomp" /proc/self/status
+
+echo "--- Dependency Scan: Python Packages ---"
+pip list --format=freeze 2>/dev/null
+
+echo "--- Dependency Scan: Key System Packages ---"
+dpkg -l | grep -E "openssl|curl|sudo|python3\.|libc6 "
+
+echo "--- Kernel Version (for CVE cross-check) ---"
+cat /proc/version
