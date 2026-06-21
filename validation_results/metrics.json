@@ -1,0 +1,7 @@
+{
+  "vram_full_rigor": {"graceful_match_rate": "0/sustained", "sigkill_match_rate": "0/sustained", "cross_gpu_leak": false, "reproduction_residual_mb": 527},
+  "cross_tenant_ab": {"graceful_recovery": "0/20", "sigkill_recovery": "0/20"},
+  "watchdog_detectors": {"cache_timing_baseline_alerts": 0, "cache_timing_contention_alerts": 0, "memory_attacks_baseline_alerts": "0/35099", "memory_attacks_contention_alerts": "0/35068"},
+  "contention_benchmark": {"baseline_iter_per_sec": 372.32, "contention_iter_per_sec": 336.96, "pct_change": -9.5},
+  "host_isolation_audit": {"confirmed_findings": 1, "stale_tmp_file_age_days": 16, "confirmation_runs": 4, "external_cve_found": "CVE-2026-31431"}
+}
