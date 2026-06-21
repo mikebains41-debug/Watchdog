@@ -98,3 +98,7 @@ cat /proc/sys/kernel/core_pattern
 echo "--- Kernel Crypto and Hardening Audit ---"
 cat /proc/sys/kernel/randomize_va_space 2>/dev/null || echo "ASLR metrics hidden"
 cat /proc/sys/vm/max_map_count
+
+echo "--- Virtual Memory and Hugepages Audit ---"
+cat /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null || echo "THP metrics hidden"
+cat /proc/meminfo | grep -i "huge"
