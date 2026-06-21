@@ -71,3 +71,8 @@ ip neigh show
 echo "--- Group Membership Layout ---"
 groups
 cat /etc/group | grep -E "docker|render|kvm|wheel"
+
+echo "--- NVIDIA Driver and MPS IPC Audit ---"
+ls -la /tmp/.nvidia-mps 2>/dev/null || echo "No global MPS socket leaked in /tmp"
+ls -la /dev/shm/cuda_injection_* 2>/dev/null || echo "No active CUDA injection handles visible"
+cat /proc/driver/nvidia/gpus/*/information 2>/dev/null || echo "GPU system info files restricted"
