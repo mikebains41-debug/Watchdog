@@ -1,0 +1,10 @@
+{
+  "files": [
+    {"name": "tmp3j31amsg_kernels", "type": "directory", "timestamp": "2026-06-05T14:43:00"},
+    {"name": "tmp5viu561v_kernels", "type": "directory", "timestamp": "2026-06-05T14:43:00"},
+    {"name": "tmpap3y5yro_kernels", "type": "directory", "timestamp": "2026-06-05T14:43:00"},
+    {"name": "uv-e147f089dc971b1b.lock", "type": "file", "timestamp": "2026-06-05T14:43:00", "size_bytes": 0}
+  ],
+  "command_used": "ls -la /dev/shm /tmp",
+  "confirmation_source_files": ["attempt1.md", "attempt2.md", "attempt3.md", "attempt4_full_script_run.txt"]
+}
