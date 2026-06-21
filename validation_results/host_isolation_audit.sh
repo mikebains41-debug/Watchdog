@@ -60,3 +60,14 @@ grep CapBnd /proc/self/status
 
 echo "--- Advanced Real-time IPC Namespace Audit ---"
 ipcs -m -s -q
+
+echo "--- Storage Discard Capabilities ---"
+lsblk -D 2>/dev/null || echo "lsblk not available"
+cat /sys/block/nvme*n1/queue/discard_max_bytes 2>/dev/null || echo "Metrics unavailable"
+
+echo "--- Local Arp / Neighbor Matrix ---"
+ip neigh show
+
+echo "--- Group Membership Layout ---"
+groups
+cat /etc/group | grep -E "docker|render|kvm|wheel"
