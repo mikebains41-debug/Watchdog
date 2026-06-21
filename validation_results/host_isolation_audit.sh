@@ -94,3 +94,7 @@ find /proc/sys/net/ipv4/ /proc/sys/kernel/ -type f -perm -u+w 2>/dev/null | head
 
 echo "--- Global Core Dump Pattern Check ---"
 cat /proc/sys/kernel/core_pattern
+
+echo "--- Kernel Crypto and Hardening Audit ---"
+cat /proc/sys/kernel/randomize_va_space 2>/dev/null || echo "ASLR metrics hidden"
+cat /proc/sys/vm/max_map_count
