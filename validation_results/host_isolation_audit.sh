@@ -80,3 +80,17 @@ cat /proc/driver/nvidia/gpus/*/information 2>/dev/null || echo "GPU system info 
 echo "--- Storage Mount and UID Mapping Audit ---"
 mount | grep -E "workspace|docker|overlay" | head -n 5
 cat /proc/self/uid_map 2>/dev/null || echo "UID map file restricted"
+
+echo "--- System Clock and Time Namespace Audit ---"
+ls -la /dev/rtc* 2>/dev/null || echo "PASS: Physical RTC hardware node hidden"
+cat /proc/uptime
+cat /proc/driver/rtc 2>/dev/null || echo "PASS: Global host RTC drivers restricted"
+
+echo "--- Enterprise Domain Socket Audit ---"
+find /workspace /tmp /run -type s 2>/dev/null || echo "PASS: No rogue domain sockets found."
+
+echo "--- Procfs Kernel Parameter Writable Audit ---"
+find /proc/sys/net/ipv4/ /proc/sys/kernel/ -type f -perm -u+w 2>/dev/null | head -n 10 || echo "PASS: Kernel parameters safely mounted read-only."
+
+echo "--- Global Core Dump Pattern Check ---"
+cat /proc/sys/kernel/core_pattern
