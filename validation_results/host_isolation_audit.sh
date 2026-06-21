@@ -54,3 +54,9 @@ echo "--- Sandbox Profile Audit ---"
 id
 cat /proc/self/attr/current 2>/dev/null || echo "AppArmor: Not enforced/Unavailable"
 grep -i "NoNewPrivs" /proc/self/status
+
+echo "--- Advanced Boundary Capability Audit ---"
+grep CapBnd /proc/self/status
+
+echo "--- Advanced Real-time IPC Namespace Audit ---"
+ipcs -m -s -q
