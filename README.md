@@ -1,11 +1,11 @@
-# Watchdog AIDR v1.5
+# Watchdog AIDR v2.0
 AI Infrastructure Detection and Response - Pure Security
 Mike Bains | CVE 2048350 | Duncan BC Canada
 
 Run: python3 watchdog.py --api --hz 100
 Test: python3 watchdog.py --test
 
-16 detection engines covering ghost power, VRAM residual, power side-channel,
+22 detection engines covering ghost power, VRAM residual, power side-channel,
 thermal emanation, cross-tenant bleeding, timing covert channel, cross-workload
 clustering, clock glitch, voltage glitch, DMA attack, laser injection, cache
 side-channel, MIG partition desync, sequential VRAM read, inference power
