@@ -1,0 +1,10 @@
+=== PHASE A: Baseline benchmark (60s, no contention) ===
+BASELINE: 27431 matmuls in 60.00s = 457.17 iter/sec
+
+=== PHASE B: Starting noisy-neighbor contention, then benchmarking (60s) ===
+Starting noisy-neighbor simulation on cuda:0 for 60s
+Noisy-neighbor simulation complete
+CONTENTION: 9619 matmuls in 60.00s = 160.31 iter/sec
+
+=== RESULT: baseline=457.17 iter/sec, contention=160.31 iter/sec, change=-64.9% ===
+=== DONE ===

@@ -1,0 +1,563 @@
+--- CC mode status ---
+
+==============NVSMI CONF-COMPUTE LOG==============
+
+    CC State                   : OFF
+    Multi-GPU Mode             : None
+    CPU CC Capabilities        : None
+    GPU CC Capabilities        : CC Capable
+    CC GPUs Ready State        : Not Ready
+
+--- Network capability check ---
+PASS: Network isolated.
+--- Raw device check ---
+No raw block devices visible
+--- GPU topology ---
+	[4mGPU0	GPU1	GPU2	GPU3	CPU Affinity	NUMA Affinity	GPU NUMA ID[0m
+GPU0	 X 	NV18	NV18	NV18	0-47,96-143	0		N/A
+GPU1	NV18	 X 	NV18	NV18	0-47,96-143	0		N/A
+GPU2	NV18	NV18	 X 	NV18	48-95,144-191	1		N/A
+GPU3	NV18	NV18	NV18	 X 	48-95,144-191	1		N/A
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+--- Shared memory/temp check ---
+/dev/shm:
+total 0
+drwxrwxrwt 2 root root  40 Jun 22 06:38 .
+drwxr-xr-x 7 root root 540 Jun 22 06:38 ..
+
+/tmp:
+total 8
+drwxrwxrwt 1 root root  117 Jun 22 07:23 .
+drwxr-xr-x 1 root root 4096 Jun 22 06:59 ..
+drwxrwxrwx 2 root root   35 Jun 22 06:38 .tensorboard-info
+-rw-rw-r-- 1 root root  341 Jun 22 07:23 noisy_neighbor_sim.py
+drwxrwxr-x 2 root root   30 Jun 22 06:38 supervisor-skip
+drwx------ 2 root root   10 Jun  5 14:41 tmpd23hprfu_kernels
+drwx------ 2 root root   10 Jun  5 14:41 tmpiz9802v8_kernels
+drwx------ 2 root root   10 Jun  5 14:41 tmpkyh5t6lz_kernels
+drwx------ 2 root root   29 Jun 22 06:59 tmux-0
+-rw-rw-rw- 1 root root    0 Jun  5 14:41 uv-e147f089dc971b1b.lock
+--- Open network ports ---
+Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                  
+udp   UNCONN 0      0            0.0.0.0:21027      0.0.0.0:*                                            
+udp   UNCONN 0      0            0.0.0.0:42553      0.0.0.0:*                                            
+udp   UNCONN 0      0               [::]:21027         [::]:*                                            
+tcp   LISTEN 0      4096       127.0.0.1:20241      0.0.0.0:*    users:(("cloudflared",pid=1871,fd=12))  
+tcp   LISTEN 0      4096       127.0.0.1:20243      0.0.0.0:*    users:(("cloudflared",pid=2029,fd=9))   
+tcp   LISTEN 0      4096       127.0.0.1:20242      0.0.0.0:*    users:(("cloudflared",pid=1996,fd=11))  
+tcp   LISTEN 0      4096       127.0.0.1:20244      0.0.0.0:*    users:(("cloudflared",pid=2060,fd=9))   
+tcp   LISTEN 0      4096       127.0.0.1:18384      0.0.0.0:*                                            
+tcp   LISTEN 0      128        127.0.0.1:16006      0.0.0.0:*    users:(("tensorboard",pid=1118,fd=10))  
+tcp   LISTEN 0      2048       127.0.0.1:11111      0.0.0.0:*    users:(("fastapi",pid=1112,fd=14))      
+tcp   LISTEN 0      2048       127.0.0.1:11112      0.0.0.0:*    users:(("fastapi",pid=1123,fd=13))      
+tcp   LISTEN 0      128          0.0.0.0:8080       0.0.0.0:*    users:(("jupyter-noteboo",pid=809,fd=6))
+tcp   LISTEN 0      128          0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=767,fd=4))           
+tcp   LISTEN 0      4096       127.0.0.1:2019       0.0.0.0:*    users:(("caddy",pid=1937,fd=3))         
+tcp   LISTEN 0      1024           [::1]:38107         [::]:*    users:(("server",pid=1311,fd=6))        
+tcp   LISTEN 0      4096               *:31858            *:*                                            
+tcp   LISTEN 0      4096               *:8384             *:*    users:(("caddy",pid=1937,fd=9))         
+tcp   LISTEN 0      4096               *:6006             *:*    users:(("caddy",pid=1937,fd=7))         
+tcp   LISTEN 0      4096               *:1111             *:*    users:(("caddy",pid=1937,fd=6))         
+tcp   LISTEN 0      128             [::]:22            [::]:*    users:(("sshd",pid=767,fd=5))           
+--- Environment variables ---
+SHELL=/bin/bash
+NV_LIBCUBLAS_VERSION=13.1.1.3-1
+NVIDIA_VISIBLE_DEVICES=void
+UV_CACHE_DIR=/.uv/cache
+NV_NVML_DEV_VERSION=13.0.87-1
+NV_CUDNN_PACKAGE_NAME=libcudnn9-cuda-13
+PYTHONUNBUFFERED=1
+VAST_TCP_PORT_72299=31858
+NVM_INC=/opt/nvm/versions/node/v24.16.0/include/node
+TERM_PROGRAM_VERSION=3.4
+NV_LIBNCCL_DEV_PACKAGE=libnccl-dev=2.28.3-1+cuda13.0
+CONDA_EXE=/opt/miniforge3/bin/conda
+_CE_M=
+GPU_COUNT=4
+NV_LIBNCCL_DEV_PACKAGE_VERSION=2.28.3-1
+VAST_TCP_PORT_22=37270
+TMUX=/tmp/tmux-0/default,2220,0
+HOSTNAME=be557b73ed8c
+NV_CUDNN_PACKAGE_DEV_HEADERS=libcudnn9-headers-cuda-13=9.14.0.64-1
+PYTHON_VERSION=3.12
+UV_PYTHON_BIN_DIR=/.uv/python_bin
+NVIDIA_REQUIRE_CUDA=cuda>=13.0 brand=unknown,driver>=535,driver<536 brand=grid,driver>=535,driver<536 brand=tesla,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=vapps,driver>=535,driver<536 brand=vpc,driver>=535,driver<536 brand=vcs,driver>=535,driver<536 brand=vws,driver>=535,driver<536 brand=cloudgaming,driver>=535,driver<536 brand=unknown,driver>=550,driver<551 brand=grid,driver>=550,driver<551 brand=tesla,driver>=550,driver<551 brand=nvidia,driver>=550,driver<551 brand=quadro,driver>=550,driver<551 brand=quadrortx,driver>=550,driver<551 brand=nvidiartx,driver>=550,driver<551 brand=vapps,driver>=550,driver<551 brand=vpc,driver>=550,driver<551 brand=vcs,driver>=550,driver<551 brand=vws,driver>=550,driver<551 brand=cloudgaming,driver>=550,driver<551 brand=unknown,driver>=565,driver<566 brand=grid,driver>=565,driver<566 brand=tesla,driver>=565,driver<566 brand=nvidia,driver>=565,driver<566 brand=quadro,driver>=565,driver<566 brand=quadrortx,driver>=565,driver<566 brand=nvidiartx,driver>=565,driver<566 brand=vapps,driver>=565,driver<566 brand=vpc,driver>=565,driver<566 brand=vcs,driver>=565,driver<566 brand=vws,driver>=565,driver<566 brand=cloudgaming,driver>=565,driver<566 brand=unknown,driver>=570,driver<571 brand=grid,driver>=570,driver<571 brand=tesla,driver>=570,driver<571 brand=nvidia,driver>=570,driver<571 brand=quadro,driver>=570,driver<571 brand=quadrortx,driver>=570,driver<571 brand=nvidiartx,driver>=570,driver<571 brand=vapps,driver>=570,driver<571 brand=vpc,driver>=570,driver<571 brand=vcs,driver>=570,driver<571 brand=vws,driver>=570,driver<571 brand=cloudgaming,driver>=570,driver<571 brand=unknown,driver>=575,driver<576 brand=grid,driver>=575,driver<576 brand=tesla,driver>=575,driver<576 brand=nvidia,driver>=575,driver<576 brand=quadro,driver>=575,driver<576 brand=quadrortx,driver>=575,driver<576 brand=nvidiartx,driver>=575,driver<576 brand=vapps,driver>=575,driver<576 brand=vpc,driver>=575,driver<576 brand=vcs,driver>=575,driver<576 brand=vws,driver>=575,driver<576 brand=cloudgaming,driver>=575,driver<576
+NV_GPU=2,3,6,7
+NV_LIBCUBLAS_DEV_PACKAGE=libcublas-dev-13-0=13.1.1.3-1
+NV_NVTX_VERSION=13.0.85-1
+VAST_TCP_PORT_6006=33035
+VAST_DEVICE_IDXS=2,3,6,7
+NV_CUDA_CUDART_DEV_VERSION=13.0.96-1
+VAST_TCP_PORT_8080=35233
+NV_LIBCUSPARSE_VERSION=12.6.3.3-1
+NV_LIBNPP_VERSION=13.0.1.2-1
+SSH_PUBLIC_KEY=
+NCCL_VERSION=2.28.3-1
+UV_PYTHON_INSTALL_DIR=/.uv/python_install
+PWD=/workspace/gpu-core-private
+LOGNAME=root
+JUPYTER_TOKEN=7e9a6aaaf205c5af1e30aa361c2c58d99a99fa647a753c28e3e88810ce9a44ac
+NV_CUDNN_PACKAGE=libcudnn9-cuda-13=9.14.0.64-1
+CONDA_PREFIX=/venv/main
+NVIDIA_DRIVER_CAPABILITIES=all
+NV_LIBNPP_PACKAGE=libnpp-13-0=13.0.1.2-1
+PIP_BREAK_SYSTEM_PACKAGES=1
+NV_LIBNCCL_DEV_PACKAGE_NAME=libnccl-dev
+TCLLIBPATH=/usr/lib/tcltk/default
+OPEN_BUTTON_TOKEN=7e9a6aaaf205c5af1e30aa361c2c58d99a99fa647a753c28e3e88810ce9a44ac
+NV_LIBCUBLAS_DEV_VERSION=13.1.1.3-1
+NVIDIA_PRODUCT_NAME=CUDA
+CONTAINER_API_KEY=1edbbc9a06361dcb933f860e0a9fd1e9f46371bb3636d62869ebfbd5dbb22a05
+JUPYTER_DIR=/
+NV_LIBCUBLAS_DEV_PACKAGE_NAME=libcublas-dev-13-0
+NV_CUDA_CUDART_VERSION=13.0.96-1
+HOME=/root
+UV_NO_CACHE=1
+LANG=C.UTF-8
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+CUDA_VERSION=13.0.3
+NV_LIBCUBLAS_PACKAGE=libcublas-13-0=13.1.1.3-1
+OPEN_BUTTON_PORT=1111
+PYTORCH_VERSION=2.12.0
+NV_CUDA_NSIGHT_COMPUTE_DEV_PACKAGE=cuda-nsight-compute-13-0=13.0.3-1
+CONDA_PROMPT_MODIFIER=(main) 
+UV_LINK_MODE=copy
+SSH_CONNECTION=96.54.157.83 60756 172.17.0.3 22
+NV_LIBNPP_DEV_PACKAGE=libnpp-dev-13-0=13.0.1.2-1
+VAST_TCP_PORT_10200=32016
+VAST_TCP_PORT_10100=39206
+NV_LIBCUBLAS_PACKAGE_NAME=libcublas-13-0
+CONTAINER_ID=42060475
+WORKSPACE=/workspace
+NV_LIBNPP_DEV_VERSION=13.0.1.2-1
+NVM_DIR=/opt/nvm
+HF_HOME=/workspace/.hf_home
+_CONDA_EXE=/opt/miniforge3/bin/conda
+LESSCLOSE=/usr/bin/lesspipe %s %s
+_CONDA_ROOT=/opt/miniforge3
+CONTAINER_LABEL=C.42060475
+TERM=tmux-256color
+NV_LIBCUSPARSE_DEV_VERSION=12.6.3.3-1
+_CE_CONDA=
+LESSOPEN=| /usr/bin/lesspipe %s
+USER=root
+TMUX_PANE=%0
+LIBRARY_PATH=/usr/local/cuda/lib64/stubs
+NV_CUDNN_VERSION=9.14.0.64-1
+CONDA_SHLVL=1
+PORTAL_CONFIG=localhost:1111:11111:/:Instance Portal|localhost:8080:8080:/:Jupyter|localhost:8080:8080:/terminals/1:Jupyter Terminal|localhost:8384:18384:/:Syncthing|localhost:6006:16006:/:Tensorboard
+VAST_CONTAINER_USER=root
+SHLVL=3
+NVM_CD_FLAGS=
+VAST_TCP_PORT_8384=35430
+NV_CUDA_LIB_VERSION=13.0.3-1
+NVARCH=x86_64
+VAST_CONTAINERLABEL=C.42060475
+VAST_TCP_PORT_1111=35292
+NV_CUDNN_PACKAGE_DEV=libcudnn9-dev-cuda-13=9.14.0.64-1
+CONDA_PYTHON_EXE=/opt/miniforge3/bin/python
+NV_LIBNCCL_PACKAGE=libnccl2=2.28.3-1+cuda13.0
+LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+PUBLIC_IPADDR=54.80.246.79
+SSH_CLIENT=96.54.157.83 60756 22
+CONDA_DEFAULT_ENV=/venv/main
+NV_CUDA_NSIGHT_COMPUTE_VERSION=13.0.3-1
+DEBUGINFOD_URLS=https://debuginfod.ubuntu.com 
+NVIDIA_CTK_LIBCUDA_DIR=/usr/lib/x86_64-linux-gnu
+CUDA_HOME=/usr/local/cuda
+PATH=/venv/main/bin:/opt/miniforge3/condabin:/opt/nvm/versions/node/v24.16.0/bin:/opt/instance-tools/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+NV_LIBNCCL_PACKAGE_NAME=libnccl2
+NV_LIBNCCL_PACKAGE_VERSION=2.28.3-1
+NVM_BIN=/opt/nvm/versions/node/v24.16.0/bin
+SSH_TTY=/dev/pts/3
+IMAGE_TYPE=vast
+DEBIAN_FRONTEND=noninteractive
+DATA_DIRECTORY=/workspace/
+PYTORCH_BACKEND=cu130
+OLDPWD=/workspace/gpu-core-private
+TERM_PROGRAM=tmux
+_=/usr/bin/printenv
+--- Kernel ring buffer ---
+dmesg: read kernel buffer failed: Operation not permitted
+--- GPU device node permissions ---
+crw-rw-rw- 1 root root 195, 254 Jun 22 06:38 /dev/nvidia-modeset
+crw-rw-rw- 1 root root 509,   0 Jun 22 06:38 /dev/nvidia-uvm
+crw-rw-rw- 1 root root 509,   1 Jun 22 06:38 /dev/nvidia-uvm-tools
+crw-rw-rw- 1 root root 195,   2 Jun 22 06:38 /dev/nvidia2
+crw-rw-rw- 1 root root 195,   3 Jun 22 06:38 /dev/nvidia3
+crw-rw-rw- 1 root root 195,   6 Jun 22 06:38 /dev/nvidia6
+crw-rw-rw- 1 root root 195,   7 Jun 22 06:38 /dev/nvidia7
+crw-rw-rw- 1 root root 195, 255 Jun 22 06:38 /dev/nvidiactl
+
+/dev/nvidia-caps:
+total 0
+drwxr-xr-x 2 root root     80 Jun 22 06:38 .
+drwxr-xr-x 7 root root    540 Jun 22 06:38 ..
+cr-------- 1 root root 234, 1 Jun 22 06:38 nvidia-cap1
+cr--r--r-- 1 root root 234, 2 Jun 22 06:38 nvidia-cap2
+--- Nvidia/cuda IPC sockets ---
+/var/run/nvidia-persistenced
+/var/run/nvidia-ctk-hook
+/var/run/nvidia-ctk-hook39f7c8a6-3fe8-4034-9b14-04b358be627c
+--- Metadata server check ---
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+curl: (7) Failed to connect to 172.17.0.1 port 80 after 0 ms: Couldn't connect to server
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/1.1 403 Forbidden
+Content-Length: 0
+Date: Mon, 22 Jun 2026 07:29:38 GMT
+Server: EC2ws
+Connection: close
+Content-Type: text/plain
+
+--- GPU device functional access check (rented indices only expected) ---
+index, name, power.draw [W], memory.used [MiB], utilization.gpu [%]
+0, NVIDIA B200, 140.32 W, 0 MiB, 0 %
+1, NVIDIA B200, 142.14 W, 0 MiB, 0 %
+2, NVIDIA B200, 144.39 W, 0 MiB, 0 %
+3, NVIDIA B200, 139.23 W, 0 MiB, 0 %
+--- PID Namespace Audit ---
+46
+root        2880    2852  0 07:29 pts/4    00:00:00 grep -E containerd|dockerd|libvirtd|kvm
+--- Local Network / DNS Leak Audit ---
+# Generated by Docker Engine.
+# This file can be edited; Docker Engine will not make further changes once it
+# has been modified.
+
+nameserver 172.31.0.2
+search ec2.internal
+
+# Based on host file: '/run/systemd/resolve/resolv.conf' (legacy)
+# Overrides: []
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::	ip6-localnet
+ff00::	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+172.17.0.3	be557b73ed8c
+--- Sandbox Profile Audit ---
+uid=0(root) gid=0(root) groups=0(root)
+docker-default (enforce)
+NoNewPrivs:	0
+--- Advanced Boundary Capability Audit ---
+CapBnd:	00000000a80425fb
+--- Advanced Real-time IPC Namespace Audit ---
+
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+
+------ Shared Memory Segments --------
+key        shmid      owner      perms      bytes      nattch     status      
+
+------ Semaphore Arrays --------
+key        semid      owner      perms      nsems     
+
+--- Storage Discard Capabilities ---
+NAME         DISC-ALN DISC-GRAN DISC-MAX DISC-ZERO
+loop0               0        4K       4G         0
+loop1               0        4K       4G         0
+loop2               0        4K       4G         0
+loop3               0        4K       4G         0
+nvme0n1             0        0B       0B         0
+├─nvme0n1p1         0        0B       0B         0
+├─nvme0n1p14        0        0B       0B         0
+├─nvme0n1p15        0        0B       0B         0
+└─nvme0n1p16        0        0B       0B         0
+nvme2n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+nvme4n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+nvme5n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+nvme1n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+nvme7n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+nvme6n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+nvme3n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+nvme8n1             0      512B       2T         0
+└─md0               0      512B       2T         0
+0
+2199023255040
+2199023255040
+2199023255040
+2199023255040
+2199023255040
+2199023255040
+2199023255040
+2199023255040
+--- Local Arp / Neighbor Matrix ---
+172.17.0.1 dev eth0 lladdr 56:c2:c3:93:26:15 REACHABLE 
+--- Group Membership Layout ---
+root
+kvm:x:994:
+render:x:993:
+--- NVIDIA Driver and MPS IPC Audit ---
+No global MPS socket leaked in /tmp
+No active CUDA injection handles visible
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-b94c460e-df6f-ec92-8804-4f904ca72830
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:51:00.0
+Device Minor: 	 0
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-f4d0633d-ce36-2576-9684-31574c86eb5b
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:52:00.0
+Device Minor: 	 1
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-229dcb2a-2aa1-bee8-557a-f8183f5a89b6
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:62:00.0
+Device Minor: 	 2
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-346fa1df-eb05-d5a7-c867-df4e700ee209
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:63:00.0
+Device Minor: 	 3
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-1c3c27f9-7954-80d0-b1e6-eef760675b03
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:75:00.0
+Device Minor: 	 4
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-46a1956c-ef50-f952-6e0a-af605636043f
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:76:00.0
+Device Minor: 	 5
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-a581d4b7-08f5-6409-b2f6-0374a542efda
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:86:00.0
+Device Minor: 	 6
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+Model: 		 NVIDIA B200
+IRQ:   		 254
+GPU UUID: 	 GPU-3def9084-79f9-9419-0225-ea38cde83708
+Video BIOS: 	 97.00.9a.00.0f
+Bus Type: 	 PCIe
+DMA Size: 	 52 bits
+DMA Mask: 	 0xfffffffffffff
+Bus Location: 	 0000:87:00.0
+Device Minor: 	 7
+GPU Firmware: 	 595.71.05
+GPU Excluded:	 No
+--- Storage Mount and UID Mapping Audit ---
+overlay on / type overlay (rw,relatime,lowerdir=30544/fs:30537/fs:30534/fs:30533/fs:30530/fs:30529/fs:30526/fs:30522/fs:30519/fs:30518/fs:30515/fs:30511/fs:30508/fs:30507/fs:30504/fs:30497/fs:30496/fs:30495/fs:30494/fs:30493/fs:30492/fs:30491/fs:30490/fs:30489/fs:30488/fs:30487/fs:30486/fs:30485/fs:30484/fs:30483/fs:30482/fs:30481/fs:30480/fs:30479/fs:30478/fs:30477/fs:30476/fs:30475/fs:30474/fs:30473/fs:30472/fs:30471/fs:30470/fs:30469/fs:30468/fs:30467/fs:30466/fs:30465/fs:30462/fs:30461/fs:30460/fs:30459/fs:30458/fs:30457/fs:30456/fs:30455/fs:30454/fs:30453/fs:30452/fs:30449/fs,upperdir=/var/lib/docker/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/30545/fs,workdir=/var/lib/docker/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/30545/work,nouserxattr)
+         0          0 4294967295
+--- System Clock and Time Namespace Audit ---
+PASS: Physical RTC hardware node hidden
+1384019.10 262814008.00
+rtc_time	: 07:29:38
+rtc_date	: 2026-06-22
+alrm_time	: 00:00:00
+alrm_date	: 2026-06-07
+alarm_IRQ	: no
+alrm_pending	: no
+update IRQ enabled	: no
+periodic IRQ enabled	: no
+periodic IRQ frequency	: 1024
+max user IRQ frequency	: 64
+24hr		: yes
+periodic_IRQ	: no
+update_IRQ	: no
+HPET_emulated	: no
+BCD		: yes
+DST_enable	: no
+periodic_freq	: 1024
+batt_status	: okay
+--- Enterprise Domain Socket Audit ---
+/tmp/tmux-0/default
+/run/supervisor.sock
+--- Procfs Kernel Parameter Writable Audit ---
+/proc/sys/net/ipv4/conf/all/accept_local
+/proc/sys/net/ipv4/conf/all/accept_redirects
+/proc/sys/net/ipv4/conf/all/accept_source_route
+/proc/sys/net/ipv4/conf/all/arp_accept
+/proc/sys/net/ipv4/conf/all/arp_announce
+/proc/sys/net/ipv4/conf/all/arp_evict_nocarrier
+/proc/sys/net/ipv4/conf/all/arp_filter
+/proc/sys/net/ipv4/conf/all/arp_ignore
+/proc/sys/net/ipv4/conf/all/arp_notify
+/proc/sys/net/ipv4/conf/all/bc_forwarding
+--- Global Core Dump Pattern Check ---
+/var/lib/vastai_kaalia/data/core-%e.%p.%h.%t
+--- Kernel Crypto and Hardening Audit ---
+2
+1048576
+--- Virtual Memory and Hugepages Audit ---
+always [madvise] never
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+FileHugePages:  15697920 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+--- Seccomp System-Call Filter Audit ---
+Seccomp:	2
+Seccomp_filters:	1
+--- Dependency Scan: Python Packages ---
+annotated-doc==0.0.4
+anyio==4.13.0
+asttokens==3.0.1
+certifi==2026.5.20
+click==8.4.1
+comm==0.2.3
+cuda-bindings==13.3.1
+cuda-pathfinder==1.5.5
+cuda-toolkit==13.0.2
+debugpy==1.8.21
+decorator==5.3.1
+executing==2.2.1
+filelock==3.29.1
+fsspec==2026.4.0
+h11==0.16.0
+hf-xet==1.5.0
+httpcore==1.0.9
+httpx==0.28.1
+huggingface_hub==1.18.0
+idna==3.18
+ipykernel==7.2.0
+ipython==9.14.1
+ipython_pygments_lexers==1.1.1
+ipywidgets==8.1.8
+jedi==0.20.0
+Jinja2==3.1.6
+jupyter_client==8.9.0
+jupyter_core==5.9.1
+jupyterlab_widgets==3.0.16
+markdown-it-py==4.2.0
+MarkupSafe==3.0.3
+matplotlib-inline==0.2.2
+mdurl==0.1.2
+mpmath==1.3.0
+nest-asyncio==1.6.0
+networkx==3.6.1
+numpy==2.4.6
+nvidia-cublas==13.1.1.3
+nvidia-cuda-cupti==13.0.85
+nvidia-cuda-nvrtc==13.0.88
+nvidia-cuda-runtime==13.0.96
+nvidia-cudnn-cu13==9.20.0.48
+nvidia-cufft==12.0.0.61
+nvidia-cufile==1.15.1.6
+nvidia-curand==10.4.0.35
+nvidia-cusolver==12.0.4.66
+nvidia-cusparse==12.6.3.3
+nvidia-cusparselt-cu13==0.8.1
+nvidia-nccl-cu13==2.29.7
+nvidia-nvjitlink==13.0.88
+nvidia-nvshmem-cu13==3.4.5
+nvidia-nvtx==13.0.85
+packaging==26.2
+parso==0.8.7
+pexpect==4.9.0
+pillow==12.2.0
+pip==26.1.2
+platformdirs==4.10.0
+prompt_toolkit==3.0.52
+psutil==7.2.2
+ptyprocess==0.7.0
+pure_eval==0.2.3
+Pygments==2.20.0
+python-dateutil==2.9.0.post0
+PyYAML==6.0.3
+pyzmq==27.1.0
+rich==15.0.0
+setuptools==81.0.0
+shellingham==1.5.4
+six==1.17.0
+stack-data==0.6.3
+sympy==1.14.0
+torch==2.12.0+cu130
+torchcodec==0.12.0+cu130
+torchvision==0.27.0+cu130
+tornado==6.5.6
+tqdm==4.68.0
+traitlets==5.15.1
+triton==3.7.0
+typer==0.25.1
+typing_extensions==4.15.0
+wcwidth==0.7.0
+wheel==0.47.0
+widgetsnbextension==4.0.15
+--- Dependency Scan: Key System Packages ---
+ii  curl                            8.5.0-2ubuntu10.9                 amd64        command line tool for transferring data with URL syntax
+ii  idle-python3.12                 3.12.3-1ubuntu0.13                all          IDE for Python (v3.12) using Tkinter
+ii  libcurl3t64-gnutls:amd64        8.5.0-2ubuntu10.9                 amd64        easy-to-use client-side URL transfer library (GnuTLS flavour)
+ii  libcurl4-openssl-dev:amd64      8.5.0-2ubuntu10.9                 amd64        development files and documentation for libcurl (OpenSSL flavour)
+ii  libcurl4t64:amd64               8.5.0-2ubuntu10.9                 amd64        easy-to-use client-side URL transfer library (OpenSSL flavour)
+ii  libpython3.12-dev:amd64         3.12.3-1ubuntu0.13                amd64        Header files and a static library for Python (v3.12)
+ii  libpython3.12-minimal:amd64     3.12.3-1ubuntu0.13                amd64        Minimal subset of the Python language (version 3.12)
+ii  libpython3.12-stdlib:amd64      3.12.3-1ubuntu0.13                amd64        Interactive high-level object-oriented language (standard library, version 3.12)
+ii  libpython3.12-testsuite         3.12.3-1ubuntu0.13                all          Testsuite for the Python standard library (v3.12)
+ii  libpython3.12t64:amd64          3.12.3-1ubuntu0.13                amd64        Shared Python runtime library (version 3.12)
+ii  openssl                         3.0.13-0ubuntu3.9                 amd64        Secure Sockets Layer toolkit - cryptographic utility
+ii  python3.12                      3.12.3-1ubuntu0.13                amd64        Interactive high-level object-oriented language (version 3.12)
+ii  python3.12-dev                  3.12.3-1ubuntu0.13                amd64        Header files and a static library for Python (v3.12)
+ii  python3.12-full                 3.12.3-1ubuntu0.13                amd64        Python Interpreter with complete class library (version 3.12)
+ii  python3.12-minimal              3.12.3-1ubuntu0.13                amd64        Minimal subset of the Python language (version 3.12)
+ii  python3.12-venv                 3.12.3-1ubuntu0.13                amd64        Interactive high-level object-oriented language (pyvenv binary, version 3.12)
+ii  sudo                            1.9.15p5-3ubuntu5.24.04.2         amd64        Provide limited super user privileges to specific users
+--- Kernel Version (for CVE cross-check) ---
+Linux version 6.17.0-1017-aws (buildd@lcy02-amd64-010) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #17~24.04.1-Ubuntu SMP Tue May 26 21:30:32 UTC 2026
