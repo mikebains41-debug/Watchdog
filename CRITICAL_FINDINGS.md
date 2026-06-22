@@ -7,12 +7,15 @@ Project: GPU Optimizer / Watchdog
 Kernel: Linux 5.15.0-140-generic (built April 2025)
 CVE: CVE-2026-31431 "Copy Fail" - container escape via shared page cache
 Confirmed: cat /proc/version
+Live-patch check: No live-patch tools found - confirmed unpatched
 Status: NOT exploited - version check only
 Action: Responsible disclosure to security@vast.ai
 
-## Finding 2: Shared /tmp Storage Residual (MEDIUM)
-Files dated 2026-06-05 14:43 found on 2026-06-21 and confirmed again
-on 2026-06-22 - 17 days before/after rental start.
+## Finding 2: Container Overlay Layer Retains Previous Tenant Files (MEDIUM)
+Files dated 2026-06-05 14:43 still present on 2026-06-22 - 17 days old.
+findmnt /tmp: no output - /tmp uses container overlay filesystem directly.
+Framing: container overlay layer retains files from a previous tenant
+session. Not a host-shared /tmp mount gap but an overlay sanitization gap.
 
 Raw evidence (5 independent confirmations):
 - tmp3j31amsg_kernels/ (empty directory, drwx------)
@@ -20,21 +23,14 @@ Raw evidence (5 independent confirmations):
 - tmpap3y5yro_kernels/ (empty directory, drwx------)
 - uv-e147f089dc971b1b.lock (0 bytes, -rw-rw-rw-)
 
-All timestamped: Jun 5 14:43
-Container start confirmed: Jun 22 02:30 (/dev/shm timestamp)
-Days predating rental: 17
+Contents: NOT inspected
 
-Contents: NOT inspected (unauthorized access avoided)
-Directories confirmed empty via ls -la inside each
-
-Command used: ls -la /dev/shm /tmp
-
-## Finding 3: -9.5% Contention Throughput Drop (LOW/MEDIUM)
+## Finding 3: -9.5% Noisy-Neighbor Performance Impact (LOW/MEDIUM)
 Baseline: 372.32 iter/sec
 Under contention: 336.96 iter/sec
-Script: contention_benchmark.py
+Framing: noisy-neighbor performance degradation, not isolation failure.
 
 ## Key Point
-Neither Finding 1 nor Finding 2 would have been detected by GPU
-Optimizer (GPU telemetry only). Both required Watchdog's host/OS-level
-checks. This validates Watchdog as a separate, essential security layer.
+Neither Finding 1 nor Finding 2 visible to GPU Optimizer (GPU telemetry
+only). Both required Watchdog host/OS-level checks - validates Watchdog
+as a separate, essential security layer alongside GPU Optimizer.
