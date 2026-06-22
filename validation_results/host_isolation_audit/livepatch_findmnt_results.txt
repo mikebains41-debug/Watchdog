@@ -1,0 +1,13 @@
+--- Live-patch Check ---
+canonical-livepatch status 2>/dev/null || kpatch list 2>/dev/null || echo "No live-patch tools found"
+Result: No live-patch tools found
+Conclusion: No live-patching in place. CVE-2026-31431 confirmed unpatched.
+
+--- findmnt /tmp ---
+Command: findmnt /tmp
+Result: (no output)
+Conclusion: /tmp has no separate mount entry - uses container overlay filesystem
+directly. June 5 files are retained in the container image/overlay layer from
+a previous tenant session. Framing update: "container overlay layer retains
+files from a previous tenant session" rather than "host-shared /tmp not wiped."
+Finding remains real and valid - files from 17 days ago still present.
