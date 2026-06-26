@@ -6,7 +6,7 @@ from agent.telemetry import TelemetryCollector, detect_gpus
 from detection.engines import DetectionPipeline
 from detection.hardware_attacks import ClockGlitchDetector, VoltageGlitchDetector, DMAAttackDetector, LaserInjectionDetector
 from detection.memory_attacks import CacheSideChannelDetector, MIGPartitionDesyncDetector, SequentialVRAMReadDetector
-from detection.llm_attacks import InferencePowerFingerprintDetector, AgentOrchestrationAnomalyDetector, PromptInjectionSideEffectDetector
+from detection.llm_attacks import InferencePowerFingerprintDetector, AgentOrchestrationAnomalyDetector, PromptInjectionSideEffectDetector, AgentSessionVRAMRetentionDetector, InterAgentHandoffAnomalyDetector
 from detection.pcie_health import PCIeHealthDetector
 from detection.predictive_failure import FanWearDetector, CapacitorAgingDetector, PackageCrackingDetector
 from detection.attestation import BootAttestation
@@ -27,6 +27,8 @@ class FullDetectionPipeline:
         self.inference_fp = InferencePowerFingerprintDetector()
         self.agent_anomaly = AgentOrchestrationAnomalyDetector()
         self.prompt_injection = PromptInjectionSideEffectDetector()
+        self.agent_vram = AgentSessionVRAMRetentionDetector()
+        self.inter_agent = InterAgentHandoffAnomalyDetector()
         self.pcie_health = PCIeHealthDetector()
         self.fan_wear = FanWearDetector()
         self.capacitor = CapacitorAgingDetector()
@@ -45,7 +47,7 @@ class FullDetectionPipeline:
                 if self.on_alert: self.on_alert(alert)
         engines = [self.clock_glitch, self.voltage_glitch, self.dma, self.laser,
                    self.cache_sc, self.mig_desync, self.seq_vram,
-                   self.inference_fp, self.agent_anomaly, self.prompt_injection,
+                   self.inference_fp, self.agent_anomaly, self.prompt_injection, self.agent_vram, self.inter_agent,
                    self.pcie_health, self.fan_wear, self.capacitor, self.package_crack]
         for engine in engines:
             alert = engine.update(row)
