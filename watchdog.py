@@ -13,6 +13,7 @@ from detection.attestation import BootAttestation
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
+from alerting.siem import SIEMRouter
 from remediation.response import RemediationEngine
 
 class FullDetectionPipeline:
