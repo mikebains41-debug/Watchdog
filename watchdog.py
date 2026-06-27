@@ -11,6 +11,7 @@ from detection.pcie_health import PCIeHealthDetector
 from detection.predictive_failure import FanWearDetector, CapacitorAgingDetector, PackageCrackingDetector
 from detection.attestation import BootAttestation
 from alerting.manager import AlertManager
+from detection.cvss_scores import enrich_alert
 from remediation.response import RemediationEngine
 
 class FullDetectionPipeline:
@@ -44,6 +45,7 @@ class FullDetectionPipeline:
             if alert:
                 self.alert_count += 1
                 print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
+                alert = enrich_alert(alert)
                 if self.on_alert: self.on_alert(alert)
         engines = [self.clock_glitch, self.voltage_glitch, self.dma, self.laser,
                    self.cache_sc, self.mig_desync, self.seq_vram,
@@ -54,6 +56,7 @@ class FullDetectionPipeline:
             if alert:
                 self.alert_count += 1
                 print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
+                alert = enrich_alert(alert)
                 if self.on_alert: self.on_alert(alert)
 
 def main():
