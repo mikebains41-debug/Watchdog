@@ -12,6 +12,7 @@ from detection.predictive_failure import FanWearDetector, CapacitorAgingDetector
 from detection.attestation import BootAttestation
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
+from alerting.state import AlertStateManager
 from remediation.response import RemediationEngine
 
 class FullDetectionPipeline:
