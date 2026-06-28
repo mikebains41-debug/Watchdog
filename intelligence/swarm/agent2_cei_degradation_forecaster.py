@@ -36,6 +36,23 @@ CEI_TIERS = {
 }
 
 
+# Real H200 validated data from Serial Alice certificates
+# These are blockchain-anchored attested measurements — not estimates
+H200_VALIDATED = {
+    'idle_floor_w': 80.36,        # M2 cert sa-29820c
+    'ghost_threshold_w': 88.36,   # idle + 8W — same as M2
+    'ghost_peak_w': 147.96,       # M6 cooldown tail cert sa-b2f092
+    'fp32_cei': 3.178e11,         # M4 cert sa-885826 — EXCELLENT tier
+    'fp32_cei_min': 3.135e11,     # M4 5-pass minimum ±1.6%
+    'fp32_cei_max': 3.187e11,     # M4 5-pass maximum ±1.6%
+    'fp16_cei': 2.846e12,         # M7 cert sa-b6d99f — same-GPU 9x FP32
+    'fp8_cei': 9.59e11,           # FP8 ladder cert sa-e6628d — 12.69x FP32
+    'fp8_bf16_ratio': 1.41,       # FP8/BF16 ratio CV 2.81% — most stable metric
+    'fp32_power_w': 620.9,
+    'fp8_power_w': 400.9,
+}
+
+
 class CEIDegradationForecaster:
     """
     Agent 2 — CEI Degradation Forecaster

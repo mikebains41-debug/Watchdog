@@ -30,6 +30,21 @@ PREDICTION_THRESHOLD = 0.82  # 82% confidence to fire warning
 COOLDOWN_S = 120         # Minimum seconds between predictions
 
 
+# Real H200 validated data from Serial Alice certificates
+# These are blockchain-anchored attested measurements — not estimates
+H200_VALIDATED = {
+    'idle_floor_w': 80.36,        # M2 cert sa-29820c
+    'ghost_threshold_w': 88.36,   # idle + 8W — same as M2
+    'ghost_peak_w': 147.96,       # M6 cooldown tail cert sa-b2f092
+    'compute_peak_w': 486.9,      # M2 peak at 0% util cert sa-29820c
+    'fp32_cei': 3.178e11,         # M4 cert sa-885826
+    'fp32_cei_range': (3.135e11, 3.187e11),  # 5-pass range ±1.6%
+    'fp8_cei': 9.59e11,           # FP8 ladder cert sa-e6628d
+    'fp8_power_w': 400.9,
+    'fp32_power_w': 620.9,
+}
+
+
 class GhostPowerPredictor:
     """
     Agent 1 — Ghost Power Predictor
