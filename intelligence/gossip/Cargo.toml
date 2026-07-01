@@ -1,0 +1,7 @@
+[package]
+name = "watchdog-gossip"
+version = "0.1.0"
+edition = "2021"
+description = "Watchdog AIDR - Cross-Cluster Swarm Vaccine Gossip Daemon"
+
+[dependencies]
