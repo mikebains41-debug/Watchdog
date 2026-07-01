@@ -64,6 +64,10 @@ class PrecisionAdvisor:
     def set_cei_baseline(self, cei):
         self.cei_baseline = cei
 
+    def update_cei(self, cei_value):
+        """Feed current CEI measurement for degradation detection."""
+        self._recent_cei = cei_value
+
     def set_current_precision(self, precision):
         if precision in PRECISION_LADDER:
             self.current_precision = precision
@@ -107,6 +111,12 @@ class PrecisionAdvisor:
 
         reason = None
         detail = {}
+
+        # CEI degradation check
+        cei_reason, cei_detail = self._check_cei_degradation(recent, None)
+        if cei_reason and not reason:
+            reason = cei_reason
+            detail = cei_detail
 
         if avg_util < 5 and avg_power > ghost_threshold:
             reason = "GHOST_POWER_DETECTED"
