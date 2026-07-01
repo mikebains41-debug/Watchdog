@@ -17,7 +17,7 @@ Grounded in real Serial Alice validated results:
 Commercial value:
 - Predicts isolation risk before breach occurs
 - EU AI Act Article 9 risk management compliance
-- SOC2 Confidentiality criterion support
+- SOC2 Confidentiality criterion evidence mapping (not certification)
 - Data center multi-tenant security SLA enforcement
 
 NOTE: Simulation-based. Requires real hardware validation.

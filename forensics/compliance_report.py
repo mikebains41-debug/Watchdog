@@ -1,10 +1,18 @@
 """
-Watchdog AIDR v2.0 - Compliance Report Generator
-Produces structured JSON reports mapped to:
+Watchdog AIDR v2.0 - Compliance Evidence Report Generator
+Produces structured JSON evidence reports mapping Watchdog alerts to
+relevant controls in the following frameworks:
 - SOC2 Type II (Security, Availability, Confidentiality)
 - EU AI Act (Article 9 Risk Management, Article 13 Transparency)
 - NIST AI RMF (GOVERN, MAP, MEASURE, MANAGE)
 - NIST CSF 2.0 (IDENTIFY, PROTECT, DETECT, RESPOND, RECOVER)
+
+IMPORTANT: These reports are compliance EVIDENCE, not certifications.
+They document which framework controls are relevant to observed alerts
+and support an organization's certification journey. Formal SOC2 Type II
+or ISO 27001 certification requires an accredited third-party auditor.
+Watchdog does not issue certifications and these reports must not be
+represented as such.
 """
 import json, time, os
 from datetime import datetime, timezone
@@ -52,7 +60,7 @@ class ComplianceReportGenerator:
                 'generated_at': now.isoformat(),
                 'period_seconds': duration_seconds,
                 'cve_reference': 'CVE-2048350',
-                'frameworks': ['SOC2 Type II', 'EU AI Act', 'NIST AI RMF 1.0', 'NIST CSF 2.0']
+                'frameworks': ['SOC2 Type II (evidence mapping)', 'EU AI Act (evidence mapping)', 'NIST AI RMF 1.0 (evidence mapping)', 'NIST CSF 2.0 (evidence mapping)']
             },
             'executive_summary': self._executive_summary(alerts, state_summary),
             'alert_findings': self._alert_findings(alerts),

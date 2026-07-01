@@ -1,6 +1,6 @@
 """
 Watchdog AIDR v2.0 - Immutable Cryptographic Audit Ledger
-Append-only local ledger for compliance reports and alerts.
+Append-only local ledger for compliance evidence reports and alerts.
 Each entry is SHA256 chained to the previous entry — any tampering
 breaks the chain and is immediately detectable.
 No cloud dependency. Works air-gapped.

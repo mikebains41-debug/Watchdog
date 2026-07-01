@@ -15,7 +15,7 @@ class ComplianceReporter:
         alerts = self.load_alerts()
         critical = [a for a in alerts if a.get('severity') in ['CRITICAL','EMERGENCY']]
         return {
-            'report': 'SOC2 Type II',
+            'report': 'SOC2 Type II — control mapping evidence only, not certification',
             'generated': datetime.now().isoformat(),
             'total_alerts': len(alerts),
             'critical_alerts': len(critical),
@@ -28,7 +28,7 @@ class ComplianceReporter:
         alerts = self.load_alerts()
         types = list(set(a.get('type') for a in alerts))
         return {
-            'report': 'NIST AI RMF',
+            'report': 'NIST AI RMF — control mapping evidence only, not certification',
             'generated': datetime.now().isoformat(),
             'govern': {'policy': 'Watchdog AIDR active', 'cve_filed': '2048350'},
             'map': {'threat_categories': types, 'total_detections': len(alerts)},
