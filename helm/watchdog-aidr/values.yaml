@@ -1,0 +1,30 @@
+global:
+  environment: production
+  sovereignCloud: true
+
+image:
+  interceptorRegistry: "internal-registry.watchdog.local/aidr/interceptor"
+  tag: "ea9de3f"
+  pullPolicy: IfNotPresent
+
+storage:
+  bucketName: "sovereign-ai-audit-logs"
+  endpointUrl: ""
+  region: "us-east-1"
+  kmsKeyId: ""
+
+mesh:
+  gossipPort: 9988
+  clusterDomain: "watchdog-system.svc.cluster.local"
+  fanOut: 3
+  rateLimitBytesPerSec: 51200
+
+ebpf:
+  autoQuarantine: false
+  minCvssToTrigger: 8.0
+
+harbor:
+  signingKeySecret: "watchdog-secrets"
+  signingKeySecretKey: "harbor-signing-key"
+
+replicaCount: 3

@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watchdog-mesh-daemon
+  namespace: watchdog-system
+  labels:
+    app: watchdog-mesh-node
+    version: {{ .Values.image.tag }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: watchdog-mesh-node
+  template:
+    metadata:
+      labels:
+        app: watchdog-mesh-node
+    spec:
+      containers:
+        - name: gossip-daemon-node
+          image: "{{ .Values.image.interceptorRegistry }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.mesh.gossipPort }}
+              protocol: UDP
+              name: gossip-udp
+            - containerPort: {{ .Values.mesh.gossipPort }}
+              protocol: TCP
+              name: gossip-tcp
+          env:
+            - name: WATCHDOG_S3_BUCKET
+              value: "{{ .Values.storage.bucketName }}"
+            - name: WATCHDOG_S3_ENDPOINT
+              value: "{{ .Values.storage.endpointUrl }}"
+            - name: WATCHDOG_S3_REGION
+              value: "{{ .Values.storage.region }}"
+            - name: WATCHDOG_EBPF_AUTO_QUARANTINE
+              value: "{{ .Values.ebpf.autoQuarantine }}"
+            - name: WATCHDOG_EBPF_MIN_CVSS
+              value: "{{ .Values.ebpf.minCvssToTrigger }}"
+            - name: WATCHDOG_STORAGE_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: watchdog-storage-credentials
+                  key: access-key
+            - name: WATCHDOG_STORAGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: watchdog-storage-credentials
+                  key: secret-key
+            - name: WATCHDOG_HARBOR_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.harbor.signingKeySecret }}
+                  key: {{ .Values.harbor.signingKeySecretKey }}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watchdog-mesh-daemon
+  namespace: watchdog-system
+spec:
+  ports:
+    - name: gossip-udp
+      port: {{ .Values.mesh.gossipPort }}
+      protocol: UDP
+    - name: gossip-tcp
+      port: {{ .Values.mesh.gossipPort }}
+      protocol: TCP
+  selector:
+    app: watchdog-mesh-node

@@ -1,0 +1,18 @@
+apiVersion: v2
+name: watchdog-aidr
+description: Category-defining Host and OS-Level GPU Security Monitoring and Intervention Platform
+type: application
+version: 1.4.0
+appVersion: "ea9de3f"
+maintainers:
+  - name: Manmohan Mike Bains
+    email: mikebains41@gmail.com
+keywords:
+  - gpu
+  - security
+  - watchdog
+  - aidr
+  - cve-2048350
+  - ghost-power
+  - vram
+  - ebpf
