@@ -1,31 +1,40 @@
 """
 Watchdog AIDR v2.0 - Adaptive Precision Recommendation Engine
 Monitors real-time GPU telemetry and recommends precision switches
-(FP32 -> FP16 -> BF16 -> FP8) based on energy state, thermal state,
-and CEI degradation signals.
+(FP32 -> FP16 -> BF16 -> FP8) based on energy state and thermal state.
 
 Integration point: output feeds directly into external precision
 controllers (e.g. Cadence) via the alert pipeline.
 
 Alert type: PRECISION_SWITCH_RECOMMENDED
+
+NOTE: CEI degradation trigger is not yet wired — cei_baseline is
+stored for future use. Power reduction estimates are derived from
+Serial Alice FP8 ladder cert sa-e6628d and are marked as estimated,
+not independently measured by this codebase.
 """
 import time
 from collections import deque
 from datetime import datetime, timezone
 
 CEI_BASELINES = {
-    "H200": 3.178e11,
-    "H100": 15.2e9,
-    "A100": 5.68e9,
-    "B200": 450.0e9,
+    "H200": 3.178e11,  # Serial Alice M4 cert sa-885826
+    "H100": 15.2e9,    # validated — no Serial Alice cert yet
+    "A100": 5.68e9,    # validated — no Serial Alice cert yet
+    "B200": 450.0e9,   # estimated — no Serial Alice cert yet
+    "B300": 900.0e9,   # estimated — not yet validated
 }
 
 PRECISION_LADDER = ["FP32", "FP16", "BF16", "FP8"]
 
-POWER_REDUCTION = {
-    "FP32->FP16": 0.15,
-    "FP16->BF16": 0.02,
-    "BF16->FP8":  0.22,
+# Power reduction estimates derived from Serial Alice FP8 ladder
+# cert sa-e6628d (Nelson Vicente / Sirius GreenTech, 2026-06-27)
+# These are ESTIMATED from a single H200 run — not independently
+# verified by this codebase. Mark as estimated until confirmed.
+POWER_REDUCTION_ESTIMATED = {
+    "FP32->FP16": 0.15,   # 620.9W -> 525.2W = 15.4% (sa-e6628d)
+    "FP16->BF16": 0.02,   # 525.2W -> 517.3W = 1.5%  (sa-e6628d)
+    "BF16->FP8":  0.22,   # 517.3W -> 400.9W = 22.5% (sa-e6628d)
 }
 
 class PrecisionAdvisor:
@@ -47,7 +56,7 @@ class PrecisionAdvisor:
         return None
 
     def _power_reduction_pct(self, from_p, to_p):
-        return POWER_REDUCTION.get(f"{from_p}->{to_p}", 0.10)
+        return POWER_REDUCTION_ESTIMATED.get(f"{from_p}->{to_p}", 0.10)
 
     def set_idle_baseline(self, idle_w):
         self.idle_baseline_w = idle_w
@@ -120,7 +129,7 @@ class PrecisionAdvisor:
                 'current_precision': self.current_precision,
                 'recommended_precision': next_p,
                 'reason': reason,
-                'expected_power_reduction_pct': round(reduction_pct * 100, 1),
+                'expected_power_reduction_pct_estimated': round(reduction_pct * 100, 1),
                 'expected_power_after_w': round(avg_power * (1 - reduction_pct), 2),
                 'message': f"Switch {self.current_precision} -> {next_p}: {reason} — expected {reduction_pct*100:.0f}% power reduction",
                 **detail
