@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-inference-worker
+  namespace: watchdog-secured-workloads
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: inference-agent
+  template:
+    metadata:
+      labels:
+        app: inference-agent
+    spec:
+      volumes:
+        - name: watchdog-interceptor-shared-volume
+          emptyDir: {}
+      initContainers:
+        - name: watchdog-binary-provisioner
+          image: internal-registry.watchdog.local/aidr/interceptor:ea9de3f
+          command: ["cp", "/opt/watchdog/libwatchdog_interceptor.so", "/shared/libwatchdog_interceptor.so"]
+          volumeMounts:
+            - name: watchdog-interceptor-shared-volume
+              mountPath: /shared
+      containers:
+        - name: cuda-inference-container
+          image: nvcr.io/nvidia/pytorch:26.03-py3
+          resources:
+            limits:
+              nvidia.com/gpu: 8
+          volumeMounts:
+            - name: watchdog-interceptor-shared-volume
+              mountPath: /usr/local/lib/watchdog
+          env:
+            - name: LD_PRELOAD
+              value: "/usr/local/lib/watchdog/libwatchdog_interceptor.so"
+            - name: WATCHDOG_DAEMON_GOSSIP_TARGET
+              value: "watchdog-mesh-daemon.watchdog-system.svc.cluster.local:9988"
+            - name: WATCHDOG_HARBOR_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: watchdog-secrets
+                  key: harbor-signing-key
