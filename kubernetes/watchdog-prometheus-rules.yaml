@@ -1,0 +1,51 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: watchdog-cei-degradation-rules
+  namespace: watchdog-system
+  labels:
+    app: watchdog-aidr
+spec:
+  groups:
+    - name: watchdog.infrastructure.alerts
+      rules:
+        - alert: WatchdogGhostPowerDetected
+          expr: watchdog_gpu_power_watts > 88 and watchdog_gpu_util_pct == 0
+          for: 10s
+          labels:
+            severity: warning
+            cve: CVE-2048350
+            mitre_id: AML.T0015
+          annotations:
+            summary: "Ghost power on GPU {{ $labels.gpu }}"
+            description: "Power above idle+8W at 0% util. Validated 147.96W on H200 cert sa-b2f092."
+
+        - alert: WatchdogVRAMResidualExposure
+          expr: watchdog_gpu_memory_used_mb > 100 and watchdog_gpu_util_pct == 0
+          for: 15s
+          labels:
+            severity: critical
+            cve: CVE-2048350
+            cvss: "8.4"
+          annotations:
+            summary: "VRAM residual exposure GPU {{ $labels.gpu }}"
+            description: "CVE-2048350 — VRAM occupied at 0% util. Previous tenant data may be readable."
+
+        - alert: WatchdogCEIDegradationCritical
+          expr: watchdog_gpu_power_watts > 400 and watchdog_gpu_util_pct < 20
+          for: 30s
+          labels:
+            severity: critical
+            mitre_id: AML.T0048
+          annotations:
+            summary: "CEI degradation on GPU {{ $labels.gpu }}"
+            description: "High power at low utilization. Possible covert mining or model extraction."
+
+        - alert: WatchdogNoisyNeighborDegradation
+          expr: watchdog_gpu_util_pct > 80 and watchdog_alerts_total > 0
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Noisy-neighbor degradation GPU {{ $labels.gpu }}"
+            description: "Matches -9.5% profile from Vast.ai instance 41986069."
