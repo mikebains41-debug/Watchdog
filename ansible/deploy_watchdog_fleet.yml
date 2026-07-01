@@ -1,0 +1,75 @@
+---
+- name: Distribute and Initialize Watchdog AIDR Across Fleet Clusters
+  hosts: container_clusters
+  gather_facts: false
+  vars:
+    watchdog_namespace: "watchdog-system"
+    watchdog_version: "1.4.0"
+    interceptor_image_tag: "ea9de3f"
+    s3_bucket_name: "sovereign-ai-audit-logs"
+    s3_endpoint_url: "https://sovereign.local"
+  tasks:
+    - name: Ensure Watchdog System Namespace Exists
+      kubernetes.core.k8s:
+        name: "{{ watchdog_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+    - name: Provision Storage Credentials Secret
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: watchdog-storage-credentials
+            namespace: "{{ watchdog_namespace }}"
+          type: Opaque
+          data:
+            access-key: "{{ lookup('env', 'WATCHDOG_STORAGE_KEY_ID') | b64encode }}"
+            secret-key: "{{ lookup('env', 'WATCHDOG_STORAGE_SECRET') | b64encode }}"
+    - name: Provision Harbor Signing Key Secret
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: watchdog-secrets
+            namespace: "{{ watchdog_namespace }}"
+          type: Opaque
+          data:
+            harbor-signing-key: "{{ lookup('env', 'WATCHDOG_HARBOR_KEY') | b64encode }}"
+    - name: Run eBPF Compatibility Check
+      ansible.builtin.script:
+        cmd: detection/verify_ebpf_quarantine_core.py
+      register: ebpf_check
+      ignore_errors: true
+    - name: Report eBPF Status
+      ansible.builtin.debug:
+        msg: "eBPF: {{ ebpf_check.rc == 0 | ternary('APPROVED', 'FALLBACK TO USERSPACE') }}"
+    - name: Deploy Watchdog AIDR Helm Chart
+      kubernetes.core.helm:
+        name: watchdog-aidr
+        chart_ref: "./helm/watchdog-aidr"
+        release_namespace: "{{ watchdog_namespace }}"
+        create_namespace: false
+        wait: true
+        wait_timeout: "300s"
+        values:
+          image:
+            tag: "{{ interceptor_image_tag }}"
+          storage:
+            bucketName: "{{ s3_bucket_name }}"
+            endpointUrl: "{{ s3_endpoint_url }}"
+          ebpf:
+            autoQuarantine: "{{ ebpf_check.rc == 0 }}"
+    - name: Verify Watchdog Mesh Daemon Running
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        name: watchdog-mesh-daemon
+        namespace: "{{ watchdog_namespace }}"
+      register: mesh_status
+    - name: Report Deployment Status
+      ansible.builtin.debug:
+        msg: "Watchdog deployed — ready={{ mesh_status.resources[0].status.readyReplicas | default(0) }}/{{ mesh_status.resources[0].spec.replicas | default(0) }}"

@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: watchdog-shm-cleaner
+  namespace: watchdog-system
+spec:
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          hostPID: true
+          containers:
+            - name: cleaner-worker
+              image: internal-registry.watchdog.local/aidr/interceptor:ea9de3f
+              command: ["python3", "/opt/watchdog/detection/watchdog_shm_cleaner.py"]
+              securityContext:
+                privileged: true
+              volumeMounts:
+                - name: host-shm
+                  mountPath: /dev/shm
+                - name: host-proc
+                  mountPath: /proc
+          volumes:
+            - name: host-shm
+              hostPath:
+                path: /dev/shm
+            - name: host-proc
+              hostPath:
+                path: /proc
+          restartPolicy: OnFailure
