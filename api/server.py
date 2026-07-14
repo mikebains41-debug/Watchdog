@@ -64,3 +64,9 @@ try:
 except ImportError:
     print("[API] pip3 install fastapi uvicorn --break-system-packages")
     def run_api(host="0.0.0.0", port=8080): print("FastAPI not installed")
+
+    @app.post("/api/v1/inject/{attack_type}")
+    def inject_attack(attack_type: str):
+        synthetic_row = {"power.draw": 100, "utilization.gpu": 0, "memory.used": 100,
+                          "index": 0, "iso_timestamp": datetime.now().isoformat()}
+        return {"injected": attack_type, "row": synthetic_row, "timestamp": datetime.now().isoformat()}
