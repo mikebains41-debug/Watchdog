@@ -1,7 +1,7 @@
 # Tests
 
 Run everything:
-Expected output ends with `TOTAL: 61 passed, 0 failed across 6 files`.
+Expected output ends with `TOTAL: 76 passed, 0 failed across 7 files`.
 
 Or run any file alone: `python3 tests/test_engines.py`. Every file is
 independently runnable and prints its own PASSED/FAILED breakdown.
@@ -107,3 +107,13 @@ Proves argument parsing, the sample loop, error propagation on a missing
 or failing `nvidia-smi`, and that clean mocked data produces zero alerts
 through the actual CLI entry point -- not just through the underlying
 pipeline object directly.
+
+## test_check_pcie_telemetry.py -- 15 tests
+
+Tests `scripts/check_pcie_telemetry.py`, a reconnaissance script (not a
+detector) checking whether this environment's nvidia-smi exposes enough
+PCIe telemetry to build a PCIe-bandwidth detector idea before any
+detection code is written for it. Mocked at the subprocess level, so
+these tests prove the script's own error handling and output shape --
+they cannot and do not prove anything about what real hardware will
+actually report.

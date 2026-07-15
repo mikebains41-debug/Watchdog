@@ -45,3 +45,20 @@ harness. It runs with `vram_strict=False`, so that detector is constructed
 but does not evaluate. Wiring in
 `nvidia-smi --query-compute-apps=pid,used_memory` is separate follow-up
 work, not done here.
+
+## check_pcie_telemetry.py
+
+Reconnaissance only, not a detector. Checks whether this environment's
+`nvidia-smi` can report real-time PCIe throughput (needed for a future
+"PCIe bandwidth anomaly" detector idea -- possible slow model-weight
+exfiltration while GPU compute stays at 0%, the same blind-spot pattern
+as ghost power and VRAM residual, one layer over).
+
+Usage:
+Static PCIe link info (generation, lane width) is queried reliably via
+`--query-gpu`. Real-time PCIe *throughput* needs `nvidia-smi dmon`, whose
+column format was not verified against real hardware when this script was
+written -- it prints raw `dmon` output for a human to read rather than
+parsing a format it isn't certain of. Do not write a PCIe detector against
+this output until you've confirmed with your own eyes that it shows real,
+changing numbers during an actual transfer, not just idle zeros.
