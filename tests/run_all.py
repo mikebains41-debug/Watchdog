@@ -32,6 +32,7 @@ TEST_FILES = [
     "test_sampler.py",
     "test_cei_report.py",
     "test_verify_ebpf_quarantine_core.py",
+    "test_run_negative_control_harness.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")

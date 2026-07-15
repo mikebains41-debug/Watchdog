@@ -1,7 +1,7 @@
 # Tests
 
 Run everything:
-Expected output ends with `TOTAL: 52 passed, 0 failed across 5 files`.
+Expected output ends with `TOTAL: 61 passed, 0 failed across 6 files`.
 
 Or run any file alone: `python3 tests/test_engines.py`. Every file is
 independently runnable and prints its own PASSED/FAILED breakdown.
@@ -97,3 +97,13 @@ process doesn't actually have write permission).
    suite without a decision to put it there.
 3. Add a section to this file describing what it tests and what its
    positive/negative controls are.
+
+## test_run_negative_control_harness.py -- 9 tests
+
+Tests `scripts/run_negative_control.py` itself, using a mocked
+`nvidia-smi`. This is Layer 2 confidence, not Layer 3 -- see
+`scripts/README.md` for what that distinction means and why it matters.
+Proves argument parsing, the sample loop, error propagation on a missing
+or failing `nvidia-smi`, and that clean mocked data produces zero alerts
+through the actual CLI entry point -- not just through the underlying
+pipeline object directly.
