@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+watchdog_data/
+*.bak
+*_results.json
+*_report.json
+test_audit_ledger.jsonl
+graphify-out/
