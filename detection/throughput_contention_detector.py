@@ -33,7 +33,7 @@
 #   that data exists.
 
 from collections import deque
-from detection.engines import _EventState
+from detection._shared import _EventState
 
 
 class ThroughputContentionDetector:

@@ -3,99 +3,37 @@ Watchdog detection engines.
 
 Design rules enforced here:
   1. Edge-triggered, not level-triggered. An alert fires when a condition
-     STARTS, not on every sample while it persists. Level-triggered alerting
-     is what turns a 10-minute event into 600 CRITICALs.
+     STARTS, not on every sample while it persists.
   2. No detector fires on a state documented as architecturally normal
      (cooldown tails, coordinated multi-GPU bursts, idle floor).
   3. A detector that cannot see its subject in the input does not ship.
-     VRAMResidualDetector requires per-process data and says so loudly
-     rather than approximating.
 
 Deleted vs. previous version, deliberately:
-  - CrossTenantBleedingDetector: duplicate of GhostPowerDetector. Neighbour
-    workload is not inferable from own-GPU power draw.
+  - CrossTenantBleedingDetector: duplicate of GhostPowerDetector.
   - ThermalEmanationDetector: fired on every cooldown, which is normal.
-  - CrossWorkloadClustering promoted from EMERGENCY to INFO: coordinated
-    bursts across GPUs are documented architectural behaviour, not attack.
+  - CrossWorkloadClustering: demoted EMERGENCY -> INFO.
+
+Wired in this version:
+  - ThroughputContentionDetector, via a SEPARATE entry point
+    (calibrate_throughput / process_throughput), not through process(row).
+    It measures a workload's own iterations/sec, which nvidia-smi cannot
+    report -- a caller (e.g. the training loop itself) must explicitly
+    supply it. Silently trying to derive it from a telemetry row would be
+    dishonest about what the detector actually needs.
 """
 
 import time
-import collections
 from datetime import datetime
 
+from detection._shared import _EventState, _f
+from detection.throughput_contention_detector import ThroughputContentionDetector
 
-# --------------------------------------------------------------------------
-# Shared: edge-triggered event state
-# --------------------------------------------------------------------------
-
-class _EventState:
-    """Turns a per-sample boolean into start/stop events.
-
-    require_consecutive: samples the condition must hold before firing.
-        Debounces single-sample spikes.
-    refire_after_s: if the condition stays true this long, re-emit once.
-        Set to None to alert exactly once per episode.
-    """
-
-    def __init__(self, require_consecutive=3, refire_after_s=300):
-        self.require_consecutive = require_consecutive
-        self.refire_after_s = refire_after_s
-        self._streak = 0
-        self._active = False
-        self._last_emit = None
-
-    def should_emit(self, condition_met, now=None):
-        now = time.time() if now is None else now
-
-        if not condition_met:
-            self._streak = 0
-            self._active = False
-            return False
-
-        self._streak += 1
-        if self._streak < self.require_consecutive:
-            return False
-
-        if not self._active:
-            self._active = True
-            self._last_emit = now
-            return True
-
-        if self.refire_after_s and (now - self._last_emit) >= self.refire_after_s:
-            self._last_emit = now
-            return True
-
-        return False
-
-    @property
-    def active(self):
-        return self._active
-
-
-def _f(row, key, default=0.0):
-    """nvidia-smi emits '[N/A]' and '' for unsupported fields. Treat as absent."""
-    v = row.get(key, default)
-    if v is None:
-        return None
-    s = str(v).strip()
-    if s == '' or s.startswith('[') or s.lower() in ('n/a', 'na', 'unknown'):
-        return None
-    try:
-        return float(s)
-    except (TypeError, ValueError):
-        return None
-
-
-# --------------------------------------------------------------------------
-# 1. Ghost power
-# --------------------------------------------------------------------------
 
 class GhostPowerDetector:
-    """Power draw materially above the idle floor while NVML reports 0% util.
+    """Power above the idle floor while NVML reports 0% util.
 
-    Baseline is the median of observed idle samples, not the mean: a single
-    ghost-power event contaminating the baseline window would otherwise raise
-    the floor and mask the very thing being detected.
+    Baseline is the MEDIAN of idle samples, not the mean: a ghost event
+    contaminating the window would otherwise raise the floor and mask itself.
     """
 
     def __init__(self, threshold_w=15.0, baseline_min_samples=30,
@@ -103,12 +41,12 @@ class GhostPowerDetector:
         self.threshold_w = threshold_w
         self.baseline_min_samples = baseline_min_samples
         self.idle_mem_mb = idle_mem_mb
+        import collections
         self.idle_samples = collections.deque(maxlen=baseline_window)
         self.baseline_w = None
         self.state = _EventState(require_consecutive=3, refire_after_s=300)
 
     def _update_baseline(self, power, util, mem):
-        # Only genuinely quiescent samples inform the floor.
         if util == 0 and mem is not None and mem < self.idle_mem_mb:
             self.idle_samples.append(power)
         if len(self.idle_samples) >= self.baseline_min_samples:
@@ -121,17 +59,13 @@ class GhostPowerDetector:
         mem = _f(row, 'memory.used')
         if power is None or util is None:
             return None
-
         self._update_baseline(power, util, mem)
         if self.baseline_w is None:
-            return None  # still learning the floor
-
+            return None
         delta = power - self.baseline_w
         condition = (util == 0 and delta > self.threshold_w)
-
         if not self.state.should_emit(condition):
             return None
-
         return {
             'type': 'GHOST_POWER',
             'severity': 'WARNING' if delta < 50 else 'CRITICAL',
@@ -147,10 +81,6 @@ class GhostPowerDetector:
         }
 
 
-# --------------------------------------------------------------------------
-# 2. VRAM residual  (requires per-process telemetry)
-# --------------------------------------------------------------------------
-
 class VRAMResidualUnavailable(RuntimeError):
     """Raised when per-process data is absent. Deliberately not swallowed."""
 
@@ -158,23 +88,16 @@ class VRAMResidualUnavailable(RuntimeError):
 class VRAMResidualDetector:
     """Memory still allocated after the owning process is gone.
 
-    The finding this detects is: VRAM remains readable after a GRACEFUL
-    process exit, and is only reclaimed by SIGKILL. That is a statement
-    about processes. It cannot be made from aggregate memory.used alone --
-    a resident idle model looks identical to residual memory.
-
-    Requires row['compute_apps'] as a list of {'pid': int, 'used_memory': mb},
-    from:  nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader,nounits
-
-    If that key is absent, this raises. It does not guess.
+    Requires row['compute_apps'] as a list of {'pid': int, 'used_memory': mb}:
+      nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader,nounits
     """
 
     def __init__(self, residual_threshold_mb=100, grace_samples=2, strict=True):
         self.threshold_mb = residual_threshold_mb
         self.grace_samples = grace_samples
         self.strict = strict
-        self.known_pids = {}          # pid -> last observed used_memory
-        self.pending = {}             # pid -> samples since disappearance
+        self.known_pids = {}
+        self.pending = {}
         self.state = _EventState(require_consecutive=1, refire_after_s=None)
 
     def update(self, row):
@@ -185,28 +108,21 @@ class VRAMResidualDetector:
                     "VRAMResidualDetector requires row['compute_apps']. "
                     "Aggregate memory.used cannot distinguish residual memory "
                     "from a resident model. Add --query-compute-apps to the "
-                    "collector or construct with strict=False to disable."
+                    "collector, or construct with strict=False."
                 )
             return None
-
         mem_total_used = _f(row, 'memory.used')
         current = {int(a['pid']): float(a['used_memory']) for a in apps}
-
-        # Processes that vanished since last sample.
         for pid, last_mem in list(self.known_pids.items()):
             if pid not in current:
                 self.pending.setdefault(pid, {'samples': 0, 'mem_at_exit': last_mem})
-
         alert = None
         for pid, info in list(self.pending.items()):
             info['samples'] += 1
             if info['samples'] < self.grace_samples:
                 continue
-
-            # Process is gone. Is its memory still accounted for?
             claimed = sum(current.values())
             unclaimed = (mem_total_used - claimed) if mem_total_used is not None else None
-
             if unclaimed is not None and unclaimed > self.threshold_mb:
                 alert = {
                     'type': 'VRAM_RESIDUAL',
@@ -219,28 +135,20 @@ class VRAMResidualDetector:
                     'memory_claimed_by_live_procs_mb': round(claimed, 1),
                     'nvml_util_memory': row.get('utilization.memory'),
                     'timestamp': row.get('iso_timestamp'),
-                    'message': (f"PID {pid} exited; {unclaimed:.0f}MB remains allocated "
-                                f"with no owning process"),
+                    'message': (f"PID {pid} exited; {unclaimed:.0f}MB remains "
+                                f"allocated with no owning process"),
                 }
             del self.pending[pid]
-
         self.known_pids = current
         return alert
 
 
-# --------------------------------------------------------------------------
-# 3. Power side channel  (periodicity, corrected)
-# --------------------------------------------------------------------------
-
 class PowerPeriodicityDetector:
-    """Periodic structure in power draw.
+    """Periodic structure in power draw, via normalised autocorrelation.
 
-    Replaces the previous TimingCovertChannelDetector, whose 'regularity'
-    score counted direction REVERSALS -- which is high for random jitter and
-    LOW for an actual square wave. It fired on noise and was blind to signal.
-
-    This uses normalised autocorrelation. A real periodic channel produces a
-    strong peak at its period lag; white noise does not.
+    Replaces TimingCovertChannelDetector, whose 'regularity' score counted
+    direction REVERSALS -- high for random jitter, LOW for a real square wave.
+    It fired on noise and was blind to signal.
     """
 
     def __init__(self, window=200, min_amplitude_w=5.0, corr_threshold=0.6,
@@ -249,6 +157,7 @@ class PowerPeriodicityDetector:
         self.min_amplitude = min_amplitude_w
         self.corr_threshold = corr_threshold
         self.min_lag = min_lag
+        import collections
         self.history = collections.deque(maxlen=window)
         self.state = _EventState(require_consecutive=2, refire_after_s=300)
 
@@ -275,19 +184,14 @@ class PowerPeriodicityDetector:
         self.history.append(power)
         if len(self.history) < self.window:
             return None
-
         vals = list(self.history)
         amplitude = max(vals) - min(vals)
         if amplitude < self.min_amplitude:
             self.state.should_emit(False)
             return None
-
         r, lag = self._autocorr_peak(vals, self.min_lag)
-        condition = r >= self.corr_threshold
-
-        if not self.state.should_emit(condition):
+        if not self.state.should_emit(r >= self.corr_threshold):
             return None
-
         return {
             'type': 'POWER_PERIODICITY',
             'severity': 'WARNING',
@@ -301,17 +205,9 @@ class PowerPeriodicityDetector:
         }
 
 
-# --------------------------------------------------------------------------
-# 4. Multi-GPU correlation  (INFO context, not accusation)
-# --------------------------------------------------------------------------
-
 class MultiGPUCorrelation:
-    """Annotates when anomalies co-occur across GPUs.
-
-    NOT an attack signal. Coordinated simultaneous bursts across GPUs are
-    documented architectural behaviour on A100 SXM and B200. Severity is INFO
-    and the message says so.
-    """
+    """Annotates anomalies co-occurring across GPUs. NOT an attack signal:
+    coordinated bursts are documented architectural behaviour on A100/B200."""
 
     def __init__(self, correlation_window=300, min_gpus=2):
         self.correlation_window = correlation_window
@@ -331,10 +227,8 @@ class MultiGPUCorrelation:
                 if now - e['time'] < self.correlation_window
             ]
         active = [g for g in self.gpu_events if self.gpu_events[g]]
-
         if not self.state.should_emit(len(active) >= self.min_gpus):
             return None
-
         return {
             'type': 'MULTI_GPU_CORRELATION',
             'severity': 'INFO',
@@ -346,10 +240,6 @@ class MultiGPUCorrelation:
         }
 
 
-# --------------------------------------------------------------------------
-# Pipeline
-# --------------------------------------------------------------------------
-
 class DetectionPipeline:
     def __init__(self, on_alert=None, vram_strict=True):
         self.on_alert = on_alert
@@ -357,14 +247,19 @@ class DetectionPipeline:
         self.vram_residual = VRAMResidualDetector(strict=vram_strict)
         self.periodicity = PowerPeriodicityDetector()
         self.correlation = MultiGPUCorrelation()
+        self.throughput_contention = ThroughputContentionDetector()
         self.alert_count = 0
         self.sample_count = 0
+        self.throughput_alert_count = 0
+        self.throughput_sample_count = 0
 
     @property
     def engines(self):
         return [self.ghost_power, self.vram_residual, self.periodicity]
 
     def process(self, row):
+        """GPU telemetry row (power/util/mem) -- from nvidia-smi. Does NOT
+        touch throughput_contention; see process_throughput() below."""
         self.sample_count += 1
         emitted = []
         for engine in self.engines:
@@ -380,13 +275,46 @@ class DetectionPipeline:
                 emitted.append(ctx)
         return emitted
 
+    def calibrate_throughput(self, throughput_sample):
+        """
+        ThroughputContentionDetector needs a workload's own iterations/sec,
+        which nvidia-smi cannot report -- process(row) never reaches this
+        detector. A caller (e.g. the training loop itself) must explicitly
+        supply known-uncontended samples here before process_throughput()
+        will evaluate anything.
+        """
+        self.throughput_contention.calibrate(throughput_sample)
+
+    def process_throughput(self, throughput_sample, gpu_index=0, timestamp=None):
+        """
+        Separate entry point, deliberately not folded into process(row).
+        See calibrate_throughput() docstring for why.
+        """
+        self.throughput_sample_count += 1
+        alert = self.throughput_contention.update(
+            throughput_sample, gpu_index=gpu_index, timestamp=timestamp
+        )
+        if not alert:
+            return None
+        self.throughput_alert_count += 1
+        self._emit(alert)
+        ctx = self.correlation.add_alert(alert)
+        if ctx:
+            self._emit(ctx)
+        return alert
+
     def stats(self):
         rate = self.alert_count / self.sample_count if self.sample_count else 0.0
+        throughput_rate = (self.throughput_alert_count / self.throughput_sample_count
+                            if self.throughput_sample_count else 0.0)
         return {
             'samples': self.sample_count,
             'alerts': self.alert_count,
             'alerts_per_sample': round(rate, 6),
             'ghost_power_baseline_w': self.ghost_power.baseline_w,
+            'throughput_samples': self.throughput_sample_count,
+            'throughput_alerts': self.throughput_alert_count,
+            'throughput_alerts_per_sample': round(throughput_rate, 6),
         }
 
     def _emit(self, alert):
