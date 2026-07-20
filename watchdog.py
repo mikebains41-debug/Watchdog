@@ -90,7 +90,14 @@ def main():
     pipeline = FullDetectionPipeline(on_alert=on_alert)
     if args.api:
         try:
-            from api.server import run_api
+            from api.server import run_api, set_pipeline
+            # FIXED: the API previously had no reference to the running
+            # pipeline at all -- /throughput could never actually reach
+            # ThroughputContentionDetector. set_pipeline() takes the base
+            # DetectionPipeline (not FullDetectionPipeline itself -- the
+            # throughput methods live on .base), so calibrate/process
+            # calls through the API reach the real, live detector.
+            set_pipeline(pipeline.base)
             t = threading.Thread(target=run_api, kwargs={'host':'0.0.0.0','port':args.api_port}, daemon=True)
             t.start()
             print(f"[WATCHDOG] API at http://0.0.0.0:{args.api_port}")
