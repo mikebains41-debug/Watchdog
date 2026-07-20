@@ -20,8 +20,8 @@ import sys
 import os
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from llm_attacks import (
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.llm_attacks import (
     InferencePowerFingerprintDetector,
     AgentOrchestrationAnomalyDetector,
     PromptInjectionSideEffectDetector,
@@ -46,9 +46,12 @@ def test_inference_power_fingerprint_detector():
     d = InferencePowerFingerprintDetector(calibration_samples=20)
     for i in range(20):
         d.update(make_row(power=190 if i % 2 == 0 else 210, util=50))
-    d.update(make_row(power=200, util=50))
     result = None
-    for _ in range(20):
+    # The detector only starts evaluating the firing condition once its
+    # rolling history hits 20 samples -- earlier calls return early. With
+    # require_consecutive=3, at least 22-23 attack samples are needed to
+    # get 3 consecutive check-eligible calls, not just 20.
+    for _ in range(23):
         result = d.update(make_row(power=400, util=50)) or result
     assert result is not None and result["type"] == "INFERENCE_POWER_ANOMALY", \
         "FAIL: InferencePowerFingerprintDetector did not fire on known deviation"
@@ -56,11 +59,16 @@ def test_inference_power_fingerprint_detector():
 
 
 def test_agent_orchestration_anomaly_detector():
-    """Real trigger: window=60, >50% of samples show power>threshold(100W)
-    while util<10 -- agent claims idle but GPU is busy."""
+    """Real trigger: baseline calibrated from genuine clean idle (power=40W,
+    util<10), then 6 consecutive samples with power well above that learned
+    baseline while still reporting util<10 -- agent claims idle but GPU is
+    busy. Calibration and attack are kept separate so the attack pattern
+    cannot poison its own baseline."""
     d = AgentOrchestrationAnomalyDetector()
+    for _ in range(30):
+        d.update(make_row(power=40, util=5))
     result = None
-    for _ in range(60):
+    for _ in range(6):
         result = d.update(make_row(power=150, util=5)) or result
     assert result is not None and result["type"] == "AGENT_ORCHESTRATION_ANOMALY", \
         "FAIL: AgentOrchestrationAnomalyDetector did not fire on known pattern"
