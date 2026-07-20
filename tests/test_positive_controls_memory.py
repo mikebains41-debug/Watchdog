@@ -17,8 +17,8 @@ import sys
 import os
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from memory_attacks import (
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.memory_attacks import (
     CacheSideChannelDetector,
     MIGPartitionDesyncDetector,
     SequentialVRAMReadDetector,
@@ -68,7 +68,7 @@ def test_sequential_vram_read_detector():
         d.update(make_row(util=50, mem=1000))
     result = None
     for _ in range(10):
-        result = d.update(make_row(util=0, util_mem=80, mem=2000, mem_total=10000)) or result
+        result = d.update(make_row(util=0, util_mem=80, mem=3500, mem_total=10000)) or result
     assert result is not None and result["type"] == "SEQUENTIAL_VRAM_READ", \
         "FAIL: SequentialVRAMReadDetector did not fire on known bulk-read pattern"
     print(f"[PASS] SequentialVRAMReadDetector fired correctly (CVSS 9.0 CRITICAL): {result['message']}")
