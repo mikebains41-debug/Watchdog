@@ -24,7 +24,7 @@ GPU       : {alert.get('gpu')}
 Confidence: {alert.get('confidence','N/A')}
 Message   : {alert.get('message')}
 
-CVE 2048350 — Mike Bains GPU Security Research
+CVE-2048350 (pending MITRE assignment) — Mike Bains GPU Security Research
             """.strip()
             msg = MIMEMultipart()
             msg['From'] = self.username

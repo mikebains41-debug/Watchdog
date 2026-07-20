@@ -49,5 +49,5 @@ def register_health(app):
                 "audit_ledger": os.path.exists("watchdog_data/audit_ledger.jsonl"),
                 "safe_harbor_ledger": os.path.exists("watchdog_data/safe_harbor_ledger.jsonl"),
             },
-            "cve_baseline": "CVE-2048350",
+            "cve_baseline": "CVE-2048350 (pending assignment)",
         }

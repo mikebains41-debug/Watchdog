@@ -48,7 +48,7 @@ class PagerDutyIntegration:
                     'cvss_score': alert.get('cvss_score'),
                     'cvss_vector': alert.get('cvss_vector'),
                     'gpu': alert.get('gpu'),
-                    'cve': 'CVE-2048350' if 'VRAM' in alert.get('type','') else None,
+                    'cve': 'CVE-2048350 (pending assignment)' if 'VRAM' in alert.get('type','') else None,
                 }
             }
         }

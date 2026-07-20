@@ -1,7 +1,7 @@
 # attack_injection_suite.py
 
 **Author:** Manmohan (Mike) Bains
-**Status:** Built AND run live -- 45/45 tests passing
+**Status:** Built AND run live -- 15/15 checks passing across 8 modules
 
 ## What This Is
 
@@ -19,7 +19,7 @@ files. No duplicated logic.
 
 ## Confirmed Run Result
 
-45/45 tests passed across 8 modules, live on this device.
+15/15 checks passed across 8 modules, live on this device.
 
 ## How To Run
 

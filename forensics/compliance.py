@@ -21,7 +21,7 @@ class ComplianceReporter:
             'critical_alerts': len(critical),
             'detection_coverage': '16 detection engines active',
             'findings': [{'type':a.get('type'),'severity':a.get('severity'),'timestamp':a.get('timestamp'),'message':a.get('message')} for a in critical],
-            'cve': '2048350',
+            'cve': '2048350', 'cve_status': 'pending MITRE assignment',
             'status': 'COMPLIANT' if len(critical)==0 else 'NON_COMPLIANT'
         }
     def nist_ai_rmf(self):
@@ -30,7 +30,7 @@ class ComplianceReporter:
         return {
             'report': 'NIST AI RMF — control mapping evidence only, not certification',
             'generated': datetime.now().isoformat(),
-            'govern': {'policy': 'Watchdog AIDR active', 'cve_filed': '2048350'},
+            'govern': {'policy': 'Watchdog AIDR active', 'cve_filed': '2048350', 'cve_status': 'pending MITRE assignment'},
             'map': {'threat_categories': types, 'total_detections': len(alerts)},
             'measure': {'detection_engines': 16, 'sample_rate_hz': 100, 'audit_log_entries': len(alerts)},
             'manage': {'auto_remediation': 'enabled', 'human_in_loop': 'EMERGENCY severity'}

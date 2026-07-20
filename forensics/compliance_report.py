@@ -59,7 +59,7 @@ class ComplianceReportGenerator:
                 'organization': self.org_name,
                 'generated_at': now.isoformat(),
                 'period_seconds': duration_seconds,
-                'cve_reference': 'CVE-2048350',
+                'cve_reference': 'CVE-2048350 (pending assignment)',
                 'frameworks': ['SOC2 Type II (evidence mapping)', 'EU AI Act (evidence mapping)', 'NIST AI RMF 1.0 (evidence mapping)', 'NIST CSF 2.0 (evidence mapping)']
             },
             'executive_summary': self._executive_summary(alerts, state_summary),

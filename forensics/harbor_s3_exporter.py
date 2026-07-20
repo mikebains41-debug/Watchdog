@@ -53,7 +53,7 @@ class SafeHarborS3Exporter:
                     "Watchdog-Payload-Version": "1.0.0",
                     "Chained-Blocks-Count": str(block_count),
                     "Tip-Block-Hash": tip_hash[:64],
-                    "CVE-Baseline": "CVE-2048350",
+                    "CVE-Baseline": "CVE-2048350 (pending assignment)",
                 },
                 ServerSideEncryption="aws:kms",
             )

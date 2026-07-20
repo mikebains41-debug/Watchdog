@@ -48,7 +48,7 @@ class SlackAlerter:
         self.webhook_url = webhook_url or os.environ.get('WATCHDOG_SLACK_WEBHOOK')
     def send(self, alert):
         if not self.webhook_url: return False
-        payload = {'attachments':[{'color':SEVERITY_COLORS.get(alert.get('severity'),'#ccc'),'title':f"[{alert.get('severity')}] {alert.get('type')}","text":alert.get('message',''),'footer':'Watchdog AIDR — CVE 2048350'}]}
+        payload = {'attachments':[{'color':SEVERITY_COLORS.get(alert.get('severity'),'#ccc'),'title':f"[{alert.get('severity')}] {alert.get('type')}","text":alert.get('message',''),'footer':'Watchdog AIDR — CVE-2048350 (pending assignment)'}]}
         try:
             data = json.dumps(payload).encode()
             req = urllib.request.Request(self.webhook_url, data=data, headers={'Content-Type':'application/json'})

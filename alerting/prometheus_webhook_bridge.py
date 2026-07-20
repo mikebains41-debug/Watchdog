@@ -81,6 +81,6 @@ except ImportError:
 
 if __name__ == "__main__":
     test = {"alerts": [{"labels": {"alertname": "WatchdogGhostPowerDetected",
-        "severity": "warning", "gpu": "0", "cve": "CVE-2048350"},
+        "severity": "warning", "gpu": "0", "cve": "CVE-2048350 (pending assignment)"},
         "annotations": {"summary": "Ghost power 147.96W at 0% util"}}]}
     print(process_webhook_payload(test))

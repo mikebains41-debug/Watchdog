@@ -19,7 +19,7 @@ CVSS_MAP = {
         'score': 8.4,
         'vector': 'CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N',
         'severity': 'HIGH',
-        'rationale': 'CVE-2048350 - VRAM contents recoverable after process exit, high confidentiality impact (model weights, training data), scope changed (cross-tenant)'
+        'rationale': 'CVE-2048350 (pending MITRE assignment) - VRAM contents recoverable after process exit, high confidentiality impact (model weights, training data), scope changed (cross-tenant)'
     },
     'POWER_SIDE_CHANNEL': {
         'score': 5.9,
@@ -121,7 +121,7 @@ CVSS_MAP = {
         'score': 8.4,
         'vector': 'CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N',
         'severity': 'HIGH',
-        'rationale': 'CVE-2048350 applied to agentic AI - proprietary drug discovery data in VRAM post-session, scope changed'
+        'rationale': 'CVE-2048350 (pending MITRE assignment) applied to agentic AI - proprietary drug discovery data in VRAM post-session, scope changed'
     },
     'INTER_AGENT_HANDOFF_ANOMALY': {
         'score': 8.1,

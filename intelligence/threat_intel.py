@@ -15,7 +15,7 @@ KNOWN_IOCS = {
         "severity": "CRITICAL",
         "cvss": 9.0,
         "mitre_atlas": ["AML.T0037", "AML.T0012"],
-        "cve": "CVE-2048350",
+        "cve": "CVE-2048350 (pending assignment)",
         "threat_actor": "Unknown — GPU cloud targeting",
         "first_seen": "2024-03-01",
     },

@@ -77,7 +77,7 @@ def main():
     parser.add_argument('--gpu', type=int, default=None)
     args = parser.parse_args()
     print(f"\n[WATCHDOG AIDR v2.0] Start: {datetime.now().isoformat()}")
-    print(f"[WATCHDOG] Detection engines: 20 active")
+    print(f"[WATCHDOG] Detection engines: 17 active")
     gpus = detect_gpus()
     if not gpus: print("[ERROR] No GPUs."); sys.exit(1)
     print(f"[WATCHDOG] GPUs: {gpus}")

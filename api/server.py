@@ -30,7 +30,7 @@ try:
     import uvicorn
     app = FastAPI(title="Watchdog AIDR", version="1.0.0")
     @app.get("/")
-    def root(): return {"platform":"Watchdog AIDR","version":"1.0.0","author":"Mike Bains CVE 2048350","status":"running","uptime_since":_state['start_time']}
+    def root(): return {"platform":"Watchdog AIDR","version":"1.0.0","author":"Mike Bains","status":"running","uptime_since":_state['start_time']}
     @app.get("/status")
     def status(): return {"status":"running","gpu_count":_state['gpu_count'],"alert_count":_state['alert_count'],"last_alert":_state['alerts'][-1] if _state['alerts'] else None,"timestamp":datetime.now().isoformat()}
     @app.get("/alerts")
@@ -57,7 +57,7 @@ try:
             exporter.set('watchdog_gpu_util_pct',latest.get('utilization.gpu',0),labels={'gpu':gpu},help_text='GPU util pct')
         return exporter.render()
     @app.get("/attest")
-    def attest(): return {"cve":"2048350","filed":"2026-05-31","ghost_power":"CONFIRMED","vram_residual":"CONFIRMED","nvml_blind":"CONFIRMED","cross_tenant":"PENDING T-32","timestamp":datetime.now().isoformat()}
+    def attest(): return {"cve":"2048350","cve_status":"pending MITRE assignment","filed":"2026-05-31","ghost_power":"CONFIRMED","vram_residual":"CONFIRMED","nvml_blind":"CONFIRMED","cross_tenant":"PENDING T-32","timestamp":datetime.now().isoformat()}
     @app.get("/health")
     def health(): return {"status":"ok","timestamp":datetime.now().isoformat()}
     def run_api(host="0.0.0.0", port=8080): uvicorn.run(app, host=host, port=port, log_level="warning")

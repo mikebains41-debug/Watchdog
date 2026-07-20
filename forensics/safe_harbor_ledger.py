@@ -64,7 +64,7 @@ class AISafeHarborLedger:
             "framework_controls": framework_controls or [],
             "parent_block_hash": self.last_block_hash,
             "system": "Watchdog AIDR v2.0",
-            "cve_baseline": "CVE-2048350",
+            "cve_baseline": "CVE-2048350 (pending assignment)",
         }
         serialized = json.dumps(payload, sort_keys=True).encode()
         signature = self._sign(serialized)

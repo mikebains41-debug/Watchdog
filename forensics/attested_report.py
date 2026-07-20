@@ -12,7 +12,7 @@ When submitted to Serial Alice, each Watchdog alert session becomes:
 This makes every Watchdog security finding as credible as the
 GPU Energy Optimizer measurements in the June 27 2026 validation report.
 
-Author: Manmohan Mike Bains | CVE-2048350
+Author: Manmohan Mike Bains | CVE-2048350 (pending MITRE assignment)
 """
 import json, hashlib, time
 from datetime import datetime, timezone
@@ -98,7 +98,7 @@ class WatchdogAttestedReport:
                 'gpus_monitored': sorted(set(str(a.get('gpu', 0)) for a in self.alerts)),
             },
             'alerts': self.alerts,
-            'cve_reference': 'CVE-2048350',
+            'cve_reference': 'CVE-2048350 (pending assignment)',
             'watchdog_version': '2.0',
             'author': 'Manmohan Mike Bains',
             'attestation_note': (

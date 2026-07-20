@@ -12,7 +12,7 @@ Grounded in real Serial Alice validated results:
 - SEC-VRAM cert sa-2346ae — isolation held graceful exit
 - SEC-KILL cert sa-83c492 — isolation held SIGKILL
 - Positive control: 3,125,000 hits proving detection works
-- CVE-2048350 — VRAM residual data exposure
+- CVE-2048350 (pending MITRE assignment) — VRAM residual data exposure
 
 Commercial value:
 - Predicts isolation risk before breach occurs
@@ -46,7 +46,7 @@ SERIAL_ALICE_ISOLATION_VALIDATED = {
         'H200_SXM': 629,
         'B200_SXM': 728,
     },
-    'cve': 'CVE-2048350',              # Filed by Manmohan Mike Bains
+    'cve': 'CVE-2048350 (pending assignment)', # Filed by Manmohan Mike Bains
     'cvss': 8.4,
 }
 
@@ -139,13 +139,13 @@ class TenantIsolationRiskScorer:
                     f"Tenant isolation risk on GPU{self.gpu_id}. "
                     f"Risk score: {risk_score*100:.1f}%. "
                     f"VRAM residual baseline: {self.vram_residual_baseline}MB. "
-                    f"CVE-2048350 CVSS 8.4. "
+                    f"CVE-2048350 (pending MITRE assignment) CVSS 8.4 (self-assessed, not independently reviewed). "
                     f"Simulation only."
                 ),
                 'recommended_action': (
                     "Verify VRAM scrubbing on tenant exit. "
                     "Check memory isolation boundaries. "
-                    "Review CVE-2048350 mitigation status."
+                    "Review CVE-2048350 (pending assignment) mitigation status."
                 )
             }
 

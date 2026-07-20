@@ -19,7 +19,7 @@ COMPARISON = [
         "capability": "VRAM residual after graceful process exit",
         "watchdog": "CONFIRMED -- VRAMResidualDetector, positive-control tested",
         "dcgm_datadog_prometheus": "STRUCTURALLY BLIND -- utilization.memory also reports 0% during confirmed residual",
-        "source": "whitepaper Section 3; CVE-2048350",
+        "source": "whitepaper Section 3; CVE-2048350 (pending assignment)",
     },
     {
         "capability": "DCGM deeper profiling-tier metrics (TensorEngineActive, sm_active)",

@@ -84,7 +84,7 @@ class AttackTimelineBuilder:
                 'generated_at': datetime.now(timezone.utc).isoformat(),
                 'system': 'Watchdog AIDR v2.0',
                 'author': 'Manmohan Mike Bains',
-                'cve_reference': 'CVE-2048350',
+                'cve_reference': 'CVE-2048350 (pending assignment)',
                 'frameworks': ['MITRE ATLAS', 'MITRE ATT&CK for ICS'],
             },
             'attack_summary': {
