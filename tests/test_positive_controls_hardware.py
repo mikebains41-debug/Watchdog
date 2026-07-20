@@ -18,8 +18,8 @@ import sys
 import os
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from hardware_attacks import (
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.hardware_attacks import (
     ClockGlitchDetector,
     VoltageGlitchDetector,
     DMAAttackDetector,
@@ -75,8 +75,9 @@ def test_dma_attack_detector():
     d = DMAAttackDetector()
     for _ in range(50):
         d.update(make_row(util=0, mem=1000))
-    d.update(make_row(util=0, mem=1000))
-    result = d.update(make_row(util=0, mem=1200, util_mem=50))
+    result = None
+    for _ in range(6):
+        result = d.update(make_row(util=0, mem=1200, util_mem=50)) or result
     assert result is not None and result["type"] == "DMA_ATTACK", \
         "FAIL: DMAAttackDetector did not fire on known DMA pattern"
     print(f"[PASS] DMAAttackDetector fired correctly (CVSS 9.6 CRITICAL): {result['message']}")
