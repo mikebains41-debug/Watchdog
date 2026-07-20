@@ -1,5 +1,8 @@
 import time, collections, subprocess
 from datetime import datetime
+from detection._shared import _EventState, _f
+
+
 class CacheSideChannelDetector:
     def __init__(self, window=200):
         self.window = window
@@ -19,6 +22,8 @@ class CacheSideChannelDetector:
             self.last_alert = now
             return {'type':'CACHE_SIDE_CHANNEL','severity':'CRITICAL','gpu':row.get('index'),'mem_util_spikes':mem_spikes,'avg_gpu_util':round(avg_gpu,2),'timestamp':row.get('iso_timestamp'),'message':f"Memory spikes ({mem_spikes}/{self.window}) at avg {avg_gpu:.1f}% GPU — possible L2 cache side-channel"}
         return None
+
+
 class MIGPartitionDesyncDetector:
     def __init__(self):
         self.last_alert = None
@@ -35,33 +40,69 @@ class MIGPartitionDesyncDetector:
             except: mig_info = 'N/A'
             return {'type':'MIG_PARTITION_DESYNC','severity':'CRITICAL','gpu':row.get('index'),'gpu_util':util_gpu,'mem_util':util_mem,'mig_info':mig_info,'timestamp':row.get('iso_timestamp'),'message':f"MIG desync: GPU={util_gpu:.0f}% but mem controller={util_mem:.0f}% — cross-partition side channel"}
         return None
+
+
 class SequentialVRAMReadDetector:
-    def __init__(self, read_threshold_pct=10.0, window=50):
-        self.read_threshold_pct = read_threshold_pct
-        self.window = window
-        self.history = collections.deque(maxlen=window)
-        self.baseline_mem = None
-        self.baseline_samples = []
-        self.last_alert = None
+    """
+    Detects high memory-bandwidth utilization covering a large fraction of
+    VRAM while GPU compute utilization stays low -- consistent with bulk
+    VRAM scraping (e.g. reading another tenant's residual model weights),
+    but also indistinguishable from legitimate large-checkpoint loading.
+
+    FIXED vs. original:
+      - The original computed a `baseline_mem` from an active-use
+        calibration phase but never referenced it anywhere in the firing
+        condition -- dead code that looked like it was doing something.
+        Removed entirely rather than left as decoration.
+      - Was level-triggered via last_alert cooldown. Now edge-triggered
+        via _EventState (require_consecutive=5).
+      - float(row.get(...)) would crash on '[N/A]'. Now N/A-safe.
+      - Default coverage threshold raised from 10% to 30% -- 10% of total
+        VRAM is a small fraction to label "bulk" scraping. This default
+        is still unvalidated against real hardware and should be tuned
+        once real measurement data exists.
+
+    STILL UNRESOLVED, stated rather than hidden: same discrimination gap
+    as DMAAttackDetector -- cannot tell this apart from a legitimate large
+    checkpoint or dataset load from telemetry alone.
+    """
+
+    def __init__(self, coverage_threshold_pct=30.0, util_mem_threshold=60.0,
+                 util_gpu_ceiling=5.0, require_consecutive=5,
+                 refire_after_s=60):
+        self.coverage_threshold_pct = coverage_threshold_pct
+        self.util_mem_threshold = util_mem_threshold
+        self.util_gpu_ceiling = util_gpu_ceiling
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
     def update(self, row):
-        mem_used = float(row.get('memory.used',0))
-        mem_total = float(row.get('memory.total',1))
-        util_gpu = float(row.get('utilization.gpu',0))
-        util_mem = float(row.get('utilization.memory',0))
-        if self.baseline_mem is None and util_gpu > 10:
-            self.baseline_samples.append(mem_used)
-            if len(self.baseline_samples) >= 20: self.baseline_mem = max(self.baseline_samples)
+        mem_used = _f(row, 'memory.used')
+        mem_total = _f(row, 'memory.total', default=1.0)
+        util_gpu = _f(row, 'utilization.gpu')
+        util_mem = _f(row, 'utilization.memory')
+        if None in (mem_used, mem_total, util_gpu, util_mem) or mem_total <= 0:
             return None
-        if self.baseline_mem is None: return None
-        self.history.append({'util_gpu':util_gpu,'util_mem':util_mem,'mem':mem_used})
-        if len(self.history) < 10: return None
-        recent = list(self.history)[-10:]
-        avg_util_mem = sum(r['util_mem'] for r in recent)/len(recent)
-        avg_util_gpu = sum(r['util_gpu'] for r in recent)/len(recent)
-        coverage_pct = (mem_used/mem_total*100) if mem_total > 0 else 0
-        if avg_util_mem > 60 and avg_util_gpu < 5 and coverage_pct >= self.read_threshold_pct:
-            now = time.time()
-            if self.last_alert and now-self.last_alert < 60: return None
-            self.last_alert = now
-            return {'type':'SEQUENTIAL_VRAM_READ','severity':'EMERGENCY','gpu':row.get('index'),'memory_used_mb':mem_used,'coverage_pct':round(coverage_pct,2),'avg_mem_util':round(avg_util_mem,2),'avg_gpu_util':round(avg_util_gpu,2),'timestamp':row.get('iso_timestamp'),'message':f"Bulk VRAM read {coverage_pct:.1f}% at {avg_util_mem:.0f}% mem BW — model exfiltration"}
-        return None
+
+        coverage_pct = (mem_used / mem_total) * 100
+
+        condition = (util_mem > self.util_mem_threshold
+                     and util_gpu < self.util_gpu_ceiling
+                     and coverage_pct >= self.coverage_threshold_pct)
+        if not self.state.should_emit(condition):
+            return None
+
+        return {
+            'type': 'SEQUENTIAL_VRAM_READ',
+            'severity': 'EMERGENCY',
+            'gpu': row.get('index'),
+            'memory_used_mb': mem_used,
+            'coverage_pct': round(coverage_pct, 2),
+            'mem_util_pct': util_mem,
+            'gpu_util_pct': util_gpu,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"Bulk VRAM read pattern: {coverage_pct:.1f}% of VRAM "
+                        f"at {util_mem:.0f}% mem bandwidth, {util_gpu:.0f}% "
+                        f"compute -- possible exfiltration OR bulk data load "
+                        f"(cannot be distinguished from telemetry alone)"),
+        }
