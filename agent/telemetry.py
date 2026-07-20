@@ -1,43 +1,15 @@
 import subprocess, time, csv, os
 from datetime import datetime
 
+from telemetry.sampler import DeltaTimedSampler
+
 SAMPLE_HZ = 100
 QUERY_FIELDS = ['timestamp','index','uuid','name','power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu','pstate','ecc.errors.corrected.volatile.total','ecc.errors.uncorrected.volatile.total']
 
-# FIXED: VRAMResidualDetector requires row['compute_apps'] and defaults to
-# strict=True. watchdog.py never overrides that. Before this fix, the key
-# was never set at all -- the detector's first update() call would raise
-# VRAMResidualUnavailable, and nothing in DetectionPipeline.process() or
-# TelemetryCollector.start()'s loop catches it, so watchdog.py would crash
-# on the very first sample of any real run.
-#
-# COMPUTE_APPS_FIELDS uses 'used_memory', matching the exact field name
-# already documented consistently elsewhere in this repo (see
-# VRAMResidualDetector's docstring in detection/engines.py and
-# scripts/run_negative_control.py's known-gap comment).
 COMPUTE_APPS_FIELDS = ['gpu_uuid', 'pid', 'used_memory']
 
 
 def sample_compute_apps():
-    """
-    Queries per-process VRAM usage across ALL GPUs in ONE subprocess call
-    (not one call per GPU -- on an 8-GPU node that would mean 8 extra
-    subprocess spawns per sample, which is real overhead given nvidia-smi
-    subprocess calls are already the dominant cost keeping this collector
-    far below its requested Hz). Keyed by gpu_uuid so each GPU's row (from
-    sample_gpu(), which now also queries uuid) can be matched to its own
-    process list.
-
-    Returns {gpu_uuid: [{'pid': int, 'used_memory': float}, ...]}.
-
-    Never raises. An empty dict, or a uuid key missing from it, both mean
-    "no processes on that GPU right now" -- a normal, common state (most
-    idle samples), not a data-unavailable state. Unlike
-    scripts/run_negative_control.py's stance on a fully missing nvidia-smi
-    (which deliberately raises), a PARTIAL query like this one failing
-    while the main --query-gpu call succeeds should degrade to "no
-    processes observed", not take down the whole collector.
-    """
     cmd = ['nvidia-smi', f'--query-compute-apps={",".join(COMPUTE_APPS_FIELDS)}',
            '--format=csv,noheader,nounits']
     result = {}
@@ -76,8 +48,6 @@ def sample_gpu(gpu_index=None):
             for f in ['power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu']:
                 try: row[f] = float(row[f])
                 except: row[f] = 0.0
-            # FIXED: always set compute_apps, even to []. Never leave the
-            # key absent -- that's what was crashing VRAMResidualDetector.
             row['compute_apps'] = compute_apps_by_gpu.get(row.get('uuid'), [])
             rows.append(row)
         return rows
@@ -92,6 +62,26 @@ def detect_gpus():
 
 
 class TelemetryCollector:
+    """
+    FIXED vs. original: SAMPLE_HZ=100 was requested but never verified as
+    achieved -- the collector silently assumed it was hitting 100Hz with
+    no measurement to back that up. telemetry/sampler.py's
+    DeltaTimedSampler was built earlier specifically to fix this, but was
+    never actually wired in here until now.
+
+    self.timer measures the ACTUAL wall-clock gap between loop
+    iterations using a monotonic clock. It wraps a no-op probe (not
+    sample_gpu() directly, since sample_gpu() returns a LIST of rows --
+    one per GPU on a multi-GPU node -- while DeltaTimedSampler's API is
+    built around a single-value probe). The measured interval from one
+    call to timer.sample() is then attached to every row produced by
+    that same loop iteration, since all of a multi-GPU sample_gpu() call
+    happens within the same wall-clock instant for practical purposes.
+
+    'actual_interval_ms' is now written to the CSV, per the collector's
+    own README/Limitations promise: "the collector must log measured
+    inter-sample deltas, not the requested rate."
+    """
     def __init__(self, sample_hz=SAMPLE_HZ, output_dir='watchdog_data', gpu_index=None, on_sample=None):
         self.sample_hz = sample_hz
         self.output_dir = output_dir
@@ -99,30 +89,47 @@ class TelemetryCollector:
         self.on_sample = on_sample
         self.running = False
         self.sample_count = 0
+        self.timer = DeltaTimedSampler(sample_fn=lambda: {})
         os.makedirs(output_dir, exist_ok=True)
+
     def start(self, duration_seconds=None):
         self.running = True
         ts = datetime.now().strftime('%Y%m%d_%H%M%S')
         csv_path = os.path.join(self.output_dir, f'telemetry_{ts}.csv')
-        print(f"[WATCHDOG] Starting at {self.sample_hz}Hz → {csv_path}")
+        print(f"[WATCHDOG] Starting -- requested {self.sample_hz}Hz → {csv_path}")
+        print(f"[WATCHDOG] Actual achieved rate will be measured and "
+              f"reported below, not assumed.")
         print(f"[WATCHDOG] GPUs: {detect_gpus()}")
+        fieldnames = ['iso_timestamp'] + QUERY_FIELDS + ['actual_interval_ms']
         with open(csv_path,'w',newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=['iso_timestamp']+QUERY_FIELDS, extrasaction='ignore')
+            writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
             writer.writeheader()
             start = time.time()
             while self.running:
                 loop_start = time.time()
+                timing_row = self.timer.sample()
+                actual_interval_ms = timing_row['actual_interval_ms']
                 rows = sample_gpu(self.gpu_index)
                 for row in rows:
+                    row['actual_interval_ms'] = actual_interval_ms
                     writer.writerow(row)
                     self.sample_count += 1
                     if self.on_sample: self.on_sample(row)
                 elapsed = time.time() - start
                 if int(elapsed) % 60 == 0 and elapsed > 1:
+                    stats = self.timer.stats()
                     for row in rows:
                         print(f"[t+{int(elapsed)}s] GPU{row.get('index','?')}: {row.get('power.draw',0):.1f}W mem={row.get('memory.used',0):.0f}MB temp={row.get('temperature.gpu',0):.0f}C util={row.get('utilization.gpu',0):.0f}%")
+                    print(f"[WATCHDOG] Actual achieved rate: "
+                          f"{stats['achieved_hz']}Hz (requested "
+                          f"{self.sample_hz}Hz) -- min/mean/max interval: "
+                          f"{stats['min_ms']}/{stats['mean_ms']}/{stats['max_ms']}ms")
                 if duration_seconds and elapsed >= duration_seconds: break
                 time.sleep(max(0,(1/self.sample_hz)-(time.time()-loop_start)))
+        final_stats = self.timer.stats()
         print(f"[WATCHDOG] Done. {self.sample_count} samples → {csv_path}")
+        print(f"[WATCHDOG] Final actual achieved rate: "
+              f"{final_stats['achieved_hz']}Hz (requested {self.sample_hz}Hz)")
         return csv_path
+
     def stop(self): self.running = False
