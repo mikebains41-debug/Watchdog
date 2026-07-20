@@ -156,10 +156,81 @@ def check_compute_apps(interactive=True):
     return False
 
 
+_UNSET = object()
+
+
+def check_torch_cuda(torch_module=_UNSET):
+    """
+    Checks whether torch is installed with working CUDA support --
+    required by scripts/precision_ghost_power_benchmark.py, NOT required
+    by core Watchdog detector validation (which never imports torch).
+
+    Separate check from nvidia-smi deliberately: a GPU can be fully
+    visible to nvidia-smi while torch itself is either not installed,
+    installed without CUDA support, or built against a CUDA version that
+    doesn't match this instance's driver -- any of which makes
+    torch.cuda.is_available() return False with no other obvious error,
+    and would otherwise only be discovered mid-benchmark.
+
+    torch_module is injectable for testing this function's logic without
+    needing torch installed or a real GPU. Left at the _UNSET sentinel
+    (not None), a real `import torch` is attempted; explicitly passing
+    torch_module=None simulates "torch is not installed" for tests.
+    """
+    print("\n" + "=" * 60)
+    print("4. TORCH + CUDA (required for precision_ghost_power_benchmark.py, "
+          "NOT required for core Watchdog detector validation)")
+    print("=" * 60)
+
+    if torch_module is _UNSET:
+        try:
+            import torch as t
+        except ImportError:
+            t = None
+    else:
+        t = torch_module
+
+    if t is None:
+        print("[FAIL] torch is not installed.")
+        print("       Install with: pip install torch --break-system-packages")
+        print("       (or the equivalent for this instance's package manager)")
+        return False
+
+    print(f"[INFO] torch version: {getattr(t, '__version__', 'unknown')}")
+
+    if not t.cuda.is_available():
+        print("[FAIL] torch.cuda.is_available() is False -- torch is "
+              "installed but cannot see a CUDA GPU. This can happen even "
+              "when nvidia-smi works fine: the installed torch build may "
+              "lack CUDA support, or may be built against a CUDA version "
+              "that doesn't match this instance's driver.")
+        print("       Check: pip show torch  (look for a '+cuXXX' build tag)")
+        return False
+
+    gpu_name = t.cuda.get_device_name(0)
+    print(f"[PASS] torch sees a CUDA GPU: {gpu_name}")
+
+    fp8_supported = hasattr(t, 'float8_e4m3fn') and hasattr(t, '_scaled_mm')
+    int8_supported = hasattr(t, '_int_mm')
+    print(f"[INFO] FP8 matmul support (torch-level): "
+          f"{'available' if fp8_supported else 'NOT available -- fp8 will report UNSUPPORTED in the benchmark'}")
+    print(f"[INFO] INT8 matmul support (torch-level): "
+          f"{'available' if int8_supported else 'NOT available -- int8 will report UNSUPPORTED in the benchmark'}")
+    print("[INFO] FP4 has no vanilla-PyTorch path on any hardware -- "
+          "always reports UNSUPPORTED in the benchmark regardless of "
+          "this instance. Expected, not a problem to fix.")
+
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--skip-process-check', action='store_true',
                          help="Skip the interactive live-process check")
+    parser.add_argument('--skip-torch-check', action='store_true',
+                         help="Skip the torch/CUDA check (only needed for "
+                              "the precision benchmark script, not core "
+                              "Watchdog detector validation)")
     args = parser.parse_args()
 
     smi_ok = check_nvidia_smi_present()
@@ -170,6 +241,7 @@ def main():
 
     fields_ok = diagnose_query_gpu_fields()
     apps_result = check_compute_apps(interactive=not args.skip_process_check)
+    torch_result = None if args.skip_torch_check else check_torch_cuda()
 
     print("\n" + "=" * 60)
     print("SUMMARY")
@@ -180,6 +252,10 @@ def main():
         print("compute_apps detection:    NOT CHECKED (--skip-process-check)")
     else:
         print(f"compute_apps detection:    {'YES' if apps_result else 'NO -- see above'}")
+    if torch_result is None:
+        print("torch + CUDA (precision benchmark): NOT CHECKED (--skip-torch-check)")
+    else:
+        print(f"torch + CUDA (precision benchmark): {'YES' if torch_result else 'NO -- see above'}")
     print("=" * 60)
 
     if not fields_ok or apps_result is False:
@@ -187,7 +263,13 @@ def main():
               "above are resolved -- they will silently produce empty or "
               "wrong results, not an obvious error.")
         sys.exit(1)
+
     print("Clear to proceed with real Watchdog validation on this instance.")
+    if torch_result is False:
+        print("Note: torch/CUDA is NOT working here -- core Watchdog "
+              "detector validation can still proceed, but "
+              "scripts/precision_ghost_power_benchmark.py will not run "
+              "until that's fixed (see above for the exact issue).")
 
 
 if __name__ == '__main__':
