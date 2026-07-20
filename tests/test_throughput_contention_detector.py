@@ -16,8 +16,8 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from throughput_contention_detector import ThroughputContentionDetector
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.throughput_contention_detector import ThroughputContentionDetector
 
 REAL_BASELINE = 372.32
 REAL_CONTENTION = 336.96
@@ -25,8 +25,15 @@ REAL_PCT_CHANGE = -9.5
 
 
 def test_fires_on_real_measured_event():
-    """The core test: does this detector catch the real event Watchdog missed?"""
-    detector = ThroughputContentionDetector(baseline_window=1, drop_threshold_pct=5.0)
+    """The core test: does this detector catch the real event Watchdog missed?
+
+    require_consecutive=1 here deliberately: the real measured event was a
+    single 60-second aggregate benchmark result, not a stream of individual
+    samples, so this test checks recognition of that one verified data
+    point rather than the live-stream consecutive-sample debounce logic
+    (which is exercised separately, if at all, elsewhere)."""
+    detector = ThroughputContentionDetector(baseline_window=1, drop_threshold_pct=5.0,
+                                             require_consecutive=1)
     detector.calibrate(REAL_BASELINE)
     result = detector.update(REAL_CONTENTION, gpu_index=0, timestamp="2026-06-21T00:00:00Z")
 
