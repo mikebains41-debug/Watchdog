@@ -37,23 +37,28 @@ def make_row(util=0, util_mem=0, mem=0, mem_total=10000, index=0):
 
 
 def test_cache_side_channel_detector():
-    """Real trigger: window=200, >40% of samples show util_mem>50 while
-    avg GPU util stays <15%."""
+    """Real trigger: window=200 must fill, then require_consecutive=3
+    (class defaults) more calls with the spike ratio still above
+    threshold fire CACHE_SIDE_CHANNEL."""
     d = CacheSideChannelDetector()
     result = None
-    for _ in range(90):
+    for _ in range(203):
         result = d.update(make_row(util=5, util_mem=60)) or result
-    for _ in range(110):
-        result = d.update(make_row(util=5, util_mem=10)) or result
     assert result is not None and result["type"] == "CACHE_SIDE_CHANNEL", \
         "FAIL: CacheSideChannelDetector did not fire on known pattern"
     print(f"[PASS] CacheSideChannelDetector fired correctly: {result['message']}")
 
 
 def test_mig_partition_desync_detector():
-    """Real trigger: util_gpu==0 while util_mem>40 -- a single-sample check."""
-    d = MIGPartitionDesyncDetector()
-    result = d.update(make_row(util=0, util_mem=55))
+    """Real trigger: 30-sample calibration establishes a learned idle
+    mem-bandwidth baseline, then a sustained large delta above it
+    (3+ consecutive samples) fires MIG_PARTITION_DESYNC."""
+    d = MIGPartitionDesyncDetector(baseline_min_samples=30, require_consecutive=3)
+    for _ in range(30):
+        d.update(make_row(util=0, util_mem=10))
+    result = None
+    for _ in range(4):
+        result = d.update(make_row(util=0, util_mem=55)) or result
     assert result is not None and result["type"] == "MIG_PARTITION_DESYNC", \
         "FAIL: MIGPartitionDesyncDetector did not fire on known desync pattern"
     print(f"[PASS] MIGPartitionDesyncDetector fired correctly: {result['message']}")

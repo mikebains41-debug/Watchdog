@@ -30,14 +30,17 @@ from detection.llm_attacks import (
 )
 
 
-def make_row(power=0, util=0, mem=0, index=0):
-    return {
+def make_row(power=0, util=0, mem=0, index=0, compute_apps=None):
+    row = {
         "power.draw": power,
         "utilization.gpu": util,
         "memory.used": mem,
         "iso_timestamp": "2026-01-01T00:00:00Z",
         "index": index,
     }
+    if compute_apps is not None:
+        row["compute_apps"] = compute_apps
+    return row
 
 
 def test_inference_power_fingerprint_detector():
@@ -76,27 +79,31 @@ def test_agent_orchestration_anomaly_detector():
 
 
 def test_prompt_injection_side_effect_detector():
-    """Real trigger: window=20, a power spike above the running mean
-    exceeding spike_threshold(30W) while util>20."""
-    d = PromptInjectionSideEffectDetector()
+    """Real trigger: 50-sample calibration (class default) establishes a
+    learned power baseline, then a sustained large spike above it
+    (3+ consecutive samples) fires PROMPT_INJECTION_SIDEEFFECT."""
+    d = PromptInjectionSideEffectDetector(calibration_samples=50, require_consecutive=3)
+    for _ in range(51):
+        d.update(make_row(power=300, util=50))
     result = None
-    for _ in range(19):
-        result = d.update(make_row(power=100, util=50)) or result
-    result = d.update(make_row(power=200, util=50)) or result
+    for _ in range(5):
+        result = d.update(make_row(power=400, util=50)) or result
     assert result is not None and result["type"] == "PROMPT_INJECTION_SIDEEFFECT", \
         "FAIL: PromptInjectionSideEffectDetector did not fire on known spike"
     print(f"[PASS] PromptInjectionSideEffectDetector fired correctly: {result['message']}")
 
 
 def test_agent_session_vram_retention_detector():
-    """Real trigger (applies CVE-2048350 to agentic AI): active session
-    (util>10) followed by sustained idle (util==0) with memory still
-    above threshold fires AGENT_VRAM_RETENTION."""
+    """Real trigger (applies CVE-2048350, pending MITRE assignment, to
+    agentic AI): a PID present in compute_apps, then that PID disappears
+    from compute_apps while memory.used doesn't drop to match -- the
+    unclaimed gap fires AGENT_VRAM_RETENTION after grace_samples."""
     d = AgentSessionVRAMRetentionDetector()
-    d.update(make_row(power=200, util=50, mem=5000))
+    d.update(make_row(power=200, util=50, mem=5000,
+                       compute_apps=[{'pid': 111, 'used_memory': 5000}]))
     result = None
-    for _ in range(35):
-        result = d.update(make_row(power=50, util=0, mem=500)) or result
+    for _ in range(4):
+        result = d.update(make_row(power=50, util=0, mem=5000, compute_apps=[])) or result
     assert result is not None and result["type"] == "AGENT_VRAM_RETENTION", \
         "FAIL: AgentSessionVRAMRetentionDetector did not fire on known retention pattern"
     print(f"[PASS] AgentSessionVRAMRetentionDetector fired correctly (CVSS 8.4): {result['message']}")
@@ -127,11 +134,14 @@ def test_agent_orchestration_silent_on_true_idle():
 
 
 def test_agent_session_vram_silent_on_clean_exit():
+    """A PID exits and memory.used correctly drops with it (nothing left
+    unclaimed) -- must not fire."""
     d = AgentSessionVRAMRetentionDetector()
-    d.update(make_row(power=200, util=50, mem=5000))
+    d.update(make_row(power=200, util=50, mem=5000,
+                       compute_apps=[{'pid': 111, 'used_memory': 5000}]))
     result = None
-    for _ in range(35):
-        result = d.update(make_row(power=50, util=0, mem=10)) or result
+    for _ in range(4):
+        result = d.update(make_row(power=50, util=0, mem=10, compute_apps=[])) or result
     assert result is None, "FAIL: AgentSessionVRAMRetentionDetector fired on genuinely clean exit"
     print("[PASS] AgentSessionVRAMRetentionDetector correctly silent on clean exit")
 
