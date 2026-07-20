@@ -60,8 +60,6 @@ class InferencePowerFingerprintDetector:
 
         if self.baseline_mad == 0:
             return None
-        # 1.4826 scales MAD to be comparable to a standard deviation under
-        # a normal distribution -- the standard robust-statistics constant.
         robust_z = abs(recent_median - self.baseline_median) / (self.baseline_mad * 1.4826)
 
         if not self.state.should_emit(robust_z > self.deviation_threshold * 10):
@@ -125,13 +123,6 @@ class AgentOrchestrationAnomalyDetector:
         if power is None or util is None:
             return None
 
-        # FIXED: freeze baseline_w once established, same reasoning as
-        # GhostPowerDetector and DMAAttackDetector -- see engines.py's
-        # GhostPowerDetector docstring for the full tradeoff. This
-        # detector had the identical structural bug: baseline inclusion
-        # and the firing condition shared the same gate (util < ceiling),
-        # so sustained anomalous idle power fed directly into its own
-        # baseline.
         if self.baseline_w is None:
             if util < self.util_ceiling:
                 self.idle_samples.append(power)
@@ -163,74 +154,165 @@ class AgentOrchestrationAnomalyDetector:
 
 
 class PromptInjectionSideEffectDetector:
-    def __init__(self, spike_threshold=30, window=20):
-        self.spike_threshold = spike_threshold
-        self.window = window
-        self.history = collections.deque(maxlen=window)
-        self.last_alert = None
+    """
+    Detects a power spike during active inference, relative to this
+    session's own calibrated baseline.
+
+    FIXED vs. original:
+      - Compared the window's own max to the window's own mean -- not a
+        baseline-vs-deviation comparison. Natural power variance from
+        different prompt lengths, batch composition, or KV-cache growth
+        during normal inference would trigger this. Replaced with a
+        properly separate calibrated baseline (median + MAD), same
+        pattern as InferencePowerFingerprintDetector -- which watches a
+        substantially overlapping signal (power deviation during active
+        inference) under a different framing. Noted, not resolved by
+        merging here.
+      - Was level-triggered via last_alert cooldown. Now edge-triggered.
+      - float(row.get(...)) N/A-safe.
+      - "possible adversarial prompt or jailbreak" stated the cause as
+        established. Message reworded to state the deviation is
+        unconfirmed as to cause. Severity kept at WARNING.
+    """
+    def __init__(self, deviation_threshold_w=30.0, calibration_samples=50,
+                 util_floor=20.0, require_consecutive=3, refire_after_s=30):
+        self.deviation_threshold_w = deviation_threshold_w
+        self.calibration_samples = calibration_samples
+        self.util_floor = util_floor
+        self.calibration = []
+        self.baseline_median = None
+        self.baseline_mad = None
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
     def update(self, row):
-        power = float(row.get('power.draw',0))
-        util = float(row.get('utilization.gpu',0))
-        self.history.append({'power':power,'util':util})
-        if len(self.history) < self.window: return None
-        powers = [v['power'] for v in self.history]
-        mean_power = sum(powers)/len(powers)
-        max_spike = max(powers)-mean_power
-        if max_spike > self.spike_threshold and util > 20:
-            now = time.time()
-            if self.last_alert and now-self.last_alert < 30: return None
-            self.last_alert = now
-            return {'type':'PROMPT_INJECTION_SIDEEFFECT','severity':'WARNING','gpu':row.get('index'),'power_spike_w':round(max_spike,2),'mean_power_w':round(mean_power,2),'timestamp':row.get('iso_timestamp'),'message':f"Inference power spike {max_spike:.1f}W above mean — possible adversarial prompt or jailbreak"}
-        return None
+        power = _f(row, 'power.draw')
+        util = _f(row, 'utilization.gpu')
+        if power is None or util is None or util <= self.util_floor:
+            return None
+
+        if self.baseline_median is None:
+            if len(self.calibration) < self.calibration_samples:
+                self.calibration.append(power)
+                return None
+            vals = sorted(self.calibration)
+            self.baseline_median = vals[len(vals) // 2]
+            deviations = sorted(abs(p - self.baseline_median) for p in self.calibration)
+            self.baseline_mad = deviations[len(deviations) // 2]
+            return None
+
+        delta = power - self.baseline_median
+        if not self.state.should_emit(delta > self.deviation_threshold_w):
+            return None
+
+        return {
+            'type': 'PROMPT_INJECTION_SIDEEFFECT',
+            'severity': 'WARNING',
+            'gpu': row.get('index'),
+            'power_w': round(power, 2),
+            'baseline_median_w': round(self.baseline_median, 2),
+            'delta_w': round(delta, 2),
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"Power {delta:.1f}W above this session's "
+                        f"calibrated inference baseline -- cause "
+                        f"unconfirmed, overlaps with "
+                        f"InferencePowerFingerprintDetector's signal, "
+                        f"consistent with a longer prompt, larger batch, "
+                        f"or an adversarial input"),
+        }
+
+
+class AgentSessionVRAMUnavailable(RuntimeError):
+    """
+    Raised by AgentSessionVRAMRetentionDetector when row['compute_apps']
+    is absent and strict=True. Deliberately a local exception rather than
+    importing VRAMResidualUnavailable from detection/engines.py, to avoid
+    adding new cross-module coupling this late in this fix pass -- but it
+    exists for exactly the same reason: see VRAMResidualDetector's
+    docstring in engines.py for the full explanation.
+    """
+    pass
 
 
 class AgentSessionVRAMRetentionDetector:
     """
-    Detects VRAM retention after agentic AI session ends.
-    Directly applies CVE-2048350 (pending MITRE assignment) to the agentic AI threat model.
-    Proprietary molecular/drug discovery data sitting in VRAM post-session.
+    Detects VRAM retention after an agentic AI session's process exits.
+    Directly applies CVE-2048350 (pending MITRE assignment) to the
+    agentic AI threat model.
+
+    FIXED vs. original: identical bug and identical fix as
+    VRAMResidualDetector in detection/engines.py -- see that class's
+    docstring for the full explanation. This detector used aggregate
+    memory.used plus an idle-utilization heuristic, with no per-process
+    tracking at all -- it could not distinguish a genuinely orphaned
+    session from a model sitting resident and idle with its owning
+    process still alive, which is the most common state in production
+    inference serving. It would have fired continuously on completely
+    normal warm-serving idle periods. Replaced with the same PID-exit-
+    tracking approach: requires row['compute_apps'], and only fires when
+    a specific PID has actually exited and its memory remains unclaimed.
+
+    Kept as its own class (not merged into VRAMResidualDetector) since it
+    carries the agentic-AI-specific CVE-2048350 message framing this pass
+    was told to preserve, not consolidate.
     """
-    def __init__(self, retention_threshold_mb=100, idle_window=30):
+    def __init__(self, retention_threshold_mb=100, grace_samples=2, strict=True):
         self.retention_threshold_mb = retention_threshold_mb
-        self.idle_window = idle_window
-        self.history = collections.deque(maxlen=idle_window)
-        self.session_active = False
-        self.session_peak_mem = 0
-        self.last_alert = None
+        self.grace_samples = grace_samples
+        self.strict = strict
+        self.known_pids = {}
+        self.pending = {}
+        self.state = _EventState(require_consecutive=1, refire_after_s=60)
 
     def update(self, row):
-        util = float(row.get('utilization.gpu', 0))
-        mem = float(row.get('memory.used', 0))
-        self.history.append({'util': util, 'mem': mem})
-
-        if util > 10:
-            self.session_active = True
-            self.session_peak_mem = max(self.session_peak_mem, mem)
+        apps = row.get('compute_apps')
+        if apps is None:
+            if self.strict:
+                raise AgentSessionVRAMUnavailable(
+                    "AgentSessionVRAMRetentionDetector requires "
+                    "row['compute_apps']. See VRAMResidualDetector's "
+                    "docstring in detection/engines.py for why aggregate "
+                    "memory.used cannot substitute for this."
+                )
             return None
 
-        if self.session_active and util == 0:
-            if len(self.history) < self.idle_window:
-                return None
-            recent = list(self.history)
-            all_idle = all(r['util'] == 0 for r in recent[-10:])
-            if all_idle and mem > self.retention_threshold_mb:
-                now = time.time()
-                if self.last_alert and now - self.last_alert < 60:
-                    return None
-                self.last_alert = now
-                self.session_active = False
-                return {
-                    'type': 'AGENT_VRAM_RETENTION',
-                    'severity': 'CRITICAL',
-                    'gpu': row.get('index'),
-                    'retained_mb': round(mem, 2),
-                    'session_peak_mb': round(self.session_peak_mem, 2),
-                    'threshold_mb': self.retention_threshold_mb,
-                    'nvml_util': util,
-                    'timestamp': row.get('iso_timestamp'),
-                    'message': f"Agent session ended but {mem:.0f}MB VRAM retained — CVE-2048350 (pending MITRE assignment) — proprietary data exposure risk"
-                }
-        return None
+        mem_total_used = _f(row, 'memory.used')
+        current = {int(a['pid']): float(a['used_memory']) for a in apps}
+
+        for pid, last_mem in list(self.known_pids.items()):
+            if pid not in current:
+                self.pending.setdefault(pid, {'samples': 0, 'mem_at_exit': last_mem})
+
+        alert = None
+        for pid, info in list(self.pending.items()):
+            info['samples'] += 1
+            if info['samples'] >= self.grace_samples and mem_total_used is not None:
+                claimed = sum(current.values())
+                unclaimed = mem_total_used - claimed
+                if unclaimed > self.retention_threshold_mb and self.state.should_emit(True):
+                    alert = {
+                        'type': 'AGENT_VRAM_RETENTION',
+                        'severity': 'CRITICAL',
+                        'gpu': row.get('index'),
+                        'exited_pid': pid,
+                        'mem_held_at_exit_mb': round(info['mem_at_exit'], 1),
+                        'unclaimed_mb': round(unclaimed, 1),
+                        'memory_used_total_mb': mem_total_used,
+                        'threshold_mb': self.retention_threshold_mb,
+                        'timestamp': row.get('iso_timestamp'),
+                        'message': (f"Agent session (PID {pid}) exited; "
+                                    f"{unclaimed:.0f}MB VRAM remains "
+                                    f"allocated with no owning process -- "
+                                    f"CVE-2048350 (pending MITRE "
+                                    f"assignment) applied to agentic AI, "
+                                    f"proprietary session data exposure "
+                                    f"risk"),
+                    }
+                if info['samples'] >= self.grace_samples:
+                    del self.pending[pid]
+
+        self.known_pids = current
+        return alert
 
 
 class InterAgentHandoffAnomalyDetector:
@@ -316,8 +398,6 @@ class InterAgentHandoffAnomalyDetector:
                                             f"consistent with a workload change or a "
                                             f"compromised upstream agent"),
                             }
-                    # Reset consistently whether this fired or was skipped
-                    # by cooldown -- this is the bug that's fixed here.
                     self.handoff_detected = False
 
         self.prev_util = util

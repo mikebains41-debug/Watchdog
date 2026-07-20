@@ -4,51 +4,157 @@ from detection._shared import _EventState, _f
 
 
 class ClockGlitchDetector:
-    def __init__(self, deviation_pct=10.0, window=50):
-        self.deviation_pct = deviation_pct
-        self.window = window
-        self.history = collections.deque(maxlen=window)
-        self.last_alert = None
+    """
+    Detects a sudden SM clock drop while GPU utilization stays active.
+
+    FIXED vs. original:
+      - The original compared a 10-sample window's own MEAN to its own
+        MIN -- this is not a baseline-vs-deviation comparison, it will
+        register some "drop" in any naturally varying clock signal,
+        since min <= mean by definition. Boost clocks vary normally
+        under thermal/power throttling; this made ordinary DVFS
+        behavior look identical to an attack. Replaced with a properly
+        separate learned baseline (median of a calibration window),
+        matching GhostPowerDetector's approach.
+      - Was level-triggered via last_alert cooldown. Now edge-triggered.
+      - float(row.get(...)) N/A-safe.
+      - "possible clock glitch injection" stated the CAUSE as if
+        established. Clock/voltage/laser fault injection are PHYSICAL
+        attack techniques requiring specialized access to the die or
+        power delivery -- not achievable purely over software from a
+        rented cloud instance, and a real fault-injection attempt would
+        be statistically indistinguishable, from telemetry alone, from
+        ordinary thermal or power-limit throttling. Severity downgraded
+        CRITICAL -> WARNING and message reworded to state this honestly.
+        Alert 'type' string left unchanged to avoid disturbing any
+        downstream key matching (e.g. remediation/response.py).
+    """
+    def __init__(self, drop_pct_threshold=10.0, baseline_min_samples=30,
+                 baseline_window=300, util_floor=10.0,
+                 require_consecutive=3, refire_after_s=60):
+        self.drop_pct_threshold = drop_pct_threshold
+        self.baseline_min_samples = baseline_min_samples
+        self.util_floor = util_floor
+        self.active_samples = collections.deque(maxlen=baseline_window)
+        self.baseline_clock = None
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
     def update(self, row):
-        sm_clock = float(row.get('clocks.sm',0))
-        util = float(row.get('utilization.gpu',0))
-        self.history.append({'sm':sm_clock,'util':util})
-        if len(self.history) < 10: return None
-        recent = list(self.history)[-10:]
-        sm_vals = [r['sm'] for r in recent if r['sm'] > 0]
-        if len(sm_vals) < 5: return None
-        sm_mean = sum(sm_vals)/len(sm_vals)
-        sm_drop = sm_mean - min(sm_vals)
-        drop_pct = (sm_drop/sm_mean*100) if sm_mean > 0 else 0
-        if drop_pct >= self.deviation_pct and util > 10:
-            now = time.time()
-            if self.last_alert and now-self.last_alert < 30: return None
-            self.last_alert = now
-            return {'type':'CLOCK_GLITCH','severity':'CRITICAL','gpu':row.get('index'),'sm_clock_mean':round(sm_mean,1),'drop_pct':round(drop_pct,2),'timestamp':row.get('iso_timestamp'),'message':f"Clock drop {drop_pct:.1f}% at {util:.0f}% util — possible clock glitch injection"}
-        return None
+        sm_clock = _f(row, 'clocks.sm')
+        util = _f(row, 'utilization.gpu')
+        if sm_clock is None or util is None:
+            return None
+
+        if self.baseline_clock is None:
+            if util > self.util_floor and sm_clock > 0:
+                self.active_samples.append(sm_clock)
+            if len(self.active_samples) >= self.baseline_min_samples:
+                vals = sorted(self.active_samples)
+                self.baseline_clock = vals[len(vals) // 2]
+
+        if self.baseline_clock is None:
+            return None
+
+        drop_pct = ((self.baseline_clock - sm_clock) / self.baseline_clock * 100
+                    ) if self.baseline_clock > 0 else 0
+        condition = util > self.util_floor and drop_pct >= self.drop_pct_threshold
+        if not self.state.should_emit(condition):
+            return None
+
+        return {
+            'type': 'CLOCK_GLITCH',
+            'severity': 'WARNING',
+            'gpu': row.get('index'),
+            'sm_clock_mhz': round(sm_clock, 1),
+            'baseline_clock_mhz': round(self.baseline_clock, 1),
+            'drop_pct': round(drop_pct, 2),
+            'utilization': util,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"SM clock {drop_pct:.1f}% below this GPU's own "
+                        f"learned baseline while active -- cause "
+                        f"unconfirmed, consistent with thermal/power "
+                        f"throttling (normal) or a clock-glitch attempt "
+                        f"(requires physical access, not verifiable from "
+                        f"software telemetry alone)"),
+        }
 
 
 class VoltageGlitchDetector:
-    def __init__(self, window=100):
-        self.window = window
-        self.power_history = collections.deque(maxlen=window)
-        self.last_alert = None
+    """
+    Detects a rapid power drop while GPU utilization stays roughly
+    steady.
+
+    FIXED vs. original:
+      - Compared max-of-first-15-samples to min-of-last-5-samples WITHIN
+        THE SAME 20-sample window -- not a baseline-vs-deviation
+        comparison. Power capping under sustained high load (hitting the
+        board's power limit) produces exactly this signature and is
+        completely normal GPU behavior, not an attack. Replaced with a
+        properly separate learned baseline.
+      - Was level-triggered. Now edge-triggered.
+      - float(row.get(...)) N/A-safe.
+      - "possible voltage glitch" stated the cause as established.
+        Voltage fault injection is a PHYSICAL attack technique -- same
+        limitation as ClockGlitchDetector above. Severity downgraded
+        CRITICAL -> WARNING, message reworded. Alert 'type' unchanged.
+    """
+    def __init__(self, drop_w_threshold=50.0, baseline_min_samples=30,
+                 baseline_window=300, util_floor=10.0,
+                 util_stability_pct=5.0, require_consecutive=3,
+                 refire_after_s=60):
+        self.drop_w_threshold = drop_w_threshold
+        self.baseline_min_samples = baseline_min_samples
+        self.util_floor = util_floor
+        self.util_stability_pct = util_stability_pct
+        self.active_samples = collections.deque(maxlen=baseline_window)
+        self.baseline_power = None
+        self.util_history = collections.deque(maxlen=10)
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
     def update(self, row):
-        power = float(row.get('power.draw',0))
-        util = float(row.get('utilization.gpu',0))
-        self.power_history.append({'power':power,'util':util})
-        if len(self.power_history) < self.window: return None
-        vals = list(self.power_history)
-        powers = [v['power'] for v in vals[-20:]]
-        utils = [v['util'] for v in vals[-20:]]
-        power_drop = max(powers[:-5])-min(powers[-5:]) if len(powers)>=10 else 0
-        util_stable = max(utils)-min(utils) < 5
-        if power_drop > 50 and util_stable and util > 10:
-            now = time.time()
-            if self.last_alert and now-self.last_alert < 30: return None
-            self.last_alert = now
-            return {'type':'VOLTAGE_GLITCH','severity':'CRITICAL','gpu':row.get('index'),'power_drop_w':round(power_drop,2),'utilization':util,'timestamp':row.get('iso_timestamp'),'message':f"Power droop {power_drop:.1f}W at stable {util:.0f}% util — possible voltage glitch"}
-        return None
+        power = _f(row, 'power.draw')
+        util = _f(row, 'utilization.gpu')
+        if power is None or util is None:
+            return None
+
+        self.util_history.append(util)
+
+        if self.baseline_power is None:
+            if util > self.util_floor:
+                self.active_samples.append(power)
+            if len(self.active_samples) >= self.baseline_min_samples:
+                vals = sorted(self.active_samples)
+                self.baseline_power = vals[len(vals) // 2]
+
+        if self.baseline_power is None or len(self.util_history) < 10:
+            return None
+
+        util_stable = (max(self.util_history) - min(self.util_history)
+                       ) < self.util_stability_pct
+        power_drop = self.baseline_power - power
+        condition = (util > self.util_floor and util_stable
+                     and power_drop > self.drop_w_threshold)
+        if not self.state.should_emit(condition):
+            return None
+
+        return {
+            'type': 'VOLTAGE_GLITCH',
+            'severity': 'WARNING',
+            'gpu': row.get('index'),
+            'power_w': round(power, 2),
+            'baseline_power_w': round(self.baseline_power, 2),
+            'power_drop_w': round(power_drop, 2),
+            'utilization': util,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"Power {power_drop:.1f}W below this GPU's own "
+                        f"learned baseline at stable {util:.0f}% util -- "
+                        f"cause unconfirmed, consistent with power-limit "
+                        f"throttling (normal) or a voltage-glitch attempt "
+                        f"(requires physical access, not verifiable from "
+                        f"software telemetry alone)"),
+        }
 
 
 class DMAAttackDetector:
@@ -134,23 +240,61 @@ class DMAAttackDetector:
 
 
 class LaserInjectionDetector:
-    def __init__(self, delta_threshold=5.0, time_window_s=0.5):
-        self.delta_threshold = delta_threshold
+    """
+    Detects a rapid GPU temperature change within a short window.
+
+    FIXED vs. original:
+      - "possible laser fault injection" claimed to detect a PHYSICAL
+        attack technique (a focused laser aimed at exposed silicon to
+        induce bit-flips) requiring physical access to the die. This
+        cannot be achieved or meaningfully detected from software
+        telemetry in a rented cloud container -- what this signal
+        actually captures is functionally the same pattern as the
+        ThermalEmanationDetector deleted from engines.py earlier tonight
+        for firing on ordinary cooldown/heating transients. Reframed
+        honestly: this reports that a rapid thermal transient occurred,
+        without claiming to know or detect its physical cause.
+      - Was level-triggered via a 10s cooldown with NO debounce at all --
+        fired on the very first qualifying sample. Now edge-triggered.
+      - float(row.get(...)) N/A-safe.
+      - Severity EMERGENCY -> INFO: a rapid temp change during normal
+        workload start/stop is common and expected; this is context, not
+        an actionable alert. Alert 'type' left unchanged.
+    """
+    def __init__(self, delta_threshold_c=5.0, time_window_s=0.5,
+                 require_consecutive=2, refire_after_s=60):
+        self.delta_threshold_c = delta_threshold_c
         self.time_window_s = time_window_s
         self.history = collections.deque(maxlen=100)
-        self.last_alert = None
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
     def update(self, row):
-        temp = float(row.get('temperature.gpu',0))
+        temp = _f(row, 'temperature.gpu')
+        if temp is None:
+            return None
         ts = time.time()
-        self.history.append({'temp':temp,'ts':ts})
-        if len(self.history) < 5: return None
-        window = [h for h in self.history if ts-h['ts'] <= self.time_window_s]
-        if len(window) < 3: return None
+        self.history.append({'temp': temp, 'ts': ts})
+        window = [h for h in self.history if ts - h['ts'] <= self.time_window_s]
+        if len(window) < 3:
+            return None
         temps = [h['temp'] for h in window]
-        delta = max(temps)-min(temps)
-        if delta >= self.delta_threshold:
-            now = time.time()
-            if self.last_alert and now-self.last_alert < 10: return None
-            self.last_alert = now
-            return {'type':'LASER_INJECTION','severity':'EMERGENCY','gpu':row.get('index'),'temp_delta_c':round(delta,2),'current_temp_c':temp,'timestamp':row.get('iso_timestamp'),'message':f"Temp spike {delta:.1f}C in {self.time_window_s}s — possible laser fault injection"}
-        return None
+        delta = max(temps) - min(temps)
+
+        if not self.state.should_emit(delta >= self.delta_threshold_c):
+            return None
+
+        return {
+            'type': 'LASER_INJECTION',
+            'severity': 'INFO',
+            'gpu': row.get('index'),
+            'temp_delta_c': round(delta, 2),
+            'current_temp_c': temp,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"Temperature changed {delta:.1f}C within "
+                        f"{self.time_window_s}s -- consistent with a "
+                        f"normal workload start/stop transient. Not "
+                        f"evidence of physical fault injection, which "
+                        f"cannot be detected from software telemetry "
+                        f"alone."),
+        }
