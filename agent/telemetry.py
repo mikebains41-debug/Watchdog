@@ -1,12 +1,71 @@
 import subprocess, time, csv, os
 from datetime import datetime
+
 SAMPLE_HZ = 100
-QUERY_FIELDS = ['timestamp','index','name','power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu','pstate','ecc.errors.corrected.volatile.total','ecc.errors.uncorrected.volatile.total']
+QUERY_FIELDS = ['timestamp','index','uuid','name','power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu','pstate','ecc.errors.corrected.volatile.total','ecc.errors.uncorrected.volatile.total']
+
+# FIXED: VRAMResidualDetector requires row['compute_apps'] and defaults to
+# strict=True. watchdog.py never overrides that. Before this fix, the key
+# was never set at all -- the detector's first update() call would raise
+# VRAMResidualUnavailable, and nothing in DetectionPipeline.process() or
+# TelemetryCollector.start()'s loop catches it, so watchdog.py would crash
+# on the very first sample of any real run.
+#
+# COMPUTE_APPS_FIELDS uses 'used_memory', matching the exact field name
+# already documented consistently elsewhere in this repo (see
+# VRAMResidualDetector's docstring in detection/engines.py and
+# scripts/run_negative_control.py's known-gap comment).
+COMPUTE_APPS_FIELDS = ['gpu_uuid', 'pid', 'used_memory']
+
+
+def sample_compute_apps():
+    """
+    Queries per-process VRAM usage across ALL GPUs in ONE subprocess call
+    (not one call per GPU -- on an 8-GPU node that would mean 8 extra
+    subprocess spawns per sample, which is real overhead given nvidia-smi
+    subprocess calls are already the dominant cost keeping this collector
+    far below its requested Hz). Keyed by gpu_uuid so each GPU's row (from
+    sample_gpu(), which now also queries uuid) can be matched to its own
+    process list.
+
+    Returns {gpu_uuid: [{'pid': int, 'used_memory': float}, ...]}.
+
+    Never raises. An empty dict, or a uuid key missing from it, both mean
+    "no processes on that GPU right now" -- a normal, common state (most
+    idle samples), not a data-unavailable state. Unlike
+    scripts/run_negative_control.py's stance on a fully missing nvidia-smi
+    (which deliberately raises), a PARTIAL query like this one failing
+    while the main --query-gpu call succeeds should degrade to "no
+    processes observed", not take down the whole collector.
+    """
+    cmd = ['nvidia-smi', f'--query-compute-apps={",".join(COMPUTE_APPS_FIELDS)}',
+           '--format=csv,noheader,nounits']
+    result = {}
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+        for line in r.stdout.strip().split('\n'):
+            if not line.strip():
+                continue
+            parts = [p.strip() for p in line.split(',')]
+            if len(parts) < 3:
+                continue
+            uuid, pid, used_memory = parts[0], parts[1], parts[2]
+            try:
+                entry = {'pid': int(pid), 'used_memory': float(used_memory)}
+            except ValueError:
+                continue
+            result.setdefault(uuid, []).append(entry)
+    except Exception:
+        pass
+    return result
+
+
 def sample_gpu(gpu_index=None):
     cmd = ['nvidia-smi','--query-gpu='+','.join(QUERY_FIELDS),'--format=csv,noheader,nounits']
     if gpu_index is not None: cmd += [f'--id={gpu_index}']
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+        compute_apps_by_gpu = sample_compute_apps()
         rows = []
         for line in r.stdout.strip().split('\n'):
             if not line.strip(): continue
@@ -17,14 +76,21 @@ def sample_gpu(gpu_index=None):
             for f in ['power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu']:
                 try: row[f] = float(row[f])
                 except: row[f] = 0.0
+            # FIXED: always set compute_apps, even to []. Never leave the
+            # key absent -- that's what was crashing VRAMResidualDetector.
+            row['compute_apps'] = compute_apps_by_gpu.get(row.get('uuid'), [])
             rows.append(row)
         return rows
     except: return []
+
+
 def detect_gpus():
     try:
         r = subprocess.run(['nvidia-smi','--query-gpu=index,name','--format=csv,noheader'],capture_output=True,text=True,timeout=5)
         return [l.strip() for l in r.stdout.strip().split('\n') if l.strip()]
     except: return []
+
+
 class TelemetryCollector:
     def __init__(self, sample_hz=SAMPLE_HZ, output_dir='watchdog_data', gpu_index=None, on_sample=None):
         self.sample_hz = sample_hz
