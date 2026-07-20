@@ -1,5 +1,8 @@
 import time, collections, subprocess
 from datetime import datetime
+from detection._shared import _EventState, _f
+
+
 class ClockGlitchDetector:
     def __init__(self, deviation_pct=10.0, window=50):
         self.deviation_pct = deviation_pct
@@ -23,6 +26,8 @@ class ClockGlitchDetector:
             self.last_alert = now
             return {'type':'CLOCK_GLITCH','severity':'CRITICAL','gpu':row.get('index'),'sm_clock_mean':round(sm_mean,1),'drop_pct':round(drop_pct,2),'timestamp':row.get('iso_timestamp'),'message':f"Clock drop {drop_pct:.1f}% at {util:.0f}% util — possible clock glitch injection"}
         return None
+
+
 class VoltageGlitchDetector:
     def __init__(self, window=100):
         self.window = window
@@ -44,25 +49,90 @@ class VoltageGlitchDetector:
             self.last_alert = now
             return {'type':'VOLTAGE_GLITCH','severity':'CRITICAL','gpu':row.get('index'),'power_drop_w':round(power_drop,2),'utilization':util,'timestamp':row.get('iso_timestamp'),'message':f"Power droop {power_drop:.1f}W at stable {util:.0f}% util — possible voltage glitch"}
         return None
+
+
 class DMAAttackDetector:
-    def __init__(self):
+    """
+    Detects memory-bandwidth activity at 0% GPU compute -- consistent with
+    a DMA-based data exfiltration attack, but also indistinguishable from
+    ordinary checkpoint/dataset loading into VRAM before compute starts.
+
+    FIXED vs. original:
+      - Baseline was the MEAN of up to 50 idle samples -- a single
+        contaminated sample during calibration could skew it. Now MEDIAN,
+        matching GhostPowerDetector's approach, and recomputed
+        continuously from a rolling window rather than frozen after one
+        calibration pass.
+      - Was level-triggered via a raw last_alert timestamp cooldown --
+        fired on the first qualifying sample, then just rate-limited.
+        Now edge-triggered via _EventState (require_consecutive=5), so a
+        sustained pattern is required, not one sample.
+      - float(row.get(...)) would crash (ValueError) on nvidia-smi's
+        '[N/A]' strings for unsupported fields. Now uses the N/A-safe
+        parser from detection._shared.
+
+    STILL UNRESOLVED, stated rather than hidden:
+      This detector cannot distinguish a DMA attack from legitimate bulk
+      data loading. That requires a signal it does not have access to --
+      e.g. correlating with process start/stop events. Until that exists,
+      treat the EMERGENCY / kill_process mapping on this alert type
+      (see remediation/response.py) as unvalidated, not a settled design.
+    """
+
+    def __init__(self, mem_delta_threshold_mb=100, util_mem_threshold=30.0,
+                 baseline_min_samples=30, baseline_window=200,
+                 require_consecutive=5, refire_after_s=60):
+        self.mem_delta_threshold_mb = mem_delta_threshold_mb
+        self.util_mem_threshold = util_mem_threshold
+        self.baseline_min_samples = baseline_min_samples
+        self.idle_samples = collections.deque(maxlen=baseline_window)
         self.baseline_mem = None
-        self.samples = []
-        self.last_alert = None
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
     def update(self, row):
-        mem_used = float(row.get('memory.used',0))
-        util = float(row.get('utilization.gpu',0))
-        util_mem = float(row.get('utilization.memory',0))
-        if self.baseline_mem is None:
-            if util == 0 and len(self.samples) < 50: self.samples.append(mem_used)
-            elif len(self.samples) >= 50: self.baseline_mem = sum(self.samples)/len(self.samples)
+        mem_used = _f(row, 'memory.used')
+        util = _f(row, 'utilization.gpu')
+        util_mem = _f(row, 'utilization.memory')
+        if mem_used is None or util is None or util_mem is None:
             return None
-        if util == 0 and util_mem > 30 and mem_used > self.baseline_mem+100:
-            now = time.time()
-            if self.last_alert and now-self.last_alert < 60: return None
-            self.last_alert = now
-            return {'type':'DMA_ATTACK','severity':'EMERGENCY','gpu':row.get('index'),'memory_used_mb':mem_used,'memory_util_pct':util_mem,'gpu_util_pct':util,'timestamp':row.get('iso_timestamp'),'message':f"Memory bandwidth {util_mem:.0f}% at 0% GPU compute — possible DMA attack"}
-        return None
+
+        # FIXED: freeze baseline_mem once established, same reasoning as
+        # GhostPowerDetector -- see that class's docstring. This one was
+        # worse before the fix: baseline inclusion only required util==0,
+        # with no secondary gate, so a sustained DMA exfiltration event
+        # (util==0, mem_used elevated) fed directly into its own baseline
+        # with nothing else in the way.
+        if self.baseline_mem is None:
+            if util == 0:
+                self.idle_samples.append(mem_used)
+            if len(self.idle_samples) >= self.baseline_min_samples:
+                vals = sorted(self.idle_samples)
+                self.baseline_mem = vals[len(vals) // 2]
+
+        if self.baseline_mem is None:
+            return None
+
+        condition = (util == 0 and util_mem > self.util_mem_threshold
+                     and mem_used > self.baseline_mem + self.mem_delta_threshold_mb)
+        if not self.state.should_emit(condition):
+            return None
+
+        return {
+            'type': 'DMA_ATTACK',
+            'severity': 'EMERGENCY',
+            'gpu': row.get('index'),
+            'memory_used_mb': mem_used,
+            'baseline_mem_mb': round(self.baseline_mem, 1),
+            'memory_util_pct': util_mem,
+            'gpu_util_pct': util,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"Memory bandwidth {util_mem:.0f}% at 0% GPU compute, "
+                        f"sustained -- possible DMA attack OR bulk data load "
+                        f"(cannot be distinguished from telemetry alone)"),
+        }
+
+
 class LaserInjectionDetector:
     def __init__(self, delta_threshold=5.0, time_window_s=0.5):
         self.delta_threshold = delta_threshold

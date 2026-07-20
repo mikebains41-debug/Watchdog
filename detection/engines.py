@@ -47,6 +47,21 @@ class GhostPowerDetector:
         self.state = _EventState(require_consecutive=3, refire_after_s=300)
 
     def _update_baseline(self, power, util, mem):
+        # FIXED: freeze the baseline once established. Previously this
+        # kept recomputing from a rolling window forever, which meant a
+        # SUSTAINED ghost-power event -- the exact thing this detector
+        # exists to catch -- could slowly become the new "normal" as its
+        # own elevated samples filled the window, shrinking delta toward
+        # zero and silencing the detector on the attack it should catch.
+        #
+        # Tradeoff, stated rather than hidden: a frozen baseline won't
+        # track slow legitimate drift (firmware updates, thermal paste
+        # aging, ambient temperature shifts) over a long-running process.
+        # For a security detector, going blind to a sustained real attack
+        # is worse than missing gradual environmental drift, so this
+        # trades adaptability for attack-resistance deliberately.
+        if self.baseline_w is not None:
+            return
         if util == 0 and mem is not None and mem < self.idle_mem_mb:
             self.idle_samples.append(power)
         if len(self.idle_samples) >= self.baseline_min_samples:
