@@ -157,6 +157,18 @@ try:
     async def ingest_throughput(request: Request):
         body = await request.json()
         return handle_throughput_request(_pipeline, body)
+    # Attach the webhook bridge -- alerting/prometheus_webhook_bridge.py
+    # already implements POST /v2/alerts/webhook correctly (confirmed by
+    # reading its source), it was just never registered on a live app.
+    # Wrapped in its own try/except so a failure here reports clearly
+    # rather than falling through to the misleading "FastAPI not
+    # installed" message below when fastapi actually IS installed.
+    try:
+        from alerting.prometheus_webhook_bridge import register_webhook
+        register_webhook(app)
+    except Exception as e:
+        print(f"[API] Webhook bridge not registered: {e}")
+
     def run_api(host="0.0.0.0", port=8080): uvicorn.run(app, host=host, port=port, log_level="warning")
 except ImportError:
     print("[API] pip3 install fastapi uvicorn --break-system-packages")
