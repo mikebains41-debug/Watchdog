@@ -9,6 +9,92 @@ QUERY_FIELDS = ['timestamp','index','uuid','name','power.draw','power.limit','ut
 COMPUTE_APPS_FIELDS = ['gpu_uuid', 'pid', 'used_memory']
 
 
+def parse_nvlink_output(stdout_text):
+    """
+    Parses `nvidia-smi nvlink -g <index> -gt d` output. Factored out from
+    the subprocess call so this parsing logic can be tested against
+    real-shaped sample text without needing NVLink hardware -- no GPU
+    with NVLink exists in the environment that wrote this, so this is
+    UNVERIFIED against real nvidia-smi output. The expected format is
+    documented by NVIDIA as:
+
+        GPU 0: NVLink Data Tx:
+           Link 0: 1234 KiB
+           Link 1: 5678 KiB
+        GPU 0: NVLink Data Rx:
+           Link 0: 2345 KiB
+           Link 1: 6789 KiB
+
+    If real output differs, this needs adjusting -- exactly the kind of
+    thing scripts/hardware_preflight_check.py exists to catch before a
+    paid session; NVLink support should be added there before relying
+    on this in production.
+
+    Returns {'nvlink_available': bool, 'nvlink_tx_kbs': float or None,
+    'nvlink_rx_kbs': float or None}. Most GPUs without NVLink hardware
+    (L40S, RTX-series, T4, most single-GPU rentals) will report
+    nvlink_available=False rather than a fabricated zero -- zero traffic
+    on present hardware and "no NVLink hardware at all" are different
+    facts and must not be conflated.
+    """
+    tx_total = 0.0
+    rx_total = 0.0
+    mode = None
+    found_any = False
+    for line in stdout_text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if 'data tx' in line.lower():
+            mode = 'tx'
+            continue
+        if 'data rx' in line.lower():
+            mode = 'rx'
+            continue
+        if line.lower().startswith('link') and ':' in line:
+            try:
+                val_str = line.split(':', 1)[1].strip().split()[0]
+                val = float(val_str)
+                found_any = True
+                if mode == 'tx':
+                    tx_total += val
+                elif mode == 'rx':
+                    rx_total += val
+            except (ValueError, IndexError):
+                continue
+    if not found_any:
+        return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None}
+    return {'nvlink_available': True, 'nvlink_tx_kbs': tx_total, 'nvlink_rx_kbs': rx_total}
+
+
+def sample_nvlink(gpu_index=0):
+    """
+    NVLink throughput sampling via `nvidia-smi nvlink -g <index> -gt d`,
+    a documented NVIDIA subcommand -- deliberately NOT attempted via the
+    --query-gpu CSV interface QUERY_FIELDS uses for everything else,
+    since NVLink field support there varies by driver version in ways
+    this environment (no GPU present) cannot verify. This subcommand is
+    per-GPU-index, unlike the combined QUERY_FIELDS query -- calling it
+    for every GPU on every sample at high sample_hz adds a real
+    subprocess-spawn cost per GPU. Callers running at high Hz on
+    multi-GPU nodes should rate-limit calls to this separately from the
+    main telemetry loop rather than call it every sample -- an open
+    design point best settled by measuring the real cost on target
+    hardware, not assumed here. NOT auto-wired into sample_gpu()'s
+    per-sample hot path for exactly this reason -- see
+    NVLinkContentionDetector's docstring in detection/hardware_attacks.py
+    for the full integration status.
+    """
+    try:
+        r = subprocess.run(['nvidia-smi', 'nvlink', '-g', str(gpu_index), '-gt', 'd'],
+                            capture_output=True, text=True, timeout=5)
+        if r.returncode != 0 or not r.stdout.strip():
+            return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None}
+        return parse_nvlink_output(r.stdout)
+    except Exception:
+        return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None}
+
+
 def sample_compute_apps():
     cmd = ['nvidia-smi', f'--query-compute-apps={",".join(COMPUTE_APPS_FIELDS)}',
            '--format=csv,noheader,nounits']
