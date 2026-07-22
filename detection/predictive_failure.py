@@ -1,13 +1,17 @@
 import collections, time
 from datetime import datetime
+from detection._shared import _f
+
+
 class FanWearDetector:
     def __init__(self, window=200):
         self.window = window
         self.history = collections.deque(maxlen=window)
         self.last_alert = None
     def update(self, row):
-        temp = float(row.get('temperature.gpu',0))
-        util = float(row.get('utilization.gpu',0))
+        temp = _f(row, 'temperature.gpu')
+        util = _f(row, 'utilization.gpu')
+        if temp is None or util is None: return None
         self.history.append({'temp':temp,'util':util})
         if len(self.history) < self.window: return None
         vals = list(self.history)
@@ -25,8 +29,9 @@ class CapacitorAgingDetector:
         self.history = collections.deque(maxlen=window)
         self.last_alert = None
     def update(self, row):
-        power = float(row.get('power.draw',0))
-        util = float(row.get('utilization.gpu',0))
+        power = _f(row, 'power.draw')
+        util = _f(row, 'utilization.gpu')
+        if power is None or util is None: return None
         self.history.append({'power':power,'util':util})
         if len(self.history) < self.window: return None
         vals = [v for v in self.history if v['util'] > 40]
@@ -47,8 +52,9 @@ class PackageCrackingDetector:
         self.history = collections.deque(maxlen=window)
         self.last_alert = None
     def update(self, row):
-        temp = float(row.get('temperature.gpu',0))
-        util = float(row.get('utilization.gpu',0))
+        temp = _f(row, 'temperature.gpu')
+        util = _f(row, 'utilization.gpu')
+        if temp is None or util is None: return None
         self.history.append({'temp':temp,'util':util,'ts':time.time()})
         if len(self.history) < self.window: return None
         vals = list(self.history)
