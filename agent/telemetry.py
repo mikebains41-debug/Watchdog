@@ -8,6 +8,52 @@ QUERY_FIELDS = ['timestamp','index','uuid','name','power.draw','power.limit','ut
 
 COMPUTE_APPS_FIELDS = ['gpu_uuid', 'pid', 'used_memory']
 
+NUMERIC_FIELDS = ['power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu']
+
+
+def parse_numeric_fields(row, fields=NUMERIC_FIELDS):
+    """
+    Converts the given fields in `row` from strings to floats in place,
+    and returns the modified row. Fields that fail to parse -- most
+    commonly nvidia-smi's literal '[N/A]' string, which some drivers
+    report for a metric a given GPU doesn't support -- are set to None,
+    NOT a fabricated 0.0.
+
+    FIXED: this previously wrote 0.0 on any parse failure, silently
+    conflating "genuinely reads zero" with "this GPU can't report this
+    metric at all" -- two very different facts a detector might act on
+    very differently (e.g. 0% utilization is meaningful; "unknown
+    utilization" reported as 0% could look like a real idle reading).
+    All 16 pipeline detectors + 4 base engines were checked and
+    confirmed to handle a real None safely (via detection._shared._f(),
+    or by not parsing these fields as floats at all) before this change
+    was made -- see the git history for that verification work, spread
+    across several commits fixing each detector that wasn't already
+    safe.
+    """
+    for f in fields:
+        try:
+            row[f] = float(row[f])
+        except (ValueError, TypeError, KeyError):
+            row[f] = None
+    return row
+
+
+def _safe_fmt(val, fmt='.1f'):
+    """
+    Formats a value for the periodic console status print, showing
+    'N/A' instead of crashing when the value is None. Needed as of the
+    parse_numeric_fields() fix above: row.get(key, 0) only supplies its
+    default when the KEY is absent, not when the value is explicitly
+    None -- so a naive f-string like f"{row.get('power.draw',0):.1f}"
+    would raise TypeError the instant a real N/A field came through,
+    which is now a genuinely reachable case rather than a theoretical
+    one.
+    """
+    if val is None:
+        return 'N/A'
+    return format(val, fmt)
+
 
 def parse_nvlink_output(stdout_text):
     """
@@ -131,9 +177,7 @@ def sample_gpu(gpu_index=None):
             if len(vals) < len(QUERY_FIELDS): continue
             row = dict(zip(QUERY_FIELDS, vals))
             row['iso_timestamp'] = datetime.now().isoformat()
-            for f in ['power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu']:
-                try: row[f] = float(row[f])
-                except: row[f] = 0.0
+            row = parse_numeric_fields(row)
             row['compute_apps'] = compute_apps_by_gpu.get(row.get('uuid'), [])
             rows.append(row)
         return rows
@@ -205,7 +249,11 @@ class TelemetryCollector:
                 if int(elapsed) % 60 == 0 and elapsed > 1:
                     stats = self.timer.stats()
                     for row in rows:
-                        print(f"[t+{int(elapsed)}s] GPU{row.get('index','?')}: {row.get('power.draw',0):.1f}W mem={row.get('memory.used',0):.0f}MB temp={row.get('temperature.gpu',0):.0f}C util={row.get('utilization.gpu',0):.0f}%")
+                        print(f"[t+{int(elapsed)}s] GPU{row.get('index','?')}: "
+                              f"{_safe_fmt(row.get('power.draw'))}W "
+                              f"mem={_safe_fmt(row.get('memory.used'),'.0f')}MB "
+                              f"temp={_safe_fmt(row.get('temperature.gpu'),'.0f')}C "
+                              f"util={_safe_fmt(row.get('utilization.gpu'),'.0f')}%")
                     print(f"[WATCHDOG] Actual achieved rate: "
                           f"{stats['achieved_hz']}Hz (requested "
                           f"{self.sample_hz}Hz) -- min/mean/max interval: "
