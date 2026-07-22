@@ -1,5 +1,6 @@
 import os, subprocess, time, json
 from datetime import datetime
+from orchestration.cluster_actions import ClusterOrchestration
 REMEDIATION_LOG = 'watchdog_data/remediation.log'
 def log_action(action, result, alert):
     os.makedirs('watchdog_data', exist_ok=True)
@@ -38,12 +39,13 @@ class RemediationEngine:
         alert['exited_pid']).
     """
     TYPE_ACTIONS = {'GHOST_POWER':['log_only'],'VRAM_RESIDUAL':['log_only','gpu_memory_reset'],'DMA_ATTACK':['kill_process'],'SEQUENTIAL_VRAM_READ':['kill_process'],'MODEL_MUTATION':['kill_process','quarantine_partition'],'AGENT_ORCHESTRATION_ANOMALY':['kill_process'],'CLOCK_GLITCH':['log_only'],'LASER_INJECTION':['log_only'],'MIG_PARTITION_DESYNC':['quarantine_partition']}
-    HUMAN_REQUIRED = ['pcie_bus_reset','power_cycle','firmware_rollback','gpu_memory_reset']
+    HUMAN_REQUIRED = ['pcie_bus_reset','power_cycle','firmware_rollback','gpu_memory_reset','kubernetes_taint','slurm_evict_job','nvlink_disable']
 
     def __init__(self, auto_remediate=False, require_human=True):
         self.auto_remediate = auto_remediate
         self.require_human = require_human
         self.action_count = 0
+        self.cluster = ClusterOrchestration()
 
     def handle(self, alert):
         alert_type = alert.get('type','UNKNOWN')
@@ -63,6 +65,9 @@ class RemediationEngine:
             elif action == 'kill_process': return self._kill_gpu_processes(gpu, alert)
             elif action == 'gpu_memory_reset': return self._gpu_memory_reset(gpu)
             elif action == 'quarantine_partition': return self._quarantine_mig(gpu)
+            elif action == 'kubernetes_taint': return self._kubernetes_taint(alert)
+            elif action == 'slurm_evict_job': return self._slurm_evict_job(alert)
+            elif action == 'nvlink_disable': return self._nvlink_disable(gpu, alert)
             else: return f'UNKNOWN_{action}'
         except Exception as e: return f'ERROR:{e}'
 
@@ -109,3 +114,36 @@ class RemediationEngine:
 
     def _quarantine_mig(self, gpu):
         return 'MIG_QUARANTINE_REQUIRES_HUMAN_APPROVAL'
+
+    def _kubernetes_taint(self, alert):
+        """
+        Requires alert['node_name']. No current detector provides this
+        field, so this always refuses today -- same honest-refusal
+        pattern as _kill_gpu_processes above, not a bug.
+        """
+        node_name = alert.get('node_name')
+        if not node_name:
+            return 'REFUSED_NO_TARGET_NODE_IN_ALERT'
+        return self.cluster.kubernetes_taint(node_name)
+
+    def _slurm_evict_job(self, alert):
+        """
+        Requires alert['job_id']. No current detector provides this
+        field, so this always refuses today.
+        """
+        job_id = alert.get('job_id')
+        if not job_id:
+            return 'REFUSED_NO_TARGET_JOB_ID_IN_ALERT'
+        return self.cluster.slurm_evict_job(job_id)
+
+    def _nvlink_disable(self, gpu, alert):
+        """
+        Requires alert['link_index']. NVLinkContentionDetector reports
+        aggregate tx/rx across all links on a GPU, not which specific
+        link -- so it cannot supply this field as currently built. This
+        always refuses today.
+        """
+        link_index = alert.get('link_index')
+        if link_index is None:
+            return 'REFUSED_NO_TARGET_LINK_INDEX_IN_ALERT'
+        return self.cluster.nvlink_disable(gpu, link_index)
