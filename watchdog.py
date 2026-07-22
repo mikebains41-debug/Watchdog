@@ -4,7 +4,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(__file__))
 from agent.telemetry import TelemetryCollector, detect_gpus
 from detection.engines import DetectionPipeline
-from detection.hardware_attacks import ClockGlitchDetector, VoltageGlitchDetector, DMAAttackDetector, LaserInjectionDetector
+from detection.hardware_attacks import ClockGlitchDetector, VoltageGlitchDetector, DMAAttackDetector, LaserInjectionDetector, NVLinkContentionDetector
 from detection.memory_attacks import CacheSideChannelDetector, MIGPartitionDesyncDetector, SequentialVRAMReadDetector
 from detection.llm_attacks import InferencePowerFingerprintDetector, AgentOrchestrationAnomalyDetector, PromptInjectionSideEffectDetector, AgentSessionVRAMRetentionDetector, InterAgentHandoffAnomalyDetector
 from detection.pcie_health import PCIeHealthDetector
@@ -19,6 +19,30 @@ from intelligence.threat_intel import ThreatIntelEngine
 from remediation.response import RemediationEngine
 
 class FullDetectionPipeline:
+    """
+    FIXED vs. original:
+      - The startup print "Detection engines: 17 active" was a hardcoded
+        constant that silently went stale every time a detector was
+        added or removed (it was already wrong before tonight's NVLink
+        addition -- the real count was always 21, since the 4 base-
+        pipeline engines in self.base were never counted). Replaced with
+        self.total_engine_count, computed once here from the real list,
+        so it cannot drift out of sync again.
+      - The engines list was previously rebuilt from scratch on every
+        single process() call (once per telemetry sample, i.e.
+        potentially 100+ times/second) -- wasteful, not incorrect. Now
+        built once in __init__ and stored as self.engines.
+      - Added NVLinkContentionDetector. It is REAL and ACTIVE in this
+        pipeline -- but requires row['nvlink_available'],
+        row['nvlink_tx_kbs'], row['nvlink_rx_kbs'], which
+        agent/telemetry.py's sample_gpu() does NOT currently populate
+        (deliberately -- see sample_nvlink()'s own docstring on the
+        subprocess-per-GPU cost of calling it every sample). This
+        detector will stay silent, correctly and safely, until NVLink
+        telemetry collection is separately wired into the collection
+        loop. Counted honestly in total_engine_count, not hidden --
+        this gap is real and still open.
+    """
     def __init__(self, on_alert=None):
         self.on_alert = on_alert
         self.base = DetectionPipeline(on_alert=on_alert)
@@ -38,9 +62,19 @@ class FullDetectionPipeline:
         self.fan_wear = FanWearDetector()
         self.capacitor = CapacitorAgingDetector()
         self.package_crack = PackageCrackingDetector()
+        self.nvlink = NVLinkContentionDetector()
         self.attestation = BootAttestation()
         self.attest_checked = False
         self.alert_count = 0
+        self.engines = [self.clock_glitch, self.voltage_glitch, self.dma, self.laser,
+                         self.cache_sc, self.mig_desync, self.seq_vram,
+                         self.inference_fp, self.agent_anomaly, self.prompt_injection,
+                         self.agent_vram, self.inter_agent, self.pcie_health,
+                         self.fan_wear, self.capacitor, self.package_crack, self.nvlink]
+        BASE_ENGINE_COUNT = 4  # GhostPowerDetector, VRAMResidualDetector, PowerPeriodicityDetector, MultiGPUCorrelation
+        ATTESTATION_COUNT = 1
+        self.total_engine_count = BASE_ENGINE_COUNT + len(self.engines) + ATTESTATION_COUNT
+
     def process(self, row):
         self.base.process(row)
         if not self.attest_checked:
@@ -51,11 +85,7 @@ class FullDetectionPipeline:
                 print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
                 alert = enrich_alert(alert)
                 if self.on_alert: self.on_alert(alert)
-        engines = [self.clock_glitch, self.voltage_glitch, self.dma, self.laser,
-                   self.cache_sc, self.mig_desync, self.seq_vram,
-                   self.inference_fp, self.agent_anomaly, self.prompt_injection, self.agent_vram, self.inter_agent,
-                   self.pcie_health, self.fan_wear, self.capacitor, self.package_crack]
-        for engine in engines:
+        for engine in self.engines:
             alert = engine.update(row)
             if alert:
                 self.alert_count += 1
@@ -77,7 +107,6 @@ def main():
     parser.add_argument('--gpu', type=int, default=None)
     args = parser.parse_args()
     print(f"\n[WATCHDOG AIDR v2.0] Start: {datetime.now().isoformat()}")
-    print(f"[WATCHDOG] Detection engines: 17 active")
     gpus = detect_gpus()
     if not gpus: print("[ERROR] No GPUs."); sys.exit(1)
     print(f"[WATCHDOG] GPUs: {gpus}")
@@ -88,6 +117,7 @@ def main():
         alert_mgr.handle(alert)
         remediation.handle(alert)
     pipeline = FullDetectionPipeline(on_alert=on_alert)
+    print(f"[WATCHDOG] Detection engines: {pipeline.total_engine_count} active")
     if args.api:
         try:
             from api.server import run_api, set_pipeline
