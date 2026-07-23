@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog Swarm Intelligence — Orchestrator
 Runs all 5 prediction agents in parallel on live GPU telemetry.

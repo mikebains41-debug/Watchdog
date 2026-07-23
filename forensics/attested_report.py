@@ -12,7 +12,7 @@ When submitted to Serial Alice, each Watchdog alert session becomes:
 This makes every Watchdog security finding as credible as the
 GPU Energy Optimizer measurements in the June 27 2026 validation report.
 
-Author: Manmohan Mike Bains | CVE-2048350 (pending MITRE assignment)
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 import json, hashlib, time
 from datetime import datetime, timezone

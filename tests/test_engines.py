@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog engine tests: paired positive and negative controls.
 

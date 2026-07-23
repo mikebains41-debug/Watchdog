@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 tests/test_telemetry_sampler_wiring.py
 

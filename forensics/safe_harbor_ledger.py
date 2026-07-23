@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - AI Safe-Harbor Ledger
 Cryptographically chained compliance event ledger for auditor delivery.

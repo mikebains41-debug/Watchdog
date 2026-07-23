@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 tests/test_hardware_attacks_remaining_fixes.py
 

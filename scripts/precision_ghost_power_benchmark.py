@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 scripts/precision_ghost_power_benchmark.py
 

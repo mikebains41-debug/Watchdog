@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 tests/test_run_negative_control_harness.py
 

@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Orphaned /dev/shm Segment Cleaner
 Detects and unlinks dead shared memory segments from terminated

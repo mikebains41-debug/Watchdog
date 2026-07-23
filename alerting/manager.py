@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import json, os, time, hashlib, urllib.request
 from datetime import datetime
 SEVERITY_LEVELS = {'INFO':0,'WARNING':1,'CRITICAL':2,'EMERGENCY':3}

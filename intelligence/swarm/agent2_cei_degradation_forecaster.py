@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog Swarm Intelligence — Agent 2
 CEI Degradation Forecaster

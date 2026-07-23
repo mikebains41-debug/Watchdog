@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Webhook Pipeline Integration Test
 Tests full alert lifecycle: firing then resolved.

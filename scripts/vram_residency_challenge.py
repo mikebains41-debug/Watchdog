@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 scripts/vram_residency_challenge.py
 

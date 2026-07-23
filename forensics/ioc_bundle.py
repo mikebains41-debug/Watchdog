@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Air-Gapped IOC Bundle System
 Signed offline IOC database updates for air-gapped deployments.

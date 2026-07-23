@@ -123,7 +123,7 @@ try:
     import uvicorn
     app = FastAPI(title="Watchdog AIDR", version="1.0.0")
     @app.get("/")
-    def root(): return {"platform":"Watchdog AIDR","version":"1.0.0","author":"Mike Bains","status":"running","uptime_since":_state['start_time']}
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
     @app.get("/status")
     def status(): return {"status":"running","gpu_count":_state['gpu_count'],"alert_count":_state['alert_count'],"last_alert":_state['alerts'][-1] if _state['alerts'] else None,"timestamp":datetime.now().isoformat()}
     @app.get("/alerts")

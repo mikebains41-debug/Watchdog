@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import collections, time
 from datetime import datetime
 from detection._shared import _f

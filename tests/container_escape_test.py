@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 # Watchdog AIDR - Container Escape Detection Test
 # Detects unpatched kernel CVE-2026-31431 and stale /tmp files.
 # Based on actual findings from Vast.ai H200 Instance 41986069.

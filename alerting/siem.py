@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - SIEM Integration
 Supports: PagerDuty Events API v2, Splunk HEC, Microsoft Sentinel,

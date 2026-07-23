@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - System Health Dashboard Endpoint
 Reports CPU, memory, GPU state, and Watchdog subsystem status.

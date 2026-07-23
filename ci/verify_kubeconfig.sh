@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 set -euo pipefail
 IFS=$'\n\t'
 

@@ -46,7 +46,7 @@ SERIAL_ALICE_ISOLATION_VALIDATED = {
         'H200_SXM': 629,
         'B200_SXM': 728,
     },
-    'cve': 'CVE-2048350 (pending assignment)', # Filed by Manmohan Mike Bains
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
     'cvss': 8.4,
 }
 

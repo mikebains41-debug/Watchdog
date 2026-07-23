@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 # Watchdog AIDR - Attack Injection Suite
 # Runs every positive-control test built tonight across all 8 test
 # files, dynamically discovered via inspect -- no duplicated logic.

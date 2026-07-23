@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Watchdog AIDR
-# Author: Manmohan (Mike) Bains
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 # Project: GPU Optimizer / Watchdog
 #
 # Positive Control Tests: detection/hardware_attacks.py (4 detectors)

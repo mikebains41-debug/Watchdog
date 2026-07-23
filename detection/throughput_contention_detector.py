@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Watchdog AIDR
-# Author: Manmohan (Mike) Bains
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 # Project: GPU Optimizer / Watchdog
 #
 # ThroughputContentionDetector

@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - eBPF Kernel Compatibility Verifier
 Tests host kernels before deploying EBPFQuarantine driver.

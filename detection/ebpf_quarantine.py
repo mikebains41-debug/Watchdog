@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - eBPF Micro-Quarantine Controller
 Terminates offending container namespaces when critical engines fire.

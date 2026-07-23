@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Compliance Evidence Report Generator
 Produces structured JSON evidence reports mapping Watchdog alerts to

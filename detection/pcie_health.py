@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import subprocess, time, collections
 from datetime import datetime
 class PCIeHealthDetector:

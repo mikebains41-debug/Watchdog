@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import sys, os, argparse, threading, time
 from datetime import datetime
 sys.path.insert(0, os.path.dirname(__file__))

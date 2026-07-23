@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - CVSS v3.1 Scoring
 Maps each detection engine alert type to a CVSS v3.1 base score and vector.

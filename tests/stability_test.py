@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 # Watchdog AIDR - 72-Hour Stability Test
 # HONEST STATUS: requires real GPU hardware with nvidia-smi. Confirmed
 # NOT present on this device.

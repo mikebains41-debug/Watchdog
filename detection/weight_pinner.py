@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Cryptographic Weight Pinning System
 Continuously hashes active VRAM regions holding model weights and

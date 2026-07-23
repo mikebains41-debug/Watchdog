@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Alert State Management
 Tracks alert lifecycle: OPEN -> ACKNOWLEDGED -> RESOLVED

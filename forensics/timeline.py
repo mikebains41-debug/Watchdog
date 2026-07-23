@@ -4,7 +4,7 @@ Watchdog AIDR v2.0 - Multi-GPU Attack Timeline & Kill Chain Report
 Builds chronological attack timeline across multiple GPUs.
 Identifies kill chain stages, first-seen GPU, propagation patterns.
 Maps to MITRE ATLAS and MITRE ATT&CK for ICS frameworks.
-Author: Manmohan Mike Bains
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 import json, time
 from datetime import datetime, timezone

@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import time, collections, torch
 
 class CacheTimingProbeDetector:

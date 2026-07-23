@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import time, collections, hashlib, subprocess
 from datetime import datetime
 class RowhammerProxyDetector:

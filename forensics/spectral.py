@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import csv, os, math, json
 from datetime import datetime
 def fft(signal):

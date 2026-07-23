@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Adaptive Precision Recommendation Engine
 Monitors real-time GPU telemetry and recommends precision switches

@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Threat Intelligence Engine
 IOC matching against known GPU attack signatures.

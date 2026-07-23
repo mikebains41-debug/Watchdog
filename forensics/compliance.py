@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import json, os
 from datetime import datetime
 class ComplianceReporter:

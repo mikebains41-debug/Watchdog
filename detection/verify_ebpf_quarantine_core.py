@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Advanced eBPF Quarantine Core Verifier
 Deep structural compatibility check before EBPFQuarantine activation.

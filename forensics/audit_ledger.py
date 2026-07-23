@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog AIDR v2.0 - Immutable Cryptographic Audit Ledger
 Append-only local ledger for compliance evidence reports and alerts.

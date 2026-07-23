@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 # Watchdog AIDR - Competitor Comparison Report
 # Documentation-grounded comparison, NOT a live automated benchmark --
 # that would require installing real competitor tools (DCGM, Datadog)
