@@ -1,10 +1,9 @@
 __pycache__/
 *.pyc
 watchdog_data/
-*.bak
+*.bak*
 *_results.json
 *_report.json
+resp*.json
 test_audit_ledger.jsonl
 graphify-out/
-*.bak
-*.bak2
