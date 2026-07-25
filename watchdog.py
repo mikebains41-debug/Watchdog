@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import sys, os, argparse, threading, time
 from datetime import datetime
 sys.path.insert(0, os.path.dirname(__file__))
@@ -11,6 +10,11 @@ from detection.llm_attacks import InferencePowerFingerprintDetector, AgentOrches
 from detection.pcie_health import PCIeHealthDetector
 from detection.predictive_failure import FanWearDetector, CapacitorAgingDetector, PackageCrackingDetector
 from detection.attestation import BootAttestation
+from detection.business_signals import CovertMiningDetector, BillingIntegrityDetector
+from detection.tamper_detection import PowerLimitTamperDetector
+from detection.telemetry_honesty import PStateHonestyDetector, PCIeBandwidthMismatchDetector
+from detection.fleet_aggregation import FleetAggregator
+from detection.hashrate_correlation import HashrateCorrelationDetector
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -21,31 +25,40 @@ from remediation.response import RemediationEngine
 
 class FullDetectionPipeline:
     """
-    FIXED vs. original:
-      - The startup print "Detection engines: 17 active" was a hardcoded
-        constant that silently went stale every time a detector was
-        added or removed (it was already wrong before tonight's NVLink
-        addition -- the real count was always 21, since the 4 base-
-        pipeline engines in self.base were never counted). Replaced with
-        self.total_engine_count, computed once here from the real list,
-        so it cannot drift out of sync again.
-      - The engines list was previously rebuilt from scratch on every
-        single process() call (once per telemetry sample, i.e.
-        potentially 100+ times/second) -- wasteful, not incorrect. Now
-        built once in __init__ and stored as self.engines.
-      - Added NVLinkContentionDetector. It is REAL and ACTIVE in this
-        pipeline -- but requires row['nvlink_available'],
-        row['nvlink_tx_kbs'], row['nvlink_rx_kbs'], which
-        agent/telemetry.py's sample_gpu() does NOT currently populate
-        (deliberately -- see sample_nvlink()'s own docstring on the
-        subprocess-per-GPU cost of calling it every sample). This
-        detector will stay silent, correctly and safely, until NVLink
-        telemetry collection is separately wired into the collection
-        loop. Counted honestly in total_engine_count, not hidden --
-        this gap is real and still open.
+    Adds five previously-unwired detectors to the live pipeline tonight:
+    CovertMiningDetector, BillingIntegrityDetector, PowerLimitTamperDetector,
+    PStateHonestyDetector, PCIeBandwidthMismatchDetector -- all five use the
+    same update(row) interface as every other engine here, so they slot
+    directly into self.engines.
+
+    Two others from the same batch of new detector files do NOT slot in
+    the same way, and are handled differently rather than forced into a
+    shape they don't fit:
+
+    FleetAggregator does not take a telemetry row -- it takes ALERTS.
+    Wired in via a new _handle_alert() method (see below) that both call
+    sites in process() now route through, instead of each duplicating
+    the same count/print/enrich/callback logic inline as before.
+    HONEST GAP: self.base's own 4 core engines (ghost power, VRAM
+    residual, power periodicity, multi-GPU correlation) emit alerts
+    directly to the external on_alert callback passed into
+    DetectionPipeline's constructor, bypassing _handle_alert() entirely
+    -- meaning FleetAggregator's rollup is currently missing those 4
+    detectors' alerts. Not fixed here, since DetectionPipeline's
+    internals were not re-verified this session; wrapping that callback
+    safely needs reading its source first, not guessing.
+
+    HashrateCorrelationDetector needs externally-supplied hashrate data
+    via calibrate()/process(), the same calibrate/process split
+    ThroughputContentionDetector used before it got its own /throughput
+    API endpoint. Instantiated here and available on the pipeline, but
+    NOT wired to any API route -- that's separate, undone work, not
+    silently expanded into tonight without being asked for it
+    specifically.
     """
-    def __init__(self, on_alert=None):
+    def __init__(self, on_alert=None, fleet_size=None):
         self.on_alert = on_alert
+        self.fleet = FleetAggregator(fleet_size=fleet_size)
         self.base = DetectionPipeline(on_alert=on_alert)
         self.clock_glitch = ClockGlitchDetector()
         self.voltage_glitch = VoltageGlitchDetector()
@@ -64,6 +77,12 @@ class FullDetectionPipeline:
         self.capacitor = CapacitorAgingDetector()
         self.package_crack = PackageCrackingDetector()
         self.nvlink = NVLinkContentionDetector()
+        self.covert_mining = CovertMiningDetector()
+        self.billing_integrity = BillingIntegrityDetector()
+        self.power_tamper = PowerLimitTamperDetector()
+        self.pstate_honesty = PStateHonestyDetector()
+        self.pcie_mismatch = PCIeBandwidthMismatchDetector()
+        self.hashrate_correlation = HashrateCorrelationDetector()  # NOT in self.engines -- see class docstring
         self.attestation = BootAttestation()
         self.attest_checked = False
         self.alert_count = 0
@@ -71,7 +90,9 @@ class FullDetectionPipeline:
                          self.cache_sc, self.mig_desync, self.seq_vram,
                          self.inference_fp, self.agent_anomaly, self.prompt_injection,
                          self.agent_vram, self.inter_agent, self.pcie_health,
-                         self.fan_wear, self.capacitor, self.package_crack, self.nvlink]
+                         self.fan_wear, self.capacitor, self.package_crack, self.nvlink,
+                         self.covert_mining, self.billing_integrity, self.power_tamper,
+                         self.pstate_honesty, self.pcie_mismatch]
         BASE_ENGINE_COUNT = 4  # GhostPowerDetector, VRAMResidualDetector, PowerPeriodicityDetector, MultiGPUCorrelation
         ATTESTATION_COUNT = 1
         self.total_engine_count = BASE_ENGINE_COUNT + len(self.engines) + ATTESTATION_COUNT
@@ -82,17 +103,26 @@ class FullDetectionPipeline:
             self.attest_checked = True
             alert = self.attestation.check(int(row.get('index',0)))
             if alert:
-                self.alert_count += 1
-                print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
-                alert = enrich_alert(alert)
-                if self.on_alert: self.on_alert(alert)
+                self._handle_alert(alert)
         for engine in self.engines:
             alert = engine.update(row)
             if alert:
-                self.alert_count += 1
-                print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
-                alert = enrich_alert(alert)
-                if self.on_alert: self.on_alert(alert)
+                self._handle_alert(alert)
+
+    def _handle_alert(self, alert):
+        """
+        Single choke point for every alert emitted from process() above
+        (attestation + the full engines list). Previously this exact
+        count/print/enrich/callback sequence was duplicated inline at
+        both call sites; factored out so FleetAggregator has one place
+        to see every alert exactly once, rather than needing separate
+        wiring at each emission site.
+        """
+        self.alert_count += 1
+        print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
+        alert = enrich_alert(alert)
+        self.fleet.ingest(alert, node_id=alert.get('gpu', 0))
+        if self.on_alert: self.on_alert(alert)
 
 def main():
     parser = argparse.ArgumentParser(description='Watchdog AIDR v2.0')
@@ -106,6 +136,7 @@ def main():
     parser.add_argument('--auto-remediate', action='store_true')
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--gpu', type=int, default=None)
+    parser.add_argument('--fleet-size', type=int, default=None)
     args = parser.parse_args()
     print(f"\n[WATCHDOG AIDR v2.0] Start: {datetime.now().isoformat()}")
     gpus = detect_gpus()
@@ -117,17 +148,11 @@ def main():
     def on_alert(alert):
         alert_mgr.handle(alert)
         remediation.handle(alert)
-    pipeline = FullDetectionPipeline(on_alert=on_alert)
+    pipeline = FullDetectionPipeline(on_alert=on_alert, fleet_size=args.fleet_size)
     print(f"[WATCHDOG] Detection engines: {pipeline.total_engine_count} active")
     if args.api:
         try:
             from api.server import run_api, set_pipeline
-            # FIXED: the API previously had no reference to the running
-            # pipeline at all -- /throughput could never actually reach
-            # ThroughputContentionDetector. set_pipeline() takes the base
-            # DetectionPipeline (not FullDetectionPipeline itself -- the
-            # throughput methods live on .base), so calibrate/process
-            # calls through the API reach the real, live detector.
             set_pipeline(pipeline.base)
             t = threading.Thread(target=run_api, kwargs={'host':'0.0.0.0','port':args.api_port}, daemon=True)
             t.start()
