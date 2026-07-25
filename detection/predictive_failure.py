@@ -5,6 +5,11 @@ from detection._shared import _f
 
 
 class FanWearDetector:
+    # Note: sustained high temp with suppressed fan response has a
+    # second real-world cause beyond hardware wear -- mining malware
+    # is documented to deliberately reduce fan speed to avoid
+    # triggering overheating alarms while hiding covert compute.
+    # Same signal, an additional motive; not yet distinguished here.
     def __init__(self, window=200):
         self.window = window
         self.history = collections.deque(maxlen=window)

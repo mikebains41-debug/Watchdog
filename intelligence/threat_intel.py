@@ -9,83 +9,27 @@ import json, time, hashlib
 from datetime import datetime, timezone
 
 KNOWN_IOCS = {
-    "VRAM_SCRAPING_CAMPAIGN_2024": {
-        "description": "Coordinated VRAM scraping campaign targeting multi-tenant GPU clusters",
-        "indicators": ["VRAM_RESIDUAL", "SEQUENTIAL_VRAM_READ", "CROSS_TENANT_BLEEDING"],
-        "min_match": 2,
-        "severity": "CRITICAL",
-        "cvss": 9.0,
-        "mitre_atlas": ["AML.T0037", "AML.T0012"],
-        "cve": "CVE-2048350 (pending assignment)",
-        "threat_actor": "Unknown — GPU cloud targeting",
-        "first_seen": "2024-03-01",
-    },
-    "LLM_EXTRACTION_TTP": {
-        "description": "Model weight extraction via inference power fingerprinting",
-        "indicators": ["INFERENCE_POWER_ANOMALY", "AGENT_VRAM_RETENTION", "POWER_SIDE_CHANNEL"],
-        "min_match": 2,
-        "severity": "CRITICAL",
-        "cvss": 8.8,
-        "mitre_atlas": ["AML.T0035", "AML.T0037"],
-        "cve": None,
-        "threat_actor": "Model theft campaign",
-        "first_seen": "2025-01-15",
-    },
-    "HARDWARE_GLITCH_CHAIN": {
-        "description": "Combined clock and voltage glitch attack — hardware fault injection",
-        "indicators": ["CLOCK_GLITCH", "VOLTAGE_GLITCH", "LASER_INJECTION"],
-        "min_match": 2,
-        "severity": "CRITICAL",
-        "cvss": 9.3,
-        "mitre_atlas": ["AML.T0011"],
-        "cve": None,
-        "threat_actor": "Physical access adversary",
-        "first_seen": "2025-06-01",
-    },
-    "AGENT_POISONING_CAMPAIGN": {
-        "description": "Multi-stage agentic AI pipeline poisoning via handoff anomalies",
-        "indicators": ["INTER_AGENT_HANDOFF_ANOMALY", "AGENT_ORCHESTRATION_ANOMALY", "PROMPT_INJECTION_SIDEEFFECT"],
-        "min_match": 2,
-        "severity": "HIGH",
-        "cvss": 8.5,
-        "mitre_atlas": ["AML.T0048", "AML.T0051"],
-        "cve": None,
-        "threat_actor": "Agentic AI adversary",
-        "first_seen": "2026-01-01",
-    },
-    "SUPPLY_CHAIN_HARDWARE_COMPROMISE": {
-        "description": "Counterfeit GPU hardware with embedded backdoor",
-        "indicators": ["SUPPLY_CHAIN_ANOMALY", "BOOT_ATTESTATION_FAIL", "CLOCK_GLITCH"],
-        "min_match": 2,
-        "severity": "CRITICAL",
-        "cvss": 9.1,
-        "mitre_atlas": ["AML.T0010"],
-        "cve": None,
-        "threat_actor": "Nation-state supply chain",
-        "first_seen": "2025-09-01",
-    },
-    "CROSS_TENANT_APT": {
-        "description": "Advanced persistent threat targeting cross-tenant GPU isolation gaps",
-        "indicators": ["CROSS_TENANT_BLEEDING", "MIG_PARTITION_DESYNC", "TIMING_COVERT_CHANNEL", "CACHE_SIDE_CHANNEL"],
-        "min_match": 3,
-        "severity": "CRITICAL",
-        "cvss": 9.6,
-        "mitre_atlas": ["AML.T0012", "AML.T0035"],
-        "cve": "CVE-2048350",
-        "threat_actor": "APT — cloud infrastructure targeting",
-        "first_seen": "2026-03-01",
-    },
-    "GHOST_POWER_CRYPTOMINING": {
-        "description": "Ghost power exploitation for covert cryptomining at 0% reported utilization",
-        "indicators": ["GHOST_POWER", "CROSS_WORKLOAD_CLUSTER"],
-        "min_match": 2,
-        "severity": "HIGH",
-        "cvss": 7.5,
-        "mitre_atlas": ["AML.T0015"],
-        "cve": None,
-        "threat_actor": "Cryptomining campaign",
-        "first_seen": "2026-04-01",
-    },
+    # FIXED: this dictionary previously contained 8 fabricated "known
+    # campaigns" -- invented names, attribution, first-seen dates, and
+    # CVSS scores presented as if they were real, sourced threat
+    # intelligence. They were not. Several also referenced detector
+    # alert types that do not exist anywhere in this codebase (e.g.
+    # BOOT_ATTESTATION_FAIL, when the real type is ATTESTATION_FAILURE),
+    # meaning those entries could never have fired correctly even if the
+    # underlying data had been real.
+    #
+    # Rather than guess at "corrected" replacements, the fabricated
+    # entries have been removed entirely. The correlation logic below
+    # (ingest_alert / correlate) is legitimate, reusable code and is
+    # left intact -- it will honestly report zero IOC matches until
+    # real entries are added here.
+    #
+    # An entry belongs in this dictionary only when it is backed by an
+    # actual, citable source: a real CVE, a real vendor security
+    # advisory, or a real incident report -- not an invented scenario,
+    # however plausible-sounding. Every "indicators" value must be
+    # verified against the actual \'type\' string a real detector in this
+    # codebase emits, not assumed from a class name.
 }
 
 class ThreatIntelEngine:
