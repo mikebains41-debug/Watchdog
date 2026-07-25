@@ -30,6 +30,7 @@ Run: python3 check_copyfail_afalg.py
 """
 import socket
 import sys
+import os
 
 
 def check_afalg_blocked():
@@ -49,7 +50,38 @@ def check_afalg_blocked():
         return None, f"Unexpected error testing AF_ALG socket creation: {e!r}. Result inconclusive, do not treat as either blocked or open."
 
 
+def is_likely_android():
+    """
+    Same check already added to check_refluxfs_exposure.sh after
+    running that script on Termux/Android and getting a trivially true
+    result that didn't validate anything -- applied here too, since
+    this script has the identical failure mode: Android's own app
+    sandboxing blocks most raw socket types for any unprivileged app
+    regardless of whether a Copy Fail mitigation was ever configured.
+    A "MITIGATED" result on Android proves nothing about a real Linux
+    server or container.
+    """
+    try:
+        uname = os.uname()
+        if "android" in uname.release.lower():
+            return True
+    except Exception:
+        pass
+    if os.environ.get("PREFIX", "").find("com.termux") != -1:
+        return True
+    return False
+
+
 def main():
+    if is_likely_android():
+        print("############################################################")
+        print("# NOTE: this looks like Android/Termux, not a rented Linux  #")
+        print("# server or container. A 'MITIGATED' result here almost     #")
+        print("# certainly reflects Android's own app sandboxing, not a    #")
+        print("# deliberate Copy Fail mitigation. This check only means    #")
+        print("# something when run on the actual target infrastructure.  #")
+        print("############################################################")
+        print()
     print("=== CVE-2026-31431 (Copy Fail) -- AF_ALG Mitigation Check ===")
     print()
     print("This checks ONE of Microsoft's two official mitigation paths")
