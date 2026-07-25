@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 """
 Watchdog Swarm Intelligence — Agent 4
 Tenant Isolation Risk Scorer
@@ -46,7 +47,7 @@ SERIAL_ALICE_ISOLATION_VALIDATED = {
         'H200_SXM': 629,
         'B200_SXM': 728,
     },
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+    'cve': 'CVE-2048350 (pending MITRE assignment)',
     'cvss': 8.4,
 }
 
