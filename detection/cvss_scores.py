@@ -132,11 +132,11 @@ CVSS_MAP = {
     },
 
     # Advanced Engines
-    'ROWHAMMER_PROXY': {
+    'MEMORY_ACTIVATION_ANOMALY': {
         'score': 5.6,
         'vector': 'CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:H/A:N',
         'severity': 'MEDIUM',
-        'rationale': 'Rowhammer probe via memory access patterns, high complexity, integrity impact'
+        'rationale': 'Sustained high-variance memory usage at low compute utilization -- NOT Rowhammer-specific; renamed from ROWHAMMER_PROXY after confirming the detector cannot see the actual bit-flip access pattern real Rowhammer-class attacks require'
     },
     'MODEL_MUTATION': {
         'score': 9.1,
@@ -144,7 +144,7 @@ CVSS_MAP = {
         'severity': 'CRITICAL',
         'rationale': 'Model tampering or backdoor injection, critical C/I impact, scope changed'
     },
-    'PERF_COUNTER_SIDE_CHANNEL': {
+    'MEMORY_UTIL_DECOUPLED_FROM_COMPUTE': {
         'score': 5.9,
         'vector': 'CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:C/C:H/I:N/A:N',
         'severity': 'MEDIUM',

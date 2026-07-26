@@ -8,7 +8,16 @@
 # WHY THIS EXISTS
 #   Same rationale as the four prior positive control files. This is
 #   the final module -- completes positive-control coverage for all
-#   24 detection engines in the Watchdog catalog.
+#   detection engines in the Watchdog catalog.
+#
+# UPDATED after detection/advanced.py's honesty fixes: RowhammerProxyDetector
+# was renamed to MemoryActivationAnomalyDetector (it never detected
+# Rowhammer -- see that class's own docstring), and its alert type
+# changed from ROWHAMMER_PROXY to MEMORY_ACTIVATION_ANOMALY.
+# PerfCounterSideChannelDetector's alert type changed from
+# PERF_COUNTER_SIDE_CHANNEL to MEMORY_UTIL_DECOUPLED_FROM_COMPUTE (the
+# CVE-2018-6260 citation was removed since this detector doesn't
+# actually read performance counters). Both updated below.
 #
 # HONEST LIMITATION -- READ THIS
 #   Two of the five detectors in this module cannot be given a true
@@ -36,9 +45,9 @@ import os
 import time
 from unittest.mock import patch, MagicMock
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from advanced import (
-    RowhammerProxyDetector,
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.advanced import (
+    MemoryActivationAnomalyDetector,
     ModelMutationDetector,
     PerfCounterSideChannelDetector,
     NVLinkFabricDetector,
@@ -58,17 +67,17 @@ def make_row(power=0, util=0, mem=0, util_mem=0, name="", index=0):
     }
 
 
-def test_rowhammer_proxy_detector():
+def test_memory_activation_anomaly_detector():
     """Real trigger: window=50, >60% of samples show util<5 with mem>500,
     and memory variance across the window exceeds 100MB."""
-    d = RowhammerProxyDetector()
+    d = MemoryActivationAnomalyDetector()
     result = None
     for i in range(50):
         mem = 600 if i % 2 == 0 else 800
         result = d.update(make_row(util=2, mem=mem)) or result
-    assert result is not None and result["type"] == "ROWHAMMER_PROXY", \
-        "FAIL: RowhammerProxyDetector did not fire on known pattern"
-    print(f"[PASS] RowhammerProxyDetector fired correctly: {result['message']}")
+    assert result is not None and result["type"] == "MEMORY_ACTIVATION_ANOMALY", \
+        "FAIL: MemoryActivationAnomalyDetector did not fire on known pattern"
+    print(f"[PASS] MemoryActivationAnomalyDetector fired correctly: {result['message']}")
 
 
 def test_perf_counter_side_channel_detector():
@@ -79,7 +88,7 @@ def test_perf_counter_side_channel_detector():
     for i in range(100):
         util_mem = 10 if i % 2 == 0 else 45
         result = d.update(make_row(util=2, util_mem=util_mem)) or result
-    assert result is not None and result["type"] == "PERF_COUNTER_SIDE_CHANNEL", \
+    assert result is not None and result["type"] == "MEMORY_UTIL_DECOUPLED_FROM_COMPUTE", \
         "FAIL: PerfCounterSideChannelDetector did not fire on known pattern"
     print(f"[PASS] PerfCounterSideChannelDetector fired correctly: {result['message']}")
 
@@ -103,7 +112,7 @@ def test_nvlink_fabric_detector_mocked():
     confirm behavior against real nvidia-smi output on real hardware.
     """
     d = NVLinkFabricDetector()
-    with patch("advanced.subprocess.run") as mock_run:
+    with patch("detection.advanced.subprocess.run") as mock_run:
         mock_result = MagicMock()
         mock_result.stdout = "Link 0: inactive\nLink 1: active"
         mock_run.return_value = mock_result
@@ -133,13 +142,13 @@ def test_model_mutation_detector_honest_limitation():
     print("       NOT yet validated as a working detector on real hardware.")
 
 
-def test_rowhammer_proxy_silent_on_normal_active_use():
-    d = RowhammerProxyDetector()
+def test_memory_activation_silent_on_normal_active_use():
+    d = MemoryActivationAnomalyDetector()
     result = None
     for _ in range(50):
         result = d.update(make_row(util=60, mem=8000)) or result
-    assert result is None, "FAIL: RowhammerProxyDetector fired on normal active GPU use"
-    print("[PASS] RowhammerProxyDetector correctly silent on normal active use")
+    assert result is None, "FAIL: MemoryActivationAnomalyDetector fired on normal active GPU use"
+    print("[PASS] MemoryActivationAnomalyDetector correctly silent on normal active use")
 
 
 def test_supply_chain_silent_on_normal_power():
@@ -152,12 +161,12 @@ def test_supply_chain_silent_on_normal_power():
 if __name__ == "__main__":
     print("=== Positive Control Tests: detection/advanced.py (5 detectors) ===\n")
     tests = [
-        test_rowhammer_proxy_detector,
+        test_memory_activation_anomaly_detector,
         test_perf_counter_side_channel_detector,
         test_supply_chain_detector,
         test_nvlink_fabric_detector_mocked,
         test_model_mutation_detector_honest_limitation,
-        test_rowhammer_proxy_silent_on_normal_active_use,
+        test_memory_activation_silent_on_normal_active_use,
         test_supply_chain_silent_on_normal_power,
     ]
     passed = 0

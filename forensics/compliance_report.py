@@ -38,9 +38,9 @@ FRAMEWORK_MAP = {
     'PROMPT_INJECTION_SIDEEFFECT':{'soc2':['CC6.1','CC7.2'],         'eu_ai_act': ['Art.9','Art.15'],  'nist_rmf': ['MEASURE 2.5'],               'nist_csf': ['DE.AE-2']},
     'AGENT_VRAM_RETENTION':      {'soc2': ['CC6.1','CC6.7'],         'eu_ai_act': ['Art.9','Art.10'],  'nist_rmf': ['MEASURE 2.5','MANAGE 2.2'],  'nist_csf': ['PR.DS-1','DE.AE-2']},
     'INTER_AGENT_HANDOFF_ANOMALY':{'soc2':['CC7.2','CC9.2'],         'eu_ai_act': ['Art.9','Art.13'],  'nist_rmf': ['MEASURE 2.5','MANAGE 1.3'],  'nist_csf': ['DE.AE-2','RS.AN-1']},
-    'ROWHAMMER_PROXY':           {'soc2': ['CC7.2'],                 'eu_ai_act': ['Art.9'],           'nist_rmf': ['MEASURE 2.5'],               'nist_csf': ['DE.AE-2']},
+    'MEMORY_ACTIVATION_ANOMALY': {'soc2': ['CC7.2'],                 'eu_ai_act': ['Art.9'],           'nist_rmf': ['MEASURE 2.5'],               'nist_csf': ['DE.AE-2']},
     'MODEL_MUTATION':            {'soc2': ['CC6.1','CC7.2','CC7.3'], 'eu_ai_act': ['Art.9','Art.15'],  'nist_rmf': ['MANAGE 1.3','MANAGE 2.2'],   'nist_csf': ['RS.MI-1','DE.AE-2']},
-    'PERF_COUNTER_SIDE_CHANNEL': {'soc2': ['CC6.1','CC7.2'],         'eu_ai_act': ['Art.9'],           'nist_rmf': ['MEASURE 2.5'],               'nist_csf': ['DE.AE-2']},
+    'MEMORY_UTIL_DECOUPLED_FROM_COMPUTE': {'soc2': ['CC6.1','CC7.2'], 'eu_ai_act': ['Art.9'],           'nist_rmf': ['MEASURE 2.5'],               'nist_csf': ['DE.AE-2']},
     'NVLINK_ANOMALY':            {'soc2': ['CC7.2','A1.2'],          'eu_ai_act': ['Art.9'],           'nist_rmf': ['MEASURE 2.5'],               'nist_csf': ['DE.AE-2','RS.AN-1']},
     'SUPPLY_CHAIN_ANOMALY':      {'soc2': ['CC9.1','CC9.2'],         'eu_ai_act': ['Art.9','Art.17'],  'nist_rmf': ['MAP 5.1','MANAGE 1.3'],      'nist_csf': ['ID.SC-4','RS.AN-1']},
 }
