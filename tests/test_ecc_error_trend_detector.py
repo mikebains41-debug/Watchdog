@@ -11,14 +11,21 @@
 #   clean data, using synthetic values matching the real nvidia-smi
 #   ECC field names -- no attack code, no real hardware required.
 #
+# FIXED: sys.path previously added detection/ directly, but
+# ecc_error_trend_detector.py imports its N/A-safe helper via the
+# package-qualified 'from detection._shared import _f', which needs
+# the repo root on path instead -- same fix already applied to
+# test_positive_controls_advanced.py earlier tonight after hitting the
+# identical ModuleNotFoundError.
+#
 # HONEST STATUS
 #   Verified locally (4/4 tests passing) before on-device confirmation.
 
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from ecc_error_trend_detector import ECCErrorTrendDetector
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.ecc_error_trend_detector import ECCErrorTrendDetector
 
 
 def make_row(corrected=0, uncorrected=0, index=0):

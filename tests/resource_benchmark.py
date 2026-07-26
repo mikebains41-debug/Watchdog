@@ -4,6 +4,11 @@
 # Measures Watchdog's own CPU/memory overhead processing synthetic
 # telemetry through the real DetectionPipeline. No GPU/nvidia-smi
 # needed -- fully runnable on this device.
+#
+# FIXED: sys.path previously added detection/ directly, but engines.py
+# imports its shared helpers via the package-qualified
+# 'from detection._shared import ...', which needs the repo root on
+# path instead -- same class of bug fixed elsewhere tonight.
 
 import sys
 import os
@@ -11,8 +16,8 @@ import time
 import json
 import psutil
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from engines import DetectionPipeline
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.engines import DetectionPipeline
 
 
 def make_synthetic_row(i):
@@ -23,6 +28,7 @@ def make_synthetic_row(i):
         "temperature.gpu": 60 + (i % 10),
         "index": 0,
         "iso_timestamp": "2026-01-01T00:00:00Z",
+        "compute_apps": [],
     }
 
 

@@ -5,6 +5,15 @@
 # files, dynamically discovered via inspect -- no duplicated logic.
 # HONEST STATUS: all patterns already individually verified tonight.
 # Fully runnable on this device, no GPU needed.
+#
+# FIXED: sys.path previously added detection/ directly (line 16 in
+# the original). That doesn't help resolve imports inside the
+# dynamically-loaded test modules, most of which use the
+# package-qualified 'from detection.X import ...' style -- they need
+# the repo root on path, not detection/ itself. Same class of bug
+# fixed individually in several of the test files this orchestrator
+# runs; fixed once here at the source instead of depending on every
+# test file getting it right independently.
 
 import sys
 import os
@@ -13,7 +22,7 @@ import inspect
 
 TESTS_DIR = os.path.dirname(__file__)
 sys.path.insert(0, TESTS_DIR)
-sys.path.insert(0, os.path.join(TESTS_DIR, "..", "detection"))
+sys.path.insert(0, os.path.join(TESTS_DIR, ".."))
 
 TEST_MODULES = [
     "test_positive_controls_engines",

@@ -12,6 +12,13 @@
 #   PARSING and STATE-CHANGE logic is correct -- it does NOT confirm
 #   behavior against real Confidential Computing hardware.
 #
+# FIXED: sys.path previously added detection/ directly, but
+# cc_integrity_detector.py imports its shared helpers via the
+# package-qualified 'from detection._shared import ...', which needs
+# the repo root on path instead -- same class of bug already fixed in
+# test_positive_controls_advanced.py and test_ecc_error_trend_detector.py
+# tonight. Mock patch targets updated to match the new import path.
+#
 # HONEST STATUS
 #   Verified locally (4/4 tests passing) before on-device confirmation.
 
@@ -19,13 +26,13 @@ import sys
 import os
 from unittest.mock import patch, MagicMock
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "detection"))
-from cc_integrity_detector import ConfidentialComputingIntegrityDetector
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from detection.cc_integrity_detector import ConfidentialComputingIntegrityDetector
 
 
 def test_baseline_establishes_no_alert():
     d = ConfidentialComputingIntegrityDetector(check_interval=0)
-    with patch("cc_integrity_detector.subprocess.run") as mock_run:
+    with patch("detection.cc_integrity_detector.subprocess.run") as mock_run:
         mock_result = MagicMock()
         mock_result.stdout = "CC status: ON\nOther info: xyz"
         mock_run.return_value = mock_result
@@ -37,7 +44,7 @@ def test_baseline_establishes_no_alert():
 def test_on_to_off_fires_critical():
     """Real trigger: CC status transitions from ON to OFF (mocked)."""
     d = ConfidentialComputingIntegrityDetector(check_interval=0)
-    with patch("cc_integrity_detector.subprocess.run") as mock_run:
+    with patch("detection.cc_integrity_detector.subprocess.run") as mock_run:
         mock_on = MagicMock()
         mock_on.stdout = "CC status: ON"
         mock_run.return_value = mock_on
@@ -55,7 +62,7 @@ def test_on_to_off_fires_critical():
 def test_stable_state_silent():
     d = ConfidentialComputingIntegrityDetector(check_interval=0)
     result = None
-    with patch("cc_integrity_detector.subprocess.run") as mock_run:
+    with patch("detection.cc_integrity_detector.subprocess.run") as mock_run:
         mock_result = MagicMock()
         mock_result.stdout = "CC status: ON"
         mock_run.return_value = mock_result
@@ -67,7 +74,7 @@ def test_stable_state_silent():
 
 def test_unparseable_output_no_false_alert():
     d = ConfidentialComputingIntegrityDetector(check_interval=0)
-    with patch("cc_integrity_detector.subprocess.run") as mock_run:
+    with patch("detection.cc_integrity_detector.subprocess.run") as mock_run:
         mock_result = MagicMock()
         mock_result.stdout = "garbage unparseable output"
         mock_run.return_value = mock_result
