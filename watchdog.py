@@ -18,6 +18,7 @@ from detection.fleet_aggregation import FleetAggregator
 from detection.hashrate_correlation import HashrateCorrelationDetector
 from forensics.audit_ledger import AuditLedger
 from forensics.clean_run_certificate import CleanRunCertificate
+from alerting.state import AlertStateManager
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -64,7 +65,14 @@ class FullDetectionPipeline:
         self.on_alert = on_alert
         self.fleet = FleetAggregator(fleet_size=fleet_size)
         self.ledger = AuditLedger()
-        self.base = DetectionPipeline(on_alert=on_alert)
+        self.state_mgr = AlertStateManager(state_file='watchdog_data/alert_state.json')
+        # on_alert=None here deliberately: self.base's own internal _emit()
+        # would otherwise call the external callback directly, and process()
+        # below ALSO routes the returned alert list through fleet/ledger --
+        # passing the real callback through both paths would double-fire it
+        # for every base-engine alert. Feeding fleet/ledger from the
+        # returned list instead, print/on_alert stays exactly single-fire.
+        self.base = DetectionPipeline(on_alert=None)
         self.clock_glitch = ClockGlitchDetector()
         self.voltage_glitch = VoltageGlitchDetector()
         self.dma = DMAAttackDetector()
@@ -110,8 +118,9 @@ class FullDetectionPipeline:
                                              clean_window_samples=clean_window_samples)
 
     def process(self, row):
-        self.base.process(row)
-        had_alert = False
+        base_alerts = self.base.process(row)
+        self._record_base_alerts(base_alerts)
+        had_alert = bool(base_alerts)
         if not self.attest_checked:
             self.attest_checked = True
             alert = self.attestation.check(int(row.get('index',0)))
@@ -125,6 +134,20 @@ class FullDetectionPipeline:
                 self._handle_alert(alert)
         self.cert_gen.record_sample(had_alert=had_alert, timestamp=time.time())
 
+    def _record_base_alerts(self, alerts):
+        """
+        Closes the gap disclosed since the fleet/ledger were first wired
+        in: self.base's 4 core engines (ghost power, VRAM residual, power
+        periodicity, multi-GPU correlation) print and reach the external
+        on_alert callback via their own internal _emit() already -- this
+        only adds fleet/ledger visibility for them, deliberately without
+        re-printing or re-calling on_alert a second time.
+        """
+        for alert in alerts:
+            enriched = enrich_alert(dict(alert))
+            self.fleet.ingest(enriched, node_id=enriched.get('gpu', 0))
+            self.ledger.append('ALERT', enriched)
+
     def _handle_alert(self, alert):
         """
         Single choke point for every alert emitted from process() above
@@ -135,11 +158,18 @@ class FullDetectionPipeline:
         wiring at each emission site.
         """
         self.alert_count += 1
-        print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
         alert = enrich_alert(alert)
+        dedup_result = self.state_mgr.process(alert)
         self.fleet.ingest(alert, node_id=alert.get('gpu', 0))
         self.ledger.append('ALERT', alert)
-        if self.on_alert: self.on_alert(alert)
+        # Ledger and fleet always see every detection -- a complete audit
+        # trail and an accurate "currently affected" picture shouldn't
+        # silently drop repeats. Notification (print + external callback)
+        # is gated on dedup_result so a flapping condition doesn't spam
+        # either channel with the same alert every sample.
+        if dedup_result in ('NEW', 'REOPENED'):
+            print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
+            if self.on_alert: self.on_alert(alert)
 
 def main():
     parser = argparse.ArgumentParser(description='Watchdog AIDR v2.0')
