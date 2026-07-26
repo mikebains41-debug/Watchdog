@@ -38,8 +38,20 @@ class RemediationEngine:
         no specific PID is available in the alert, and only targets a
         named process when one actually is provided (alert['pid'] or
         alert['exited_pid']).
+
+    ADDED (prediction-to-remediation bridge): explicit entries for the
+    5-agent prediction layer's alert types, plus MigrationRecommended.
+    None of these are new behavior -- every prediction alert type was
+    ALREADY reaching this class's handle() method via on_alert in
+    main(), and ALREADY fell through to the default ['log_only'] since
+    it wasn't in this dict. This makes that safe default explicit and
+    auditable instead of accidental. No new action type was invented --
+    even the REAL, confirmed GHOST_POWER detection (not the prediction)
+    only ever maps to log_only; predictions get the same treatment as
+    their corresponding detections, not a more aggressive one.
     """
-    TYPE_ACTIONS = {'GHOST_POWER':['log_only'],'VRAM_RESIDUAL':['log_only','gpu_memory_reset'],'DMA_ATTACK':['kill_process'],'SEQUENTIAL_VRAM_READ':['kill_process'],'MODEL_MUTATION':['kill_process','quarantine_partition'],'AGENT_ORCHESTRATION_ANOMALY':['kill_process'],'CLOCK_GLITCH':['log_only'],'LASER_INJECTION':['log_only'],'MIG_PARTITION_DESYNC':['quarantine_partition']}
+    TYPE_ACTIONS = {'GHOST_POWER':['log_only'],'VRAM_RESIDUAL':['log_only','gpu_memory_reset'],'DMA_ATTACK':['kill_process'],'SEQUENTIAL_VRAM_READ':['kill_process'],'MODEL_MUTATION':['kill_process','quarantine_partition'],'AGENT_ORCHESTRATION_ANOMALY':['kill_process'],'CLOCK_GLITCH':['log_only'],'LASER_INJECTION':['log_only'],'MIG_PARTITION_DESYNC':['quarantine_partition'],
+                     'GHOST_POWER_PREDICTED':['log_only'],'THERMAL_THROTTLE_PREDICTED':['log_only'],'TENANT_ISOLATION_RISK':['log_only'],'CEI_DEGRADATION_PREDICTED':['log_only'],'EU_AI_ACT_COMPLIANCE_RISK':['log_only'],'MIGRATION_RECOMMENDED':['log_only']}
     HUMAN_REQUIRED = ['pcie_bus_reset','power_cycle','firmware_rollback','gpu_memory_reset','kubernetes_taint','slurm_evict_job','nvlink_disable']
 
     def __init__(self, auto_remediate=False, require_human=True):

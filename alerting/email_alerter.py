@@ -1,3 +1,4 @@
+# Author: Manmohan (Mike) Bains -- Watchdog AIDR
 import smtplib, json, os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -23,8 +24,6 @@ Severity  : {severity}
 GPU       : {alert.get('gpu')}
 Confidence: {alert.get('confidence','N/A')}
 Message   : {alert.get('message')}
-
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
             """.strip()
             msg = MIMEMultipart()
             msg['From'] = self.username
