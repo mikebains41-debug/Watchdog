@@ -16,6 +16,7 @@ from detection.telemetry_honesty import PStateHonestyDetector, PCIeBandwidthMism
 from detection.fleet_aggregation import FleetAggregator
 from detection.hashrate_correlation import HashrateCorrelationDetector
 from forensics.audit_ledger import AuditLedger
+from forensics.clean_run_certificate import CleanRunCertificate
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -58,7 +59,7 @@ class FullDetectionPipeline:
     silently expanded into tonight without being asked for it
     specifically.
     """
-    def __init__(self, on_alert=None, fleet_size=None):
+    def __init__(self, on_alert=None, fleet_size=None, clean_window_samples=3600):
         self.on_alert = on_alert
         self.fleet = FleetAggregator(fleet_size=fleet_size)
         self.ledger = AuditLedger()
@@ -99,18 +100,28 @@ class FullDetectionPipeline:
         BASE_ENGINE_COUNT = 4  # GhostPowerDetector, VRAMResidualDetector, PowerPeriodicityDetector, MultiGPUCorrelation
         ATTESTATION_COUNT = 1
         self.total_engine_count = BASE_ENGINE_COUNT + len(self.engines) + ATTESTATION_COUNT
+        _cert_engine_names = ([type(e).__name__ for e in self.engines]
+                               + ['GhostPowerDetector', 'VRAMResidualDetector',
+                                  'PowerPeriodicityDetector', 'MultiGPUCorrelation',
+                                  'BootAttestation'])
+        self.cert_gen = CleanRunCertificate(self.ledger, _cert_engine_names,
+                                             clean_window_samples=clean_window_samples)
 
     def process(self, row):
         self.base.process(row)
+        had_alert = False
         if not self.attest_checked:
             self.attest_checked = True
             alert = self.attestation.check(int(row.get('index',0)))
             if alert:
+                had_alert = True
                 self._handle_alert(alert)
         for engine in self.engines:
             alert = engine.update(row)
             if alert:
+                had_alert = True
                 self._handle_alert(alert)
+        self.cert_gen.record_sample(had_alert=had_alert, timestamp=time.time())
 
     def _handle_alert(self, alert):
         """
