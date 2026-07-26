@@ -19,6 +19,12 @@ from detection.hashrate_correlation import HashrateCorrelationDetector
 from forensics.audit_ledger import AuditLedger
 from forensics.clean_run_certificate import CleanRunCertificate
 from alerting.state import AlertStateManager
+from alerting.siem import SIEMRouter
+from detection.cluster_metadata import enrich_with_cluster_metadata
+from detection.firmware_integrity import VBIOSIntegrityDetector
+from detection.cost_impact import CostImpactAggregator
+from intelligence.swarm.swarm_orchestrator import WatchdogSwarm
+from intelligence.swarm.telemetry_adapter import adapt_row_to_swarm_telemetry
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -61,11 +67,15 @@ class FullDetectionPipeline:
     silently expanded into tonight without being asked for it
     specifically.
     """
-    def __init__(self, on_alert=None, fleet_size=None, clean_window_samples=3600):
+    def __init__(self, on_alert=None, fleet_size=None, clean_window_samples=3600, gpu_arch='H200'):
         self.on_alert = on_alert
         self.fleet = FleetAggregator(fleet_size=fleet_size)
         self.ledger = AuditLedger()
         self.state_mgr = AlertStateManager(state_file='watchdog_data/alert_state.json')
+        self.siem = SIEMRouter()
+        self.cost_impact = CostImpactAggregator(self.ledger)
+        self.vbios_integrity = VBIOSIntegrityDetector()
+        self.swarm = WatchdogSwarm(gpu_id=0, gpu_arch=gpu_arch)
         # on_alert=None here deliberately: self.base's own internal _emit()
         # would otherwise call the external callback directly, and process()
         # below ALSO routes the returned alert list through fleet/ledger --
@@ -106,7 +116,7 @@ class FullDetectionPipeline:
                          self.agent_vram, self.inter_agent, self.pcie_health,
                          self.fan_wear, self.capacitor, self.package_crack, self.nvlink,
                          self.covert_mining, self.billing_integrity, self.power_tamper,
-                         self.pstate_honesty, self.pcie_mismatch, self.ecc_trend]
+                         self.pstate_honesty, self.pcie_mismatch, self.ecc_trend, self.vbios_integrity]
         BASE_ENGINE_COUNT = 4  # GhostPowerDetector, VRAMResidualDetector, PowerPeriodicityDetector, MultiGPUCorrelation
         ATTESTATION_COUNT = 1
         self.total_engine_count = BASE_ENGINE_COUNT + len(self.engines) + ATTESTATION_COUNT
@@ -132,7 +142,32 @@ class FullDetectionPipeline:
             if alert:
                 had_alert = True
                 self._handle_alert(alert)
+        swarm_telemetry = adapt_row_to_swarm_telemetry(row)
+        swarm_alerts = self.swarm.ingest(swarm_telemetry)
+        if swarm_alerts:
+            had_alert = True
+        self._record_swarm_alerts(swarm_alerts)
         self.cert_gen.record_sample(had_alert=had_alert, timestamp=time.time())
+
+    def _record_swarm_alerts(self, alerts):
+        """
+        Routes prediction-layer alerts (5-agent swarm) through the same
+        fleet/ledger/dedup/SIEM/on_alert treatment as every other alert.
+        Deliberately does NOT print -- each swarm agent's own update()
+        already prints its own "[SWARM AGENT X] ..." line internally,
+        printing again here would double it, same trap already solved
+        for self.base's alerts.
+        """
+        for alert in alerts:
+            self.alert_count += 1
+            alert = enrich_alert(alert)
+            alert = enrich_with_cluster_metadata(alert)
+            dedup_result = self.state_mgr.process(alert)
+            self.fleet.ingest(alert, node_id=alert.get('gpu', 0))
+            self.ledger.append('ALERT', alert)
+            if dedup_result in ('NEW', 'REOPENED'):
+                self.siem.route(alert)
+                if self.on_alert: self.on_alert(alert)
 
     def _record_base_alerts(self, alerts):
         """
@@ -145,8 +180,10 @@ class FullDetectionPipeline:
         """
         for alert in alerts:
             enriched = enrich_alert(dict(alert))
+            enriched = enrich_with_cluster_metadata(enriched)
             self.fleet.ingest(enriched, node_id=enriched.get('gpu', 0))
             self.ledger.append('ALERT', enriched)
+            self.siem.route(enriched)
 
     def _handle_alert(self, alert):
         """
@@ -159,16 +196,21 @@ class FullDetectionPipeline:
         """
         self.alert_count += 1
         alert = enrich_alert(alert)
+        alert = enrich_with_cluster_metadata(alert)
         dedup_result = self.state_mgr.process(alert)
         self.fleet.ingest(alert, node_id=alert.get('gpu', 0))
         self.ledger.append('ALERT', alert)
         # Ledger and fleet always see every detection -- a complete audit
         # trail and an accurate "currently affected" picture shouldn't
-        # silently drop repeats. Notification (print + external callback)
-        # is gated on dedup_result so a flapping condition doesn't spam
-        # either channel with the same alert every sample.
+        # silently drop repeats. Notification (print + external callback
+        # + SIEM routing) is gated on dedup_result so a flapping condition
+        # doesn't spam any of those channels with the same alert every
+        # sample. SIEMRouter is safe by design -- no-ops per integration
+        # without its own credential, so this is a no-op today with none
+        # configured.
         if dedup_result in ('NEW', 'REOPENED'):
             print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
+            self.siem.route(alert)
             if self.on_alert: self.on_alert(alert)
 
 def main():
