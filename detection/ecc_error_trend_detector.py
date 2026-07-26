@@ -25,15 +25,23 @@
 #   watching this counter is the correct, non-exploit way to gain
 #   visibility into the phenomenon that research describes.
 #
+# FIXED: both fields previously used raw float(row.get(key, 0)),
+# which crashes with ValueError on nvidia-smi's "[N/A]" string --
+# returned when a GPU lacks ECC memory, has ECC disabled, or when the
+# driver/container layer doesn't expose the field. This is not a
+# hypothetical: field availability gaps like this have shown up
+# repeatedly elsewhere in this project's real infrastructure sessions.
+# Now uses the same N/A-safe _f() parser as every other detector.
+#
 # HONEST STATUS
 #   Detection logic only -- does not include or require any attack
 #   code. Tested with synthetic data matching real nvidia-smi field
-#   names (4/4 tests passing). Not yet run against real ECC error
-#   events on live hardware.
+#   names. Not yet run against real ECC error events on live hardware.
 
 import time
 import collections
 from datetime import datetime
+from detection._shared import _f
 
 
 class ECCErrorTrendDetector:
@@ -45,8 +53,10 @@ class ECCErrorTrendDetector:
         self.last_alert = None
 
     def update(self, row):
-        corrected = float(row.get('ecc.errors.corrected.volatile.total', 0))
-        uncorrected = float(row.get('ecc.errors.uncorrected.volatile.total', 0))
+        corrected = _f(row, 'ecc.errors.corrected.volatile.total')
+        uncorrected = _f(row, 'ecc.errors.uncorrected.volatile.total')
+        if corrected is None or uncorrected is None:
+            return None
 
         if self.last_uncorrected is not None and uncorrected > self.last_uncorrected:
             delta = uncorrected - self.last_uncorrected

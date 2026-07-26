@@ -13,6 +13,7 @@ from detection.attestation import BootAttestation
 from detection.business_signals import CovertMiningDetector, BillingIntegrityDetector
 from detection.tamper_detection import PowerLimitTamperDetector
 from detection.telemetry_honesty import PStateHonestyDetector, PCIeBandwidthMismatchDetector
+from detection.ecc_error_trend_detector import ECCErrorTrendDetector
 from detection.fleet_aggregation import FleetAggregator
 from detection.hashrate_correlation import HashrateCorrelationDetector
 from forensics.audit_ledger import AuditLedger
@@ -86,6 +87,7 @@ class FullDetectionPipeline:
         self.power_tamper = PowerLimitTamperDetector()
         self.pstate_honesty = PStateHonestyDetector()
         self.pcie_mismatch = PCIeBandwidthMismatchDetector()
+        self.ecc_trend = ECCErrorTrendDetector()
         self.hashrate_correlation = HashrateCorrelationDetector()  # NOT in self.engines -- see class docstring
         self.attestation = BootAttestation()
         self.attest_checked = False
@@ -96,7 +98,7 @@ class FullDetectionPipeline:
                          self.agent_vram, self.inter_agent, self.pcie_health,
                          self.fan_wear, self.capacitor, self.package_crack, self.nvlink,
                          self.covert_mining, self.billing_integrity, self.power_tamper,
-                         self.pstate_honesty, self.pcie_mismatch]
+                         self.pstate_honesty, self.pcie_mismatch, self.ecc_trend]
         BASE_ENGINE_COUNT = 4  # GhostPowerDetector, VRAMResidualDetector, PowerPeriodicityDetector, MultiGPUCorrelation
         ATTESTATION_COUNT = 1
         self.total_engine_count = BASE_ENGINE_COUNT + len(self.engines) + ATTESTATION_COUNT
