@@ -25,6 +25,7 @@ from detection.firmware_integrity import VBIOSIntegrityDetector
 from detection.cost_impact import CostImpactAggregator
 from intelligence.swarm.swarm_orchestrator import WatchdogSwarm
 from intelligence.swarm.telemetry_adapter import adapt_row_to_swarm_telemetry
+from detection.migration_recommendation import MigrationRecommendationGenerator
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -76,6 +77,7 @@ class FullDetectionPipeline:
         self.cost_impact = CostImpactAggregator(self.ledger)
         self.vbios_integrity = VBIOSIntegrityDetector()
         self.swarm = WatchdogSwarm(gpu_id=0, gpu_arch=gpu_arch)
+        self.migration_advisor = MigrationRecommendationGenerator()
         # on_alert=None here deliberately: self.base's own internal _emit()
         # would otherwise call the external callback directly, and process()
         # below ALSO routes the returned alert list through fleet/ledger --
@@ -168,6 +170,19 @@ class FullDetectionPipeline:
             if dedup_result in ('NEW', 'REOPENED'):
                 self.siem.route(alert)
                 if self.on_alert: self.on_alert(alert)
+
+            recommendation = self.migration_advisor.process(alert)
+            if recommendation:
+                self.alert_count += 1
+                recommendation = enrich_alert(recommendation)
+                recommendation = enrich_with_cluster_metadata(recommendation)
+                rec_dedup = self.state_mgr.process(recommendation)
+                self.fleet.ingest(recommendation, node_id=recommendation.get('gpu', 0))
+                self.ledger.append('ALERT', recommendation)
+                if rec_dedup in ('NEW', 'REOPENED'):
+                    print(f"[{recommendation['severity']}] {recommendation['type']} — {recommendation['message']}")
+                    self.siem.route(recommendation)
+                    if self.on_alert: self.on_alert(recommendation)
 
     def _record_base_alerts(self, alerts):
         """
