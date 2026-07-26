@@ -15,6 +15,7 @@ from detection.tamper_detection import PowerLimitTamperDetector
 from detection.telemetry_honesty import PStateHonestyDetector, PCIeBandwidthMismatchDetector
 from detection.fleet_aggregation import FleetAggregator
 from detection.hashrate_correlation import HashrateCorrelationDetector
+from forensics.audit_ledger import AuditLedger
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -43,10 +44,11 @@ class FullDetectionPipeline:
     residual, power periodicity, multi-GPU correlation) emit alerts
     directly to the external on_alert callback passed into
     DetectionPipeline's constructor, bypassing _handle_alert() entirely
-    -- meaning FleetAggregator's rollup is currently missing those 4
-    detectors' alerts. Not fixed here, since DetectionPipeline's
-    internals were not re-verified this session; wrapping that callback
-    safely needs reading its source first, not guessing.
+    -- meaning FleetAggregator's rollup, and now AuditLedger's chain,
+    are both currently missing those 4 detectors' alerts. Not fixed
+    here, since DetectionPipeline's internals were not re-verified
+    this session; wrapping that callback safely needs reading its
+    source first, not guessing.
 
     HashrateCorrelationDetector needs externally-supplied hashrate data
     via calibrate()/process(), the same calibrate/process split
@@ -59,6 +61,7 @@ class FullDetectionPipeline:
     def __init__(self, on_alert=None, fleet_size=None):
         self.on_alert = on_alert
         self.fleet = FleetAggregator(fleet_size=fleet_size)
+        self.ledger = AuditLedger()
         self.base = DetectionPipeline(on_alert=on_alert)
         self.clock_glitch = ClockGlitchDetector()
         self.voltage_glitch = VoltageGlitchDetector()
@@ -122,6 +125,7 @@ class FullDetectionPipeline:
         print(f"[{alert['severity']}] {alert['type']} — {alert['message']}")
         alert = enrich_alert(alert)
         self.fleet.ingest(alert, node_id=alert.get('gpu', 0))
+        self.ledger.append('ALERT', alert)
         if self.on_alert: self.on_alert(alert)
 
 def main():
