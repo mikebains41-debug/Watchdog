@@ -27,6 +27,7 @@ from intelligence.swarm.swarm_orchestrator import WatchdogSwarm
 from intelligence.swarm.telemetry_adapter import adapt_row_to_swarm_telemetry
 from detection.migration_recommendation import MigrationRecommendationGenerator
 from intelligence.cei_benchmark import CEIBenchmarkRunner
+from intelligence.compliance_metrics import ComplianceMetricsTracker
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -80,6 +81,7 @@ class FullDetectionPipeline:
         self.swarm = WatchdogSwarm(gpu_id=0, gpu_arch=gpu_arch)
         self.migration_advisor = MigrationRecommendationGenerator()
         self.cei_benchmark = CEIBenchmarkRunner()
+        self.compliance_metrics = ComplianceMetricsTracker()
         # on_alert=None here deliberately: self.base's own internal _emit()
         # would otherwise call the external callback directly, and process()
         # below ALSO routes the returned alert list through fleet/ledger --
@@ -142,10 +144,20 @@ class FullDetectionPipeline:
                 had_alert = True
                 self._handle_alert(alert)
         for engine in self.engines:
-            alert = engine.update(row)
+            try:
+                alert = engine.update(row)
+            except Exception:
+                # Counted for compliance_metrics' crash_count, which
+                # measures Watchdog's OWN detector exceptions -- not GPU
+                # workload crashes. Re-raised rather than swallowed: a
+                # detector raising is a real bug that should surface,
+                # not be silently absorbed into a counter.
+                self.compliance_metrics.record_detector_exception()
+                raise
             if alert:
                 had_alert = True
                 self._handle_alert(alert)
+        self.compliance_metrics.record_sample(row, self.base.ghost_power.baseline_w)
         swarm_telemetry = adapt_row_to_swarm_telemetry(row)
         swarm_alerts = self.swarm.ingest(swarm_telemetry)
         if swarm_alerts:
@@ -208,14 +220,16 @@ class FullDetectionPipeline:
         result = self.cei_benchmark.run(duration_s=duration_s)
         if result is None:
             return None
+        cm = self.compliance_metrics.as_telemetry_fields()
         telemetry = {
             'cei_flops_per_joule': result['cei_flops_per_joule'],
-            'ghost_power_pct': 0,
+            'ghost_power_pct': cm['ghost_power_pct'],
             'idle_power_w': self.base.ghost_power.baseline_w or 0,
-            'crash_count': 0,
-            'isolation_score': 1.0,
+            'crash_count': cm['crash_count'],
+            'isolation_score': cm['isolation_score'],
             'timestamp': time.time(),
         }
+        result['compliance_metrics_provenance'] = cm['_provenance']
         a2 = self.swarm.agent2.update(telemetry)
         a5 = self.swarm.agent5.update(telemetry)
         fired = [a for a in (a2, a5) if a]
