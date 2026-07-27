@@ -90,6 +90,12 @@ def handle_throughput_request(pipeline, body):
                           "reference. Throughput ingestion is not "
                           "available."}
 
+    # set_pipeline() now receives the FULL pipeline (see watchdog.py),
+    # since /hashrate needs a detector that lives there. The throughput
+    # methods live on the base DetectionPipeline, so reach through when
+    # a .base exists -- and still work if a bare base is passed directly.
+    pipeline = getattr(pipeline, 'base', pipeline)
+
     throughput = body.get("throughput")
     if throughput is None:
         return {"error": "Missing required field 'throughput'"}
@@ -118,13 +124,95 @@ def handle_throughput_request(pipeline, body):
     return {"error": f"Unknown mode '{mode}', expected 'calibrate' or 'process'"}
 
 
+def handle_hashrate_request(pipeline, body):
+    """
+    Pure logic for the /hashrate endpoint, factored out from FastAPI
+    routing so it can be tested without fastapi installed -- same
+    structure and reasoning as handle_throughput_request() above, which
+    this deliberately mirrors rather than inventing a different shape
+    for the same problem.
+
+    HashrateCorrelationDetector needs TWO externally-supplied values,
+    not one: the pool-reported hashrate AND the power draw it should be
+    correlated against. Watchdog can read power itself, but only the
+    caller knows which power reading corresponds to the hashrate sample
+    they are reporting -- pairing a pool figure against whatever power
+    happened to be sampled at an unrelated moment would silently
+    produce a meaningless ratio. Both are required here for that reason.
+
+    Body: {"hashrate": <float, required>,
+           "power_w": <float, required>,
+           "gpu_index": <int, optional, default 0>,
+           "mode": "calibrate" | "process" (optional, default "process"),
+           "timestamp": <str, optional>}
+
+    "calibrate" mode: feed samples YOU have verified represent normal,
+    authorized mining on this device. Same explicit,
+    never-auto-learn-from-live-data discipline as /throughput.
+
+    "process" mode: evaluate a live sample against that baseline. Any
+    real alert is fed into update_state() so it appears in /alerts and
+    /metrics like any other alert.
+    """
+    if pipeline is None:
+        return {"error": "No pipeline attached to this API instance -- "
+                          "run_api() was called without a pipeline "
+                          "reference. Hashrate ingestion is not "
+                          "available."}
+
+    detector = getattr(pipeline, 'hashrate_correlation', None)
+    if detector is None:
+        return {"error": "This pipeline has no hashrate_correlation detector attached."}
+
+    hashrate = body.get("hashrate")
+    if hashrate is None:
+        return {"error": "Missing required field 'hashrate'"}
+    try:
+        hashrate = float(hashrate)
+    except (TypeError, ValueError):
+        return {"error": f"'hashrate' must be a number, got {body.get('hashrate')!r}"}
+
+    power_w = body.get("power_w")
+    if power_w is None:
+        return {"error": "Missing required field 'power_w' -- the power "
+                          "reading this hashrate sample should be correlated "
+                          "against. Not read from telemetry automatically, "
+                          "since only the caller knows which power reading "
+                          "corresponds to their hashrate sample."}
+    try:
+        power_w = float(power_w)
+    except (TypeError, ValueError):
+        return {"error": f"'power_w' must be a number, got {body.get('power_w')!r}"}
+
+    gpu_index = body.get("gpu_index", 0)
+    mode = body.get("mode", "process")
+    timestamp = body.get("timestamp") or datetime.now().isoformat()
+
+    if mode == "calibrate":
+        detector.calibrate(power_w, hashrate)
+        return {"mode": "calibrate", "hashrate": hashrate, "power_w": power_w,
+                "baseline_established": detector.baseline_ratio is not None,
+                "calibration_samples": len(detector.samples),
+                "samples_needed": detector.min_correlation_samples,
+                "timestamp": timestamp}
+
+    if mode == "process":
+        alert = detector.process(power_w, hashrate, gpu_index=gpu_index, timestamp=timestamp)
+        if alert:
+            update_state(alerts=[alert])
+        return {"mode": "process", "hashrate": hashrate, "power_w": power_w,
+                "alert": alert, "timestamp": timestamp}
+
+    return {"error": f"Unknown mode '{mode}', expected 'calibrate' or 'process'"}
+
+
 try:
     from fastapi import FastAPI, Request
     from fastapi.responses import PlainTextResponse
     import uvicorn
     app = FastAPI(title="Watchdog AIDR", version="1.0.0")
     @app.get("/")
-    def root(): return {"service": "Watchdog AIDR", "version": "1.0.0", "endpoints": ["/status", "/alerts", "/metrics", "/attest", "/health", "/throughput"]}
+    def root(): return {"service": "Watchdog AIDR", "version": "1.0.0", "endpoints": ["/status", "/alerts", "/metrics", "/attest", "/health", "/throughput", "/hashrate"]}
     @app.get("/status")
     def status(): return {"status":"running","gpu_count":_state['gpu_count'],"alert_count":_state['alert_count'],"last_alert":_state['alerts'][-1] if _state['alerts'] else None,"timestamp":datetime.now().isoformat()}
     @app.get("/alerts")
@@ -158,6 +246,10 @@ try:
     async def ingest_throughput(request: Request):
         body = await request.json()
         return handle_throughput_request(_pipeline, body)
+    @app.post("/hashrate")
+    async def ingest_hashrate(request: Request):
+        body = await request.json()
+        return handle_hashrate_request(_pipeline, body)
     # Attach the webhook bridge -- alerting/prometheus_webhook_bridge.py
     # already implements POST /v2/alerts/webhook correctly (confirmed by
     # reading its source), it was just never registered on a live app.

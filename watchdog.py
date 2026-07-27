@@ -296,7 +296,13 @@ def main():
     if args.api:
         try:
             from api.server import run_api, set_pipeline
-            set_pipeline(pipeline.base)
+            # Pass the FULL pipeline, not .base -- /throughput needs
+            # base's calibrate_throughput/process_throughput, but
+            # /hashrate needs hashrate_correlation which lives on
+            # FullDetectionPipeline itself. The API handlers resolve
+            # which object they need; passing .base here made the
+            # hashrate detector unreachable.
+            set_pipeline(pipeline)
             t = threading.Thread(target=run_api, kwargs={'host':'0.0.0.0','port':args.api_port}, daemon=True)
             t.start()
             print(f"[WATCHDOG] API at http://0.0.0.0:{args.api_port}")
