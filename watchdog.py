@@ -26,6 +26,7 @@ from detection.cost_impact import CostImpactAggregator
 from intelligence.swarm.swarm_orchestrator import WatchdogSwarm
 from intelligence.swarm.telemetry_adapter import adapt_row_to_swarm_telemetry
 from detection.migration_recommendation import MigrationRecommendationGenerator
+from intelligence.cei_benchmark import CEIBenchmarkRunner
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -78,6 +79,7 @@ class FullDetectionPipeline:
         self.vbios_integrity = VBIOSIntegrityDetector()
         self.swarm = WatchdogSwarm(gpu_id=0, gpu_arch=gpu_arch)
         self.migration_advisor = MigrationRecommendationGenerator()
+        self.cei_benchmark = CEIBenchmarkRunner()
         # on_alert=None here deliberately: self.base's own internal _emit()
         # would otherwise call the external callback directly, and process()
         # below ALSO routes the returned alert list through fleet/ledger --
@@ -183,6 +185,43 @@ class FullDetectionPipeline:
                     print(f"[{recommendation['severity']}] {recommendation['type']} — {recommendation['message']}")
                     self.siem.route(recommendation)
                     if self.on_alert: self.on_alert(recommendation)
+
+    def run_cei_benchmark(self, duration_s=10):
+        """
+        Runs a real CEI benchmark (matmul workload, real power
+        sampling) and feeds the result into both CEI-dependent swarm
+        agents. Deliberately a separate, explicitly-called entry
+        point -- not part of process(row) -- since CEI cannot be
+        derived from passive telemetry, matching the same design as
+        calibrate_throughput / process_throughput.
+
+        HONEST STATUS: fully unblocks CEIDegradationForecaster
+        (agent2), which needs only cei_flops_per_joule. PARTIALLY
+        unblocks EUAIActComplianceForecaster (agent5): also feeds
+        idle_power_w from GhostPowerDetector's own already-learned
+        baseline (a real value, not a default), but ghost_power_pct,
+        crash_count, and isolation_score remain unaddressed here --
+        agent5 will still compute its compliance risk score using
+        safe defaults for those three, not real measurements. Returns
+        None if no real GPU/torch is available.
+        """
+        result = self.cei_benchmark.run(duration_s=duration_s)
+        if result is None:
+            return None
+        telemetry = {
+            'cei_flops_per_joule': result['cei_flops_per_joule'],
+            'ghost_power_pct': 0,
+            'idle_power_w': self.base.ghost_power.baseline_w or 0,
+            'crash_count': 0,
+            'isolation_score': 1.0,
+            'timestamp': time.time(),
+        }
+        a2 = self.swarm.agent2.update(telemetry)
+        a5 = self.swarm.agent5.update(telemetry)
+        fired = [a for a in (a2, a5) if a]
+        if fired:
+            self._record_swarm_alerts(fired)
+        return result
 
     def _record_base_alerts(self, alerts):
         """
