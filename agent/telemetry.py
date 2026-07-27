@@ -235,7 +235,8 @@ class TelemetryCollector:
     own README/Limitations promise: "the collector must log measured
     inter-sample deltas, not the requested rate."
     """
-    def __init__(self, sample_hz=SAMPLE_HZ, output_dir='watchdog_data', gpu_index=None, on_sample=None):
+    def __init__(self, sample_hz=SAMPLE_HZ, output_dir='watchdog_data', gpu_index=None,
+                 on_sample=None, nvlink_enabled=False, nvlink_interval_s=5.0):
         self.sample_hz = sample_hz
         self.output_dir = output_dir
         self.gpu_index = gpu_index
@@ -243,7 +244,45 @@ class TelemetryCollector:
         self.running = False
         self.sample_count = 0
         self.timer = DeltaTimedSampler(sample_fn=lambda: {})
+        # NVLink sampling, OFF by default. sample_nvlink() spawns a
+        # subprocess PER GPU, so calling it every sample at high
+        # sample_hz would add exactly the cost both its own docstring
+        # and NVLinkContentionDetector's warn about -- and would
+        # silently degrade the achieved rate DeltaTimedSampler exists
+        # to honestly measure. Instead it refreshes at most once per
+        # nvlink_interval_s and the cached values are merged into every
+        # row in between. Default OFF rather than ON so no existing
+        # deployment silently changes behavior; a caller enabling it is
+        # making a deliberate choice about that subprocess cost.
+        self.nvlink_enabled = nvlink_enabled
+        self.nvlink_interval_s = nvlink_interval_s
+        self._last_nvlink_ts = 0.0
+        self._nvlink_cache = {}
         os.makedirs(output_dir, exist_ok=True)
+
+    def _maybe_refresh_nvlink(self, rows, now):
+        """
+        Refreshes the per-GPU NVLink cache at most once per
+        nvlink_interval_s, then merges the cached values into every row
+        of the current sample. Rows between refreshes carry the last
+        known values -- real, just not resampled that instant. Rows get
+        no nvlink keys at all when disabled, so nvlink_available stays
+        absent rather than a fabricated False.
+        """
+        if not self.nvlink_enabled:
+            return
+        if now - self._last_nvlink_ts >= self.nvlink_interval_s:
+            self._last_nvlink_ts = now
+            for row in rows:
+                idx = row.get('index', 0)
+                try:
+                    self._nvlink_cache[idx] = sample_nvlink(idx)
+                except Exception:
+                    pass
+        for row in rows:
+            cached = self._nvlink_cache.get(row.get('index', 0))
+            if cached:
+                row.update(cached)
 
     def start(self, duration_seconds=None):
         self.running = True
@@ -263,6 +302,7 @@ class TelemetryCollector:
                 timing_row = self.timer.sample()
                 actual_interval_ms = timing_row['actual_interval_ms']
                 rows = sample_gpu(self.gpu_index)
+                self._maybe_refresh_nvlink(rows, time.time())
                 for row in rows:
                     row['actual_interval_ms'] = actual_interval_ms
                     writer.writerow(row)
