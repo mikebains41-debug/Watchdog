@@ -33,6 +33,7 @@ TEST_MODULES = [
     "test_throughput_contention_detector",
     "test_ecc_error_trend_detector",
     "test_cc_integrity_detector",
+    "test_watchdog_imports",
 ]
 
 
