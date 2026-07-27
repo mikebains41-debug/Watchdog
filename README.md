@@ -44,8 +44,9 @@ are wired separately, because each needs data GPU telemetry alone cannot
 provide: ThroughputContentionDetector needs externally-reported workload
 throughput (iterations/sec), reached via a dedicated /throughput API
 endpoint (calibrate then process mode); HashrateCorrelationDetector needs
-externally-supplied pool hashrate, same calibrate/process pattern, not yet
-exposed via its own endpoint. These are separate code paths from the
+externally-supplied pool hashrate and the power reading it should be
+correlated against, reached via its own /hashrate endpoint, same
+calibrate/process pattern. These are separate code paths from the
 automatic pipeline and from the prediction layer described further down —
 conflating their counts would misstate what runs automatically today.
 
@@ -87,15 +88,23 @@ three papers (2023–2026), one demonstrating a real cross-VM attack on
 GCP. No standard monitoring tool tracks NVLink at all. Stated in the
 detector itself: the same signature also arises from legitimate
 distributed-training synchronization traffic (all-reduce, all-gather), and
-telemetry alone cannot tell the two apart. NVLink data collection exists (agent/telemetry.py's sample_nvlink())
-and now includes per-link breakdown, not just combined totals -- but it
-is not currently wired into the live per-sample loop at all. The per-GPU
-subprocess cost at high sample_hz has not been measured on real hardware,
-so wiring it in at an appropriate, separately rate-limited cadence is a
-deliberate, not-yet-done follow-up step. NVLinkContentionDetector is
-therefore effectively inert in a live run today: nvlink_available is
-never populated by any current caller, even though it is counted among
-the 29 automatic engines.
+telemetry alone cannot tell the two apart. NVLink data collection (agent/telemetry.py's sample_nvlink()) now
+includes a per-link breakdown, not just combined totals, and is wired
+into TelemetryCollector's live loop on a deliberately separate, slower
+cadence than the main sample rate -- sample_nvlink() spawns a subprocess
+per GPU, so calling it every sample would add exactly the cost its own
+docstring warns about and would degrade the achieved rate
+DeltaTimedSampler exists to honestly measure. It refreshes at most once
+per nvlink_interval_s (default 5s), with cached values merged into every
+row in between; measured at 2 subprocess calls per 1000 samples at 100Hz
+rather than 1000. It is OFF by default (nvlink_enabled=False) so no
+existing deployment silently changes behavior. When disabled, rows carry
+no NVLink keys at all, keeping "no NVLink hardware" and "NVLink not
+sampled" distinguishable rather than conflating them into a fabricated
+zero. NVLinkContentionDetector therefore has a real path to firing when
+sampling is enabled, and now attributes a best-effort link_index on its
+alerts; both the parsing and the detector remain unvalidated against
+real NVLink hardware.
 
 Memory attacks (3) — CacheSideChannelDetector, MIGPartitionDesyncDetector,
 SequentialVRAMReadDetector.
@@ -402,8 +411,15 @@ API) and job_id (available automatically inside any SLURM job) to every
 alert, giving kubernetes_taint and slurm_evict_job a real path to firing
 for the first time, given both human approval and the right deployment
 environment — neither has been tested against a real Kubernetes or SLURM
-cluster. nvlink_disable remains fully blocked: no detector currently maps
-an anomaly to the specific physical link index it requires.
+cluster. nvlink_disable now also has a path: NVLinkContentionDetector
+attributes a best-effort link_index on its alerts (the single link
+deviating most from its own learned baseline), so the action is
+reachable when NVLink sampling is enabled and human approval is
+granted. That attribution is explicitly best-effort, not the confirmed
+pairwise/topology-aware analysis the detector discloses it does not
+perform, and is None until per-link baselines are established -- in
+which case the action still refuses rather than guessing. Untested
+against real NVLink hardware.
 
 ---
 
@@ -462,7 +478,7 @@ recommendation capability has no real fleet-topology awareness.
 Kubernetes and SLURM remediation actions are untested against real
 infrastructure. Both now have a real path to firing (see Remediation)
 but neither has been confirmed against an actual cluster of either kind.
-nvlink_disable remains structurally blocked entirely.
+nvlink_disable now has a path via NVLinkContentionDetector's best-effort link_index attribution, but is equally untested against a real cluster or real NVLink hardware.
 
 Audit ledger has no protection against a writer that ignores its file
 lock, and no external anchoring beyond an optional, explicitly weaker
