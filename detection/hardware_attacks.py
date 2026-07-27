@@ -359,6 +359,10 @@ class NVLinkContentionDetector:
         self.baseline_kbs = None
         self.state = _EventState(require_consecutive=require_consecutive,
                                   refire_after_s=refire_after_s)
+        # NEW: per-link baseline tracking, additive alongside the
+        # existing combined baseline above -- does not replace it.
+        self.idle_samples_by_link = collections.defaultdict(lambda: collections.deque(maxlen=baseline_window))
+        self.baseline_by_link = {}
 
     def update(self, row):
         if not row.get('nvlink_available'):
@@ -370,12 +374,26 @@ class NVLinkContentionDetector:
             return None
         total_kbs = tx + rx
 
+        # NEW: per-link combined (tx+rx) totals, additive -- built the
+        # same way as the existing combined total above.
+        tx_by_link = row.get('nvlink_tx_kbs_by_link') or {}
+        rx_by_link = row.get('nvlink_rx_kbs_by_link') or {}
+        combined_by_link = {}
+        for link in set(tx_by_link) | set(rx_by_link):
+            combined_by_link[link] = tx_by_link.get(link, 0.0) + rx_by_link.get(link, 0.0)
+
         if self.baseline_kbs is None:
             if util < self.util_ceiling:
                 self.idle_samples.append(total_kbs)
+                for link, val in combined_by_link.items():
+                    self.idle_samples_by_link[link].append(val)
             if len(self.idle_samples) >= self.baseline_min_samples:
                 vals = sorted(self.idle_samples)
                 self.baseline_kbs = vals[len(vals) // 2]
+                for link, samples in self.idle_samples_by_link.items():
+                    if len(samples) >= self.baseline_min_samples:
+                        lvals = sorted(samples)
+                        self.baseline_by_link[link] = lvals[len(lvals) // 2]
 
         if self.baseline_kbs is None:
             return None
@@ -385,6 +403,22 @@ class NVLinkContentionDetector:
         if not self.state.should_emit(condition):
             return None
 
+        # NEW: best-effort attribution of which single link deviates most
+        # from ITS OWN baseline -- explicitly best-effort, not confirmed
+        # pairwise/topology-aware analysis (this class already discloses
+        # it does not do that). None when insufficient per-link baseline
+        # data exists yet.
+        link_index = None
+        max_link_delta = None
+        for link, val in combined_by_link.items():
+            link_baseline = self.baseline_by_link.get(link)
+            if link_baseline is None:
+                continue
+            link_delta = val - link_baseline
+            if max_link_delta is None or link_delta > max_link_delta:
+                max_link_delta = link_delta
+                link_index = link
+
         return {
             'type': 'NVLINK_CONTENTION',
             'severity': 'WARNING',
@@ -393,6 +427,13 @@ class NVLinkContentionDetector:
             'baseline_kbs': round(self.baseline_kbs, 1),
             'delta_kbs': round(delta, 1),
             'utilization': util,
+            'link_index': link_index,
+            'link_index_note': (
+                'Best-effort: the single link whose own traffic deviates '
+                'most from its own learned baseline. Not confirmed '
+                'pairwise/topology-aware attribution. None when per-link '
+                'baseline data is not yet established.'
+            ),
             'timestamp': row.get('iso_timestamp'),
             'message': (f"NVLink traffic {delta:.0f}KB/s above this GPU's "
                         f"own learned baseline at {util:.0f}% compute -- "

@@ -83,9 +83,23 @@ def parse_nvlink_output(stdout_text):
     nvlink_available=False rather than a fabricated zero -- zero traffic
     on present hardware and "no NVLink hardware at all" are different
     facts and must not be conflated.
+
+    EXTENDED: previously parsed each "Link N: <value>" line, added its
+    value into a combined tx_total/rx_total, and discarded the
+    per-link value and the link number itself -- meaning link_index was
+    never available anywhere downstream, even though NVIDIA's own
+    documented output format already breaks the data down per link.
+    Now also returns nvlink_tx_kbs_by_link and nvlink_rx_kbs_by_link,
+    dicts mapping int link index -> float KiB. The existing aggregate
+    fields are computed identically to before (same sum, same
+    behavior) so nothing that already depends on them changes. Same
+    UNVERIFIED-against-real-hardware caveat applies to the per-link
+    extraction as to the aggregate parsing above it.
     """
     tx_total = 0.0
     rx_total = 0.0
+    tx_by_link = {}
+    rx_by_link = {}
     mode = None
     found_any = False
     for line in stdout_text.splitlines():
@@ -100,18 +114,24 @@ def parse_nvlink_output(stdout_text):
             continue
         if line.lower().startswith('link') and ':' in line:
             try:
-                val_str = line.split(':', 1)[1].strip().split()[0]
+                label, rest = line.split(':', 1)
+                link_num = int(label.strip().split()[1])
+                val_str = rest.strip().split()[0]
                 val = float(val_str)
                 found_any = True
                 if mode == 'tx':
                     tx_total += val
+                    tx_by_link[link_num] = val
                 elif mode == 'rx':
                     rx_total += val
+                    rx_by_link[link_num] = val
             except (ValueError, IndexError):
                 continue
     if not found_any:
-        return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None}
-    return {'nvlink_available': True, 'nvlink_tx_kbs': tx_total, 'nvlink_rx_kbs': rx_total}
+        return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None,
+                'nvlink_tx_kbs_by_link': {}, 'nvlink_rx_kbs_by_link': {}}
+    return {'nvlink_available': True, 'nvlink_tx_kbs': tx_total, 'nvlink_rx_kbs': rx_total,
+            'nvlink_tx_kbs_by_link': tx_by_link, 'nvlink_rx_kbs_by_link': rx_by_link}
 
 
 def sample_nvlink(gpu_index=0):
@@ -136,10 +156,12 @@ def sample_nvlink(gpu_index=0):
         r = subprocess.run(['nvidia-smi', 'nvlink', '-g', str(gpu_index), '-gt', 'd'],
                             capture_output=True, text=True, timeout=5)
         if r.returncode != 0 or not r.stdout.strip():
-            return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None}
+            return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None,
+                    'nvlink_tx_kbs_by_link': {}, 'nvlink_rx_kbs_by_link': {}}
         return parse_nvlink_output(r.stdout)
     except Exception:
-        return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None}
+        return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None,
+                'nvlink_tx_kbs_by_link': {}, 'nvlink_rx_kbs_by_link': {}}
 
 
 def sample_compute_apps():

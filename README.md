@@ -87,12 +87,15 @@ three papers (2023–2026), one demonstrating a real cross-VM attack on
 GCP. No standard monitoring tool tracks NVLink at all. Stated in the
 detector itself: the same signature also arises from legitimate
 distributed-training synchronization traffic (all-reduce, all-gather), and
-telemetry alone cannot tell the two apart. NVLink data is sampled via a
-separate nvidia-smi subcommand (nvidia-smi nvlink -g <index> -gt d), not
-the combined --query-gpu call the other fields use, and is deliberately
-NOT called on every sample — the per-GPU subprocess cost at 100Hz has not
-been measured on real hardware, so it is rate-limited by design pending
-that measurement.
+telemetry alone cannot tell the two apart. NVLink data collection exists (agent/telemetry.py's sample_nvlink())
+and now includes per-link breakdown, not just combined totals -- but it
+is not currently wired into the live per-sample loop at all. The per-GPU
+subprocess cost at high sample_hz has not been measured on real hardware,
+so wiring it in at an appropriate, separately rate-limited cadence is a
+deliberate, not-yet-done follow-up step. NVLinkContentionDetector is
+therefore effectively inert in a live run today: nvlink_available is
+never populated by any current caller, even though it is counted among
+the 29 automatic engines.
 
 Memory attacks (3) — CacheSideChannelDetector, MIGPartitionDesyncDetector,
 SequentialVRAMReadDetector.
