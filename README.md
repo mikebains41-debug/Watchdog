@@ -33,20 +33,21 @@ Our self-assessed CVSS is 8.4; that score has not been reviewed by anyone else.
 
 ---
 
-## Detection engines (22 automatic + 1 separate)
+## Detection engines (29 automatic + 2 separate)
 
-Four foundational engines, detailed below. Eighteen more were added since,
-covering hardware attacks, memory attacks, LLM/agent attacks, PCIe health,
-predictive failure, and boot attestation — listed by category further
-down. All 22 run automatically on every telemetry sample via
-FullDetectionPipeline. A 23rd, ThroughputContentionDetector, is wired
-separately: it needs externally-reported workload throughput
-(iterations/sec), which GPU telemetry alone cannot provide, so it is
-reached via a dedicated /throughput API endpoint (calibrate then process
-mode) rather than the per-sample loop. These are three separate code
-paths — automatic pipeline, throughput endpoint, and the prediction layer
-described further down — and conflating their counts would misstate what
-runs automatically today.
+Four foundational engines, detailed below. Twenty-five more were added
+since, covering hardware attacks, memory attacks, LLM/agent attacks, PCIe
+health, predictive failure, boot attestation, business/fleet signals, and
+hardware/firmware integrity — listed by category further down. All 29 run
+automatically on every telemetry sample via FullDetectionPipeline. Two more
+are wired separately, because each needs data GPU telemetry alone cannot
+provide: ThroughputContentionDetector needs externally-reported workload
+throughput (iterations/sec), reached via a dedicated /throughput API
+endpoint (calibrate then process mode); HashrateCorrelationDetector needs
+externally-supplied pool hashrate, same calibrate/process pattern, not yet
+exposed via its own endpoint. These are separate code paths from the
+automatic pipeline and from the prediction layer described further down —
+conflating their counts would misstate what runs automatically today.
 
 Each of the original four has a paired positive and negative control in
 tests/test_engines.py. Current status: 17/17 passing.
@@ -77,12 +78,12 @@ No CVSS score is attached to any engine. CVSS scores vulnerabilities, not
 detectors: a detector has no attack vector, no privileges required, and no
 scope. Scoring one is a category error.
 
-### The eighteen additional engines
+### The twenty-five additional engines
 
 Hardware attacks (5) — ClockGlitchDetector, VoltageGlitchDetector,
 DMAAttackDetector, LaserInjectionDetector, NVLinkContentionDetector. The
-last is new: NVLink covert-channel and side-channel attacks are documented
-in three papers (2023–2026), one demonstrating a real cross-VM attack on
+last: NVLink covert-channel and side-channel attacks are documented in
+three papers (2023–2026), one demonstrating a real cross-VM attack on
 GCP. No standard monitoring tool tracks NVLink at all. Stated in the
 detector itself: the same signature also arises from legitimate
 distributed-training synchronization traffic (all-reduce, all-gather), and
@@ -111,7 +112,29 @@ generation/width downgrade vs. a learned baseline) and BootAttestation
 hardware fingerprint hash mismatch since baseline, e.g. a firmware or
 driver change).
 
-None of the eighteen have live-hardware validation beyond the same
+Business/fleet signals (5) — CovertMiningDetector (sustained flat
+near-TDP utilization consistent with unattended mining; explicitly cannot
+determine authorization), BillingIntegrityDetector (power draw during
+NVML-reported idle that would be billed as zero-utilization time; never
+invents a dollar figure without an operator-supplied rate),
+PowerLimitTamperDetector (power.limit changes against a learned baseline,
+optional operator allowlist), PStateHonestyDetector and
+PCIeBandwidthMismatchDetector (both check whether NVML's own reported
+fields are internally consistent — the same "telemetry lies to itself"
+pattern the ghost-power and VRAM-residual findings are built around,
+applied to two more fields).
+
+Hardware/firmware integrity (2) — ECCErrorTrendDetector (watches this
+GPU's own real ECC error counters; the correct, non-exploit way to gain
+visibility into GPU-driven Rowhammer-class memory disturbance research —
+GPUHammer, USENIX Security 2025 — replacing an earlier detector that
+claimed Rowhammer detection but could not structurally deliver it, see
+Engineering notes below) and VBIOSIntegrityDetector (tracks this GPU's
+VBIOS version string for changes; no external known-good baseline exists,
+so this detects change from whatever was first observed, not confirmation
+that a change was malicious).
+
+None of the twenty-five have live-hardware validation beyond the same
 synthetic-control methodology described below for the original four.
 
 ---
@@ -138,13 +161,24 @@ The headline number is the pipeline negative control: 3600 consecutive
 clean idle samples produce 0 alerts. An always-firing detector is
 indistinguishable from no detector.
 
+The prediction layer (below) has its own, separate non-circular validation
+harnesses — scripts/validate_swarm_prediction.py (Ghost Power Predictor)
+and scripts/validate_swarm_prediction_agents2to5.py (the remaining four) —
+which generate randomized trials at runtime rather than replaying a fixed
+dataset, specifically so a detector cannot pass by matching a known input.
+Both harnesses have their own tests (tests/test_validate_swarm_prediction.py)
+proving the scoring math itself is correct, independent of whether any real
+agent performs well, using injectable fake agents with known behavior.
+
 Across the full repository: at least 36 test files, covering everything
 described above plus the prediction layer and the remediation/alerting
-fixes, all passing as of the last full run. All synthetic, all subject to
-the same "positive control alone proves nothing" caveat above as
-test_engines.py's own 17/17. Two files (test_metrics_alert_firing.py,
-test_webhook_pipeline_delivery.py) require a running API server and skip
-cleanly when one is not present, rather than reporting a false pass.
+fixes, all passing as of the last full run (confirmed via
+tests/attack_injection_suite.py running all real positive-control modules
+together: 36/36). All synthetic, all subject to the same "positive control
+alone proves nothing" caveat above as test_engines.py's own 17/17. Two
+files (test_metrics_alert_firing.py, test_webhook_pipeline_delivery.py)
+require a running API server and skip cleanly when one is not present,
+rather than reporting a false pass.
 
 Not yet run on live GPU hardware. Synthetic controls only. See Limitations.
 
@@ -165,9 +199,20 @@ The check we use for this (matching the running kernel version string
 against known-vulnerable ranges) is fragile by design: distributions
 routinely backport security fixes without changing the version string, so
 a host can show a vulnerable-looking version and already be patched, or
-vice versa. A separate script checks live-patch tooling
-(canonical-livepatch / kpatch) for exactly this reason, but the two are
-not yet connected.
+vice versa. scripts/check_copyfail_afalg.py adds a second, independent
+check for this same CVE — it directly tests whether the AF_ALG
+socket-creation attack path is reachable right now, per Microsoft's own
+published mitigation guidance, regardless of what the kernel version
+string claims. Neither check alone is complete; both include a runtime
+warning when run on an unsuitable environment (e.g. a phone rather than a
+rented server), after an early version returned a technically-true but
+practically meaningless result on exactly that mismatch.
+
+A second, independent kernel vulnerability was separately identified:
+CVE-2026-64600 ("RefluXFS"), an XFS filesystem race condition disclosed
+by Qualys, affecting kernels with reflink-enabled XFS.
+scripts/check_refluxfs_exposure.sh checks exposure to this CVE, with the
+same environment-mismatch warning.
 
 Container overlay sanitization gap. Files belonging to a previous tenant,
 17 days old, still present in the container filesystem. 5 independent
@@ -206,35 +251,122 @@ and has not run any Watchdog detector directly.
 
 ---
 
-## Prediction layer (not wired into the pipeline)
+## Prediction layer
 
-Every engine above is reactive — it reports a condition once underway.
-Five additional agents (intelligence/swarm/) attempt prediction:
-identifying leading indicators 30–60 seconds before an event, from
-power/thermal/VRAM/compliance-metric trends rather than a single reading.
-None are imported or instantiated anywhere in watchdog.py. They contribute
-zero capability to a running Watchdog instance today.
+Every reactive engine above reports a condition once underway. Five
+additional agents (intelligence/swarm/) attempt prediction: identifying
+leading indicators 30–60 seconds before an event, from power/thermal/
+VRAM/compliance-metric trends rather than a single reading.
 
-Each was validated with randomized synthetic trials — fresh random noise
-per trial, severity varied randomly per trial, not hand-scripted
-demonstrations built to fire. Results (false positive rate on clean
-trials / overall true positive rate / weakest severity tier):
+As of this writing, the prediction layer is wired into the live pipeline —
+previously tested code that contributed nothing to a running instance. A
+telemetry adapter (intelligence/swarm/telemetry_adapter.py) translates real
+nvidia-smi fields to what each agent expects. Real, per-agent status,
+discovered by building that translation rather than assumed:
+
+Fully functional — GhostPowerPredictor and ThermalEventPredictor. Every
+field either needs (power draw, utilization, memory clock, SM clock,
+temperature) is real, already-collected telemetry. Confirmed by forcing a
+genuine precursor pattern through the full live pipeline and observing a
+correct prediction fire.
+
+Wired but permanently degraded — TenantIsolationRiskScorer. One of its
+four weighted signals depends on row['memory_access_timing_ms'], a field
+nothing in agent/telemetry.py collects. It does not crash — the missing
+signal safely computes to zero — but real-world performance is likely
+below its already-modest validated 24.5%. It remains the weakest agent by
+a wide margin.
+
+Wired but structurally, permanently silent — CEIDegradationForecaster and
+EUAIActComplianceForecaster. Both require a measure of FLOPs actually
+delivered (cei_flops_per_joule), which nvidia-smi cannot report under any
+field name. Both agents' own code already refuses to proceed without this
+value; confirmed via their internal sample counts remaining at zero rather
+than crashing or guessing. intelligence/cei_benchmark.py adds a real,
+separate path to closing this gap for CEIDegradationForecaster — a timed
+matmul workload with a known FLOP count, real power sampling, CEI = FLOPs
+/ (mean watts × elapsed seconds) — deliberately a separate, explicitly
+called entry point (run_cei_benchmark), not part of the per-sample loop,
+same reasoning as ThroughputContentionDetector needing its own path. Its
+arithmetic is tested against hand-calculated expected values; it has not
+been run against real GPU hardware, and cannot produce a real CEI number
+until it is. This closes the gap for CEIDegradationForecaster only;
+EUAIActComplianceForecaster needs three further fields
+(ghost_power_pct, crash_count, isolation_score) not yet addressed.
+
+A related, advisory-only capability: detection/migration_recommendation.py
+generates a human-readable recommendation when ThermalEventPredictor or
+TenantIsolationRiskScorer fires, suggesting a workload migration. It does
+not execute any migration and has no real fleet-topology awareness — it
+names the source GPU and reason, and says directly in its own output that
+it cannot identify an actual target, leaving that to a human or a real
+orchestration system.
+
+Each agent's underlying performance numbers were validated with
+randomized, non-circular synthetic trials — fresh random noise per trial,
+severity varied randomly per trial, not hand-scripted demonstrations built
+to fire, and not the same as the wiring status above, which concerns
+whether real telemetry can even reach each agent. Results (false positive
+rate on clean trials / overall true positive rate / weakest severity tier),
+each independently reproducible via the scripts named above:
 
 GhostPowerPredictor — 0% / 96.5% / 89.4%
+  (python3 scripts/validate_swarm_prediction.py --n-clean 200 --n-event 200 --seed 42)
 CEIDegradationForecaster — 0% / 68.0% / 9.1%
 ThermalEventPredictor — 0.5% / 63.0% / 0%
 TenantIsolationRiskScorer — 0% / 24.5% / 0%
 EUAIActComplianceForecaster — 0% / 54.0% / 1.5%
-
-TenantIsolationRiskScorer cannot function even if wired in: its risk score
-depends on row['memory_access_timing_ms'], a field nothing in
-agent/telemetry.py collects. It is also the weakest agent by a wide
-margin.
+  (last four: python3 scripts/validate_swarm_prediction_agents2to5.py, own stated defaults)
 
 This proves the scoring logic generalizes across randomized severity. It
 does not prove any of these precursor patterns actually precede real
 events on real hardware — that requires real, timestamped hardware data,
 which does not exist for this project yet.
+
+---
+
+## Tamper-evident audit trail
+
+forensics/audit_ledger.py hash-chains every alert the live pipeline
+produces (SHA256, append-only): each entry's hash incorporates the
+previous entry's hash, so any retroactive edit or deletion breaks the
+chain in a way that is immediately, mechanically detectable. Tested under
+real concurrent load: 100 simultaneous append operations across 5 threads
+produced a perfectly valid, unforked, sequentially-numbered chain, zero
+corruption — this required an fcntl-based exclusive lock around the
+entire read-tail-state-plus-write sequence, not just the write itself, and
+re-reading the actual last entry from disk inside the lock rather than
+trusting an in-memory cache.
+
+Two limitations stated rather than hidden: the file lock only protects
+against other writers that also respect it, not a process that ignores
+locking entirely; and the ledger's trust root is the local file itself —
+an attacker with root on the machine could delete it and start a fresh,
+internally-"valid" fake chain. An optional anchor() method emails the
+current chain hash to an external inbox, explicitly documented in the code
+as a materially weaker guarantee than Serial Alice's blockchain anchoring
+elsewhere in this project, not a replacement for it.
+
+forensics/clean_run_certificate.py issues a hash-chained "clean run"
+record after a sustained alert-free window across all active engines.
+Deliberately, repeatedly labeled in its own code as NOT hardware TEE
+attestation — nothing in Watchdog's current infrastructure runs inside a
+TEE, and this cannot prove anything against an already-compromised host.
+What it provides is real: a tamper-evident record of exactly which
+engines were active and that they produced no alerts. A genuine precursor
+to hardware attestation, not a substitute for it.
+
+detection/fleet_aggregation.py rolls up alerts across any number of nodes
+into a single view ("N of M nodes currently affected by alert type X"),
+covering all 29 automatic engines including the original four — which
+initially bypassed both the ledger and the fleet rollup, since
+DetectionPipeline.process()'s return value was being computed and
+silently discarded; both now consume it directly. alerting/state.py
+provides real OPEN/ACKNOWLEDGED/RESOLVED alert deduplication: the ledger
+and fleet rollup log every individual detection unconditionally, for a
+complete record, while repeat notifications to the external callback and
+console are suppressed so a flapping condition produces one notification,
+not one per sample.
 
 ---
 
@@ -251,39 +383,46 @@ process — and returned success regardless of whether anything happened.
 Both are fixed: kill_process now requires and verifies a named PID or
 refuses; VRAM_RESIDUAL's action is gpu_memory_reset, gated behind human
 approval by default, since no automated path to reclaim orphaned VRAM
-exists.
+exists. The five prediction-layer alert types, now that that layer is
+live, are explicitly mapped to log_only in this same table — not new
+behavior, since every prediction alert already reached this code and
+already fell through to that default; making it explicit turns an
+accidental safe default into an auditable one.
 
 orchestration/cluster_actions.py adds three infrastructure actions —
 kubernetes_taint, slurm_evict_job, nvlink_disable — wired in with the same
 discipline: all three are gated behind human approval by default, and all
 three refuse cleanly unless the alert supplies a specific target (node
-name, job ID, link index respectively). No current alert type supplies any
-of the three, so none of them fire yet even with human approval granted;
-mapping alert types to these actions is a deliberate, separate decision
-not yet made.
+name, job ID, link index respectively). detection/cluster_metadata.py now
+attaches node_name (when a deployment sets it via Kubernetes' Downward
+API) and job_id (available automatically inside any SLURM job) to every
+alert, giving kubernetes_taint and slurm_evict_job a real path to firing
+for the first time, given both human approval and the right deployment
+environment — neither has been tested against a real Kubernetes or SLURM
+cluster. nvlink_disable remains fully blocked: no detector currently maps
+an anomaly to the specific physical link index it requires.
 
 ---
 
 ## Alerting
 
-alerting/manager.py handles severity filtering and audit logging for every
-alert; this is wired in and runs on every alert. Four additional modules
-are imported in watchdog.py but never instantiated or called anywhere:
-alerting/state.py (alert lifecycle and deduplication), alerting/siem.py
-(PagerDuty/Splunk/Sentinel/Datadog routing — safe by design, each
-integration no-ops without its own credential env var),
-alerting/email_alerter.py, and intelligence/threat_intel.py. All four are
-dead imports as of this writing — present, loaded, doing nothing.
+alerting/manager.py handles severity filtering and audit logging for
+every alert, fully wired in. Two further modules are now also live:
+alerting/state.py (deduplication, described above under audit trail) and
+alerting/siem.py (PagerDuty/Splunk/Sentinel/Datadog routing — safe by
+design, each integration no-ops without its own credential env var). Two
+modules remain dead imports — present, loaded, doing nothing:
+alerting/email_alerter.py and intelligence/threat_intel.py.
 email_alerter.py has one known bug independent of being wired in: it
 hardcodes a reference to CVE-2048350 into every alert email regardless of
 the alert's actual type.
 
 intelligence/threat_intel.py additionally has a known problem in its own
-data, not just its wiring: KNOWN_IOCS lists named attack campaigns with
-invented attribution, dates, and CVSS scores, several referencing detector
-alert types that do not exist anywhere in this codebase (e.g.
-BOOT_ATTESTATION_FAIL, when the real type is ATTESTATION_FAILURE). Not
-wired in, not shipped as-is, flagged here rather than fixed silently.
+data, not just its wiring: KNOWN_IOCS previously listed named attack
+campaigns with invented attribution, dates, and CVSS scores. That
+fabricated data has been removed entirely rather than "corrected" with
+more guessing — the correlation logic is intact and now honestly reports
+zero matches until real, sourced entries are added. Still not wired in.
 
 ---
 
@@ -308,6 +447,25 @@ synthetic data, same as the rest of the repository's 36+ test files. The
 engines have not been run against a real GPU. The negative control in
 particular needs an hour on a clean idle H200 before it means anything.
 
+Two prediction agents cannot fire under any real-world condition today.
+CEIDegradationForecaster and EUAIActComplianceForecaster both require a
+real FLOPs/joule measurement no passive telemetry field provides; a real
+CEI benchmark now exists (see Prediction layer) but has not been run on
+real hardware, and EUAIActComplianceForecaster needs three further fields
+beyond CEI that remain unaddressed. TenantIsolationRiskScorer's timing
+signal is permanently silent for the same class of reason. The migration
+recommendation capability has no real fleet-topology awareness.
+
+Kubernetes and SLURM remediation actions are untested against real
+infrastructure. Both now have a real path to firing (see Remediation)
+but neither has been confirmed against an actual cluster of either kind.
+nvlink_disable remains structurally blocked entirely.
+
+Audit ledger has no protection against a writer that ignores its file
+lock, and no external anchoring beyond an optional, explicitly weaker
+email-based fallback. The clean-run certificate is not hardware TEE
+attestation and should not be represented as such.
+
 Container-only. RunPod and Vast.ai instances are Linux containers with GPU
 passthrough, not bare metal. Persistence mode and power caps are blocked by
 the hypervisor. Firmware attestation is not possible from this position.
@@ -322,12 +480,8 @@ the patent's general claims. It does not affect the more specific
 memory-clock mechanistic finding, or Watchdog's own detection capability,
 which stand independently of the patent's outcome.
 
-Prediction layer not wired in. See above. Contributes zero capability to a
-running instance today, regardless of the per-agent numbers reported.
-
-Alerting mostly not wired in. See above. Only alerting/manager.py runs
-today; SIEM routing, alert deduplication, email alerts, and threat-intel
-correlation are all present in the codebase and all inert.
+Email alerting and threat-intelligence correlation remain unwired from the
+live pipeline. See Alerting.
 
 ---
 
