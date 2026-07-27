@@ -7,15 +7,42 @@ as a verified proof bundle for compliance reviews.
 
 This is a compliance EVIDENCE tool. It does not constitute SOC2 or
 ISO 27001 certification. Formal certification requires an accredited auditor.
+
+FIXED: previously fell back to a hardcoded, public
+"watchdog-default-key-change-in-production" string whenever
+WATCHDOG_HARBOR_KEY wasn't set. Since that fallback string is sitting
+in this file's own source history, anyone who has ever seen this
+repository could forge a block that verifies as "validly signed" under
+the default key. A silent insecure fallback in a module whose entire
+purpose is cryptographic tamper-evidence defeats that purpose. Now
+refuses to construct at all without a real key -- same "refuse rather
+than guess" pattern used throughout this project (e.g.
+VRAMResidualDetector's strict mode, RemediationEngine's kill_process
+refusing without a named target).
 """
 import json, hmac, hashlib, time, os
 from datetime import datetime, timezone
 
+
+class SafeHarborKeyNotConfigured(RuntimeError):
+    """Raised when no real signing key is available. Deliberately not
+    swallowed -- a caller must either set WATCHDOG_HARBOR_KEY or pass
+    signing_key explicitly."""
+
+
 class AISafeHarborLedger:
     def __init__(self, signing_key=None, ledger_path=None):
-        self.secret_key = signing_key or os.environ.get(
-            "WATCHDOG_HARBOR_KEY", "watchdog-default-key-change-in-production"
-        ).encode()
+        key = signing_key or os.environ.get("WATCHDOG_HARBOR_KEY")
+        if not key:
+            raise SafeHarborKeyNotConfigured(
+                "AISafeHarborLedger requires a real signing key. Set the "
+                "WATCHDOG_HARBOR_KEY environment variable, or pass "
+                "signing_key= explicitly. Refusing to fall back to a "
+                "default key, since that key has been publicly visible "
+                "in this project's source and would let anyone forge a "
+                "'validly signed' block."
+            )
+        self.secret_key = key.encode() if isinstance(key, str) else key
         self.ledger_path = ledger_path or "watchdog_data/safe_harbor_ledger.jsonl"
         os.makedirs(os.path.dirname(self.ledger_path) if os.path.dirname(self.ledger_path) else ".", exist_ok=True)
         self.last_block_hash = self._get_last_hash()
