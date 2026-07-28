@@ -105,3 +105,39 @@ Stated so their absence is not mistaken for an oversight:
 - API rate limiting is per-process and keyed on peer address. Behind a
   proxy that does not forward the real client address, every request
   appears to come from one client.
+
+---
+
+## Recorded decision: cluster action automation
+
+Status: deliberately manual. Not an open task.
+
+All three cluster actions (kubernetes_taint, slurm_evict_job,
+nvlink_disable) remain gated behind human approval. This is a decision,
+not an omission.
+
+Reasoning, recorded so it does not have to be rediscovered: no current
+alert type can distinguish an attack from normal operation with enough
+confidence to justify killing running work automatically. The detectors
+themselves say so. CovertMiningDetector cannot determine authorization.
+PowerPeriodicityDetector reports that a periodic signal exists without
+attributing a cause. MultiGPUCorrelation is INFO-only and explicitly
+not an attack signal. NVLinkContentionDetector notes the same signature
+arises from legitimate distributed-training synchronization. Ghost power
+is normal on healthy idle GPUs. That hedging is honest design, and it is
+exactly why none of these should trigger destructive action unattended.
+
+One distinction to preserve if this is ever revisited: a Kubernetes
+taint stops new work from scheduling onto a node while running jobs
+continue. A SLURM eviction kills a job in progress. These are not
+equivalent risks and should not be automated together.
+
+The one candidate worth reconsidering after real hardware data exists:
+ECC_UNCORRECTABLE_ERROR -> kubernetes_taint only. An uncorrectable ECC
+error means memory corruption has already occurred -- unambiguous
+hardware failure rather than an inference, and the only alert in the
+catalog whose meaning is not hedged. Draining a node from new work on
+that signal is standard HPC practice and kills nothing already running.
+
+Revisit only once the hardware campaign has produced real false-positive
+rates. Deciding this from synthetic data would be guessing.
