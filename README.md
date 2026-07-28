@@ -19,7 +19,7 @@ It is built around two findings from our own hardware testing, both
 reproduced across multiple architectures:
 
 Ghost power — GPUs draw substantial power while NVML reports 0%
-utilization. Observed across A100 SXM, H100, H200, and B200. The magnitude
+utilization. Observed across A100, H100, H200, B200, and B300. The magnitude
 tracks memory clock: the HBM subsystem stays at full speed regardless of
 compute activity.
 
