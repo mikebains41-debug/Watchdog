@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Advanced eBPF Quarantine Core Verifier
+Watchdog v2.0 - Advanced eBPF Quarantine Core Verifier
 Deep structural compatibility check before EBPFQuarantine activation.
 Checks cgroup v2 unified hierarchy, kprobes, and perf_event access.
 Extends verify_ebpf_compat.py with lower-level kernel structure checks.

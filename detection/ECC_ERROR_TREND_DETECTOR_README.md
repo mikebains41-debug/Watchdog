@@ -1,7 +1,7 @@
 # ECCErrorTrendDetector
 
 **Author:** Manmohan (Mike) Bains
-**Company:** GPU Optimizer Inc. / Watchdog AIDR
+**Company:** GPU Optimizer Inc. / Watchdog
 **Status:** Detection logic complete, tested with synthetic data (4/4
 tests passing). Not yet run against real ECC error events on live
 hardware.

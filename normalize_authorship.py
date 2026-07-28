@@ -7,7 +7,7 @@ file in the repo, so authorship is unambiguous everywhere -- not just in
 the files that already had some form of it.
 
 Standard line, identical for both file types:
-  # Author: Manmohan (Mike) Bains -- Watchdog AIDR
+  # Author: Manmohan (Mike) Bains -- Watchdog
 
 Behavior per file:
   - If a line already matches an existing author pattern ("Mike Bains",
@@ -35,7 +35,7 @@ import subprocess
 import sys
 import os
 
-STANDARD_LINE = "# Author: Manmohan (Mike) Bains -- Watchdog AIDR\n"
+STANDARD_LINE = "# Author: Manmohan (Mike) Bains -- Watchdog\n"
 
 AUTHOR_PATTERN = re.compile(r"(Mike Bains|Manmohan|Author\s*:)", re.IGNORECASE)
 

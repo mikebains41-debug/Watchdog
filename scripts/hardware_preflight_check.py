@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
 scripts/hardware_preflight_check.py
 

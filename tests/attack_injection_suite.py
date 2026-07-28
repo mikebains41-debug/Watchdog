@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
-# Watchdog AIDR - Attack Injection Suite
+# Author: Manmohan (Mike) Bains -- Watchdog
+# Watchdog - Attack Injection Suite
 # Runs every positive-control test built tonight across all 8 test
 # files, dynamically discovered via inspect -- no duplicated logic.
 # HONEST STATUS: all patterns already individually verified tonight.
@@ -64,7 +64,7 @@ def run_module_tests(module_name):
 
 def main():
     print("=" * 60)
-    print("WATCHDOG AIDR - ATTACK INJECTION SUITE")
+    print("WATCHDOG - ATTACK INJECTION SUITE")
     print("=" * 60)
 
     total_passed = 0

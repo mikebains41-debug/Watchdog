@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - CVSS v3.1 Scoring
+Watchdog v2.0 - CVSS v3.1 Scoring
 Maps each detection engine alert type to a CVSS v3.1 base score and vector.
 Scores reflect GPU infrastructure threat model:
 - Confidentiality: proprietary model weights, training data, VRAM contents

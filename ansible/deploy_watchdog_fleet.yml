@@ -1,5 +1,5 @@
 ---
-- name: Distribute and Initialize Watchdog AIDR Across Fleet Clusters
+- name: Distribute and Initialize Watchdog Across Fleet Clusters
   hosts: container_clusters
   gather_facts: false
   vars:
@@ -48,7 +48,7 @@
     - name: Report eBPF Status
       ansible.builtin.debug:
         msg: "eBPF: {{ ebpf_check.rc == 0 | ternary('APPROVED', 'FALLBACK TO USERSPACE') }}"
-    - name: Deploy Watchdog AIDR Helm Chart
+    - name: Deploy Watchdog Helm Chart
       kubernetes.core.helm:
         name: watchdog-aidr
         chart_ref: "./helm/watchdog-aidr"

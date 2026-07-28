@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
 detection/_shared.py
 

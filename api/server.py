@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 import json, os, time
 from datetime import datetime
 
@@ -210,9 +210,9 @@ try:
     from fastapi import FastAPI, Request
     from fastapi.responses import PlainTextResponse
     import uvicorn
-    app = FastAPI(title="Watchdog AIDR", version="1.0.0")
+    app = FastAPI(title="Watchdog", version="1.0.0")
     @app.get("/")
-    def root(): return {"service": "Watchdog AIDR", "version": "1.0.0", "endpoints": ["/status", "/alerts", "/metrics", "/attest", "/health", "/throughput", "/hashrate"]}
+    def root(): return {"service": "Watchdog", "version": "1.0.0", "endpoints": ["/status", "/alerts", "/metrics", "/attest", "/health", "/throughput", "/hashrate"]}
     @app.get("/status")
     def status(): return {"status":"running","gpu_count":_state['gpu_count'],"alert_count":_state['alert_count'],"last_alert":_state['alerts'][-1] if _state['alerts'] else None,"timestamp":datetime.now().isoformat()}
     @app.get("/alerts")

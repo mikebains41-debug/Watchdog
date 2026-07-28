@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 set -euo pipefail
 
 echo "[WATCHDOG BUILD] Running local test suite..."

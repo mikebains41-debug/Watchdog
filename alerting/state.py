@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Alert State Management
+Watchdog v2.0 - Alert State Management
 Tracks alert lifecycle: OPEN -> ACKNOWLEDGED -> RESOLVED
 Prevents duplicate alerts, enables SOC workflow integration.
 """

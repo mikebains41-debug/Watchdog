@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - CVE-2048350 Detection Latency
+Watchdog v2.0 - CVE-2048350 Detection Latency
 
 FIXED vs. original:
   - The original "scavenger" allocated a NEW tensor in the SAME process

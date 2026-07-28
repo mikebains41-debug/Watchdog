@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - eBPF Kernel Compatibility Verifier
+Watchdog v2.0 - eBPF Kernel Compatibility Verifier
 Tests host kernels before deploying EBPFQuarantine driver.
 Checks kernel version, BTF presence, required config flags,
 cgroup v2, and BPF JIT status.

@@ -53,7 +53,7 @@ def check_file(path):
 
     findings = []
     for i, line in enumerate(lines):
-        if "Watchdog AIDR" in line and ("Author" in line or "Manmohan" in line):
+        if "Watchdog" in line and ("Author" in line or "Manmohan" in line):
             my_indent = indent_of(line)
             prev_line = lines[i - 1] if i > 0 else ""
             next_line = lines[i + 1] if i + 1 < len(lines) else ""

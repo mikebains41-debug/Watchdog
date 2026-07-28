@@ -1,4 +1,4 @@
-# Watchdog AIDR - CUDA/NCCL Interception Hooks
+# Watchdog - CUDA/NCCL Interception Hooks
 
 ## Files
 

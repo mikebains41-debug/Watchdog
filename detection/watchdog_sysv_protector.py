@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - System V IPC Shared Memory Protector
+Watchdog v2.0 - System V IPC Shared Memory Protector
 Attaches to System V IPC memory segments read-only and marks
 them for deletion to prevent future re-attachment.
 

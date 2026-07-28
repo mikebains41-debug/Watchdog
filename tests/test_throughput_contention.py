@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
 Tests for ThroughputContentionDetector: paired positive and negative controls.
 

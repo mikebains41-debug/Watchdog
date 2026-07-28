@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - System Health Dashboard Endpoint
+Watchdog v2.0 - System Health Dashboard Endpoint
 Reports CPU, memory, GPU state, and Watchdog subsystem status.
 Mounts on existing FastAPI instance in api/server.py.
 Register: from api.health_dashboard import register_health

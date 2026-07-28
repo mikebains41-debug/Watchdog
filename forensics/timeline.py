@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Watchdog AIDR v2.0 - Multi-GPU Attack Timeline & Kill Chain Report
+Watchdog v2.0 - Multi-GPU Attack Timeline & Kill Chain Report
 Builds chronological attack timeline across multiple GPUs.
 Identifies kill chain stages, first-seen GPU, propagation patterns.
 Maps to MITRE ATLAS and MITRE ATT&CK for ICS frameworks.
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
 import json, time
 from datetime import datetime, timezone
@@ -82,7 +82,7 @@ class AttackTimelineBuilder:
             'report_metadata': {
                 'title': 'Multi-GPU Attack Timeline & Kill Chain Report',
                 'generated_at': datetime.now(timezone.utc).isoformat(),
-                'system': 'Watchdog AIDR v2.0',
+                'system': 'Watchdog v2.0',
                 'author': 'Manmohan Mike Bains',
                 'cve_reference': 'CVE-2048350 (pending assignment)',
                 'frameworks': ['MITRE ATLAS', 'MITRE ATT&CK for ICS'],

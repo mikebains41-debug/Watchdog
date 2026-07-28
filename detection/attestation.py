@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 import subprocess, hashlib, json, os, time
 from datetime import datetime
 class BootAttestation:

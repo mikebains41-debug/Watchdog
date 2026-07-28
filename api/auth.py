@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - API Authentication
+Watchdog v2.0 - API Authentication
 API key authentication middleware for FastAPI.
 Keys stored as SHA256 hashes — never plaintext.
 Supports multiple keys with different permission levels.

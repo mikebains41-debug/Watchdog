@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
 Noisy-neighbor simulator - creates generic, irregular GPU memory access
 contention to test whether CacheTimingProbeDetector responds differently

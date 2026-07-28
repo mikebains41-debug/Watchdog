@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Air-Gapped Threat Intel Engine
+Watchdog v2.0 - Air-Gapped Threat Intel Engine
 Extends ThreatIntelEngine with offline signed IOC bundle support.
 Falls back to built-in IOCs if no bundles are present.
 """

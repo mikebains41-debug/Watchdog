@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 # Project: GPU Optimizer / Watchdog
 # Host Isolation Audit - all non-destructive checks run during the
 # Vast.ai 2xH200 session, 2026-06-21

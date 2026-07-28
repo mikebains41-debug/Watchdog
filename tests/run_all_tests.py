@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
-# Watchdog AIDR - Validation Suite (only real, confirmed-existing scripts)
+# Author: Manmohan (Mike) Bains -- Watchdog
+# Watchdog - Validation Suite (only real, confirmed-existing scripts)
 import sys, subprocess
 from datetime import datetime
 

@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 import smtplib, json, os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -16,7 +16,7 @@ class EmailAlerter:
             severity = alert.get('severity','INFO')
             subject = f"[WATCHDOG {severity}] {alert.get('type')} — GPU {alert.get('gpu')}"
             body = f"""
-WATCHDOG AIDR ALERT
+WATCHDOG ALERT
 ===================
 Time      : {alert.get('timestamp',datetime.now().isoformat())}
 Type      : {alert.get('type')}

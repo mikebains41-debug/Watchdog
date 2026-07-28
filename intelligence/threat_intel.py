@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Threat Intelligence Engine
+Watchdog v2.0 - Threat Intelligence Engine
 IOC matching against known GPU attack signatures.
 Correlates live alerts against known threat actor TTPs.
 Cross-references MITRE ATLAS and CVE database.
@@ -102,7 +102,7 @@ class ThreatIntelEngine:
             "report_metadata": {
                 "title": "Threat Intelligence IOC Match Report",
                 "generated_at": datetime.now(timezone.utc).isoformat(),
-                "system": "Watchdog AIDR v2.0",
+                "system": "Watchdog v2.0",
                 "ioc_database_version": "2026.06",
                 "total_iocs_checked": len(KNOWN_IOCS),
             },

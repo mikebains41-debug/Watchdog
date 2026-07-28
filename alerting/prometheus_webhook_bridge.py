@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Prometheus Alertmanager Webhook Bridge
+Watchdog v2.0 - Prometheus Alertmanager Webhook Bridge
 Receives Alertmanager payloads and routes through SIEMRouter.
 
 Wire into Alertmanager config:

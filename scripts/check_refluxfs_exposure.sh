@@ -1,5 +1,5 @@
 #!/bin/bash
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 #
 # check_refluxfs_exposure.sh
 #

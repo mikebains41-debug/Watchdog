@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 import time, collections, hashlib, subprocess
 from datetime import datetime
 from detection._shared import _EventState, _f

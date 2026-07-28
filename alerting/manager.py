@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 import json, os, time, hashlib, urllib.request
 from datetime import datetime
 SEVERITY_LEVELS = {'INFO':0,'WARNING':1,'CRITICAL':2,'EMERGENCY':3}
@@ -49,7 +49,7 @@ class SlackAlerter:
         self.webhook_url = webhook_url or os.environ.get('WATCHDOG_SLACK_WEBHOOK')
     def send(self, alert):
         if not self.webhook_url: return False
-        payload = {'attachments':[{'color':SEVERITY_COLORS.get(alert.get('severity'),'#ccc'),'title':f"[{alert.get('severity')}] {alert.get('type')}","text":alert.get('message',''),'footer':'Watchdog AIDR — CVE-2048350 (pending assignment)'}]}
+        payload = {'attachments':[{'color':SEVERITY_COLORS.get(alert.get('severity'),'#ccc'),'title':f"[{alert.get('severity')}] {alert.get('type')}","text":alert.get('message',''),'footer':'Watchdog — CVE-2048350 (pending assignment)'}]}
         try:
             data = json.dumps(payload).encode()
             req = urllib.request.Request(self.webhook_url, data=data, headers={'Content-Type':'application/json'})

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
-echo "=== WATCHDOG AIDR INSTALLER ==="
+# Author: Manmohan (Mike) Bains -- Watchdog
+echo "=== WATCHDOG INSTALLER ==="
 pip3 install fastapi uvicorn --break-system-packages
 git clone https://github.com/mikebains41-debug/Watchdog.git
 cd Watchdog

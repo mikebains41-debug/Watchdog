@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Compliance Evidence Report Generator
+Watchdog v2.0 - Compliance Evidence Report Generator
 Produces structured JSON evidence reports mapping Watchdog alerts to
 relevant controls in the following frameworks:
 - SOC2 Type II (Security, Availability, Confidentiality)
@@ -46,7 +46,7 @@ FRAMEWORK_MAP = {
 }
 
 class ComplianceReportGenerator:
-    def __init__(self, org_name='', system_name='Watchdog AIDR v2.0', gpu_info=None):
+    def __init__(self, org_name='', system_name='Watchdog v2.0', gpu_info=None):
         self.org_name = org_name
         self.system_name = system_name
         self.gpu_info = gpu_info or []

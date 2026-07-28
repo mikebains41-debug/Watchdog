@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - POSIX Shared Memory Read-Only Enforcer
+Watchdog v2.0 - POSIX Shared Memory Read-Only Enforcer
 Locks /dev/shm model weight segments to read-only after loading.
 Prevents runtime modification of active model layers.
 

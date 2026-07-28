@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - AI Safe-Harbor Ledger S3 Export Module
+Watchdog v2.0 - AI Safe-Harbor Ledger S3 Export Module
 Automated out-of-band streaming export of auditor proof bundles
 to AWS S3 or sovereign MinIO/Ceph object storage.
 

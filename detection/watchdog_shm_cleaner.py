@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Orphaned /dev/shm Segment Cleaner
+Watchdog v2.0 - Orphaned /dev/shm Segment Cleaner
 Detects and unlinks dead shared memory segments from terminated
 Kubernetes container workloads. Runs every 10 minutes via CronJob.
 

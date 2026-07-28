@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 # Project: GPU Optimizer
 """
 VRAM Residual Test - SIGKILL Full Methodology

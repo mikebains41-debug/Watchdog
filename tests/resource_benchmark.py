@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
-# Watchdog AIDR - Resource Overhead Benchmark
+# Author: Manmohan (Mike) Bains -- Watchdog
+# Watchdog - Resource Overhead Benchmark
 # Measures Watchdog's own CPU/memory overhead processing synthetic
 # telemetry through the real DetectionPipeline. No GPU/nvidia-smi
 # needed -- fully runnable on this device.

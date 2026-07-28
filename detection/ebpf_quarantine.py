@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - eBPF Micro-Quarantine Controller
+Watchdog v2.0 - eBPF Micro-Quarantine Controller
 Terminates offending container namespaces when critical engines fire.
 
 DEPLOYMENT NOTE: eBPF requires Linux kernel >= 5.4 and CAP_BPF capability.

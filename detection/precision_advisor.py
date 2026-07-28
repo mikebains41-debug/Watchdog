@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Adaptive Precision Recommendation Engine
+Watchdog v2.0 - Adaptive Precision Recommendation Engine
 Monitors real-time GPU telemetry and recommends precision switches
 (FP32 -> FP16 -> BF16 -> FP8) based on energy state and thermal state.
 

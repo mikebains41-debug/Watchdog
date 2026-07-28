@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - SIEM Integration
+Watchdog v2.0 - SIEM Integration
 Supports: PagerDuty Events API v2, Splunk HEC, Microsoft Sentinel,
           Datadog Events API
 Each integration is optional — only fires if credentials are set.
@@ -42,7 +42,7 @@ class PagerDutyIntegration:
             'payload': {
                 'summary': alert.get('message', alert.get('type')),
                 'severity': severity_map.get(alert.get('severity','WARNING'), 'warning'),
-                'source': f"Watchdog AIDR v2.0 - GPU {alert.get('gpu',0)}",
+                'source': f"Watchdog v2.0 - GPU {alert.get('gpu',0)}",
                 'timestamp': alert.get('timestamp', datetime.utcnow().isoformat()),
                 'custom_details': {
                     'alert_type': alert.get('type'),
@@ -95,7 +95,7 @@ class SplunkHECIntegration:
 class SentinelIntegration:
     """Microsoft Sentinel Custom Log via Data Collector API"""
 
-    def __init__(self, workspace_id=None, shared_key=None, log_type='WatchdogAIDR'):
+    def __init__(self, workspace_id=None, shared_key=None, log_type='WatchdogWatchdog'):
         self.workspace_id = workspace_id or os.environ.get('SENTINEL_WORKSPACE_ID')
         self.shared_key = shared_key or os.environ.get('SENTINEL_SHARED_KEY')
         self.log_type = log_type

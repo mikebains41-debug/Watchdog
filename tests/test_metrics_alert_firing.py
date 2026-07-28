@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Prometheus Metrics Endpoint Validation
+Watchdog v2.0 - Prometheus Metrics Endpoint Validation
 
 FIXED vs. original:
   - The original independently reimplemented alert-firing logic with

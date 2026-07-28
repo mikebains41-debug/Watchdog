@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
-# Watchdog AIDR - Multi-Node Swarm Test
+# Author: Manmohan (Mike) Bains -- Watchdog
+# Watchdog - Multi-Node Swarm Test
 # HONEST STATUS: requires 2+ real running Watchdog API server instances
 # reachable over the network. Uses the REAL endpoints confirmed in
 # api/server.py: /status, /alerts, /health, /throughput.

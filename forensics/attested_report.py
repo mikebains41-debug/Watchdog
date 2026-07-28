@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Watchdog AIDR v2.0 - Attested Report Generator
+Watchdog v2.0 - Attested Report Generator
 Produces a structured alert report formatted for Serial Alice attestation.
 
 When submitted to Serial Alice, each Watchdog alert session becomes:
@@ -12,7 +12,7 @@ When submitted to Serial Alice, each Watchdog alert session becomes:
 This makes every Watchdog security finding as credible as the
 GPU Energy Optimizer measurements in the June 27 2026 validation report.
 
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
 import json, hashlib, time
 from datetime import datetime, timezone

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Watchdog AIDR
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Watchdog
+# Author: Manmohan (Mike) Bains -- Watchdog
 # Project: GPU Optimizer / Watchdog
 #
 # Positive Control Tests: detection/memory_attacks.py (3 detectors)

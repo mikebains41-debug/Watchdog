@@ -317,7 +317,7 @@ class FullDetectionPipeline:
             if self.on_alert: self.on_alert(alert)
 
 def main():
-    parser = argparse.ArgumentParser(description='Watchdog AIDR v2.0')
+    parser = argparse.ArgumentParser(description='Watchdog v2.0')
     parser.add_argument('--hz', type=int, default=100)
     parser.add_argument('--duration', type=int, default=None)
     parser.add_argument('--output', type=str, default='watchdog_data')
@@ -330,7 +330,7 @@ def main():
     parser.add_argument('--gpu', type=int, default=None)
     parser.add_argument('--fleet-size', type=int, default=None)
     args = parser.parse_args()
-    print(f"\n[WATCHDOG AIDR v2.0] Start: {datetime.now().isoformat()}")
+    print(f"\n[WATCHDOG v2.0] Start: {datetime.now().isoformat()}")
     gpus = detect_gpus()
     if not gpus: print("[ERROR] No GPUs."); sys.exit(1)
     print(f"[WATCHDOG] GPUs: {gpus}")

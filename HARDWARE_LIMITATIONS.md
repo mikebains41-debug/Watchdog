@@ -1,4 +1,4 @@
-# Watchdog AIDR - Hardware Sensor Limitations
+# Watchdog - Hardware Sensor Limitations
 
 The following catalog features require physical sensor hardware not
 present in standard cloud GPU VMs (RunPod, GCP, AWS, Azure) and are

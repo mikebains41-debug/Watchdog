@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 import os, subprocess, time, json
 from datetime import datetime
 from orchestration.cluster_actions import ClusterOrchestration

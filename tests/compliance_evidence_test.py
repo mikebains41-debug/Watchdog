@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
-# Watchdog AIDR - Compliance Evidence Generation Test
+# Author: Manmohan (Mike) Bains -- Watchdog
+# Watchdog - Compliance Evidence Generation Test
 # Proves the real AuditLedger append/verify chain works correctly.
 #
 # CORRECTED: the original pasted version of this test called

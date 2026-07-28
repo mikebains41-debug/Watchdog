@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
-# Watchdog AIDR - Competitor Comparison Report
+# Author: Manmohan (Mike) Bains -- Watchdog
+# Watchdog - Competitor Comparison Report
 # Documentation-grounded comparison, NOT a live automated benchmark --
 # that would require installing real competitor tools (DCGM, Datadog)
 # side by side, which is not available in this session. Every claim
@@ -51,7 +51,7 @@ COMPARISON = [
 
 def generate_report():
     print("=" * 70)
-    print("WATCHDOG AIDR vs STANDARD MONITORING TOOLS -- COMPARISON REPORT")
+    print("WATCHDOG vs STANDARD MONITORING TOOLS -- COMPARISON REPORT")
     print("Documentation-grounded, NOT a live automated benchmark")
     print("=" * 70)
 

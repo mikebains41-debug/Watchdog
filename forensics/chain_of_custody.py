@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 import json, os, hashlib, shutil
 from datetime import datetime
 class ChainOfCustody:

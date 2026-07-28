@@ -1,4 +1,4 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
 FIXED: this module previously hardcoded 'detection_coverage': '16
 detection engines active', 'detection_engines': 16, and
@@ -74,7 +74,7 @@ class ComplianceReporter:
         return {
             'report': 'NIST AI RMF — control mapping evidence only, not certification',
             'generated': datetime.now().isoformat(),
-            'govern': {'policy': 'Watchdog AIDR active', 'cve_filed': '2048350', 'cve_status': 'pending MITRE assignment'},
+            'govern': {'policy': 'Watchdog active', 'cve_filed': '2048350', 'cve_status': 'pending MITRE assignment'},
             'map': {'threat_categories': types, 'total_detections': len(alerts)},
             'measure': {
                 'detection_engines': self.engine_count if self.engine_count is not None else 'not supplied by caller',

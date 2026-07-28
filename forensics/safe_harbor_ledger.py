@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - AI Safe-Harbor Ledger
+Watchdog v2.0 - AI Safe-Harbor Ledger
 Cryptographically chained compliance event ledger for auditor delivery.
 HMAC-SHA256 signed blocks. Every event is tamper-evident and exportable
 as a verified proof bundle for compliance reviews.
@@ -91,7 +91,7 @@ class AISafeHarborLedger:
             "cve_reference": cve,
             "framework_controls": framework_controls or [],
             "parent_block_hash": self.last_block_hash,
-            "system": "Watchdog AIDR v2.0",
+            "system": "Watchdog v2.0",
             "cve_baseline": "CVE-2048350 (pending assignment)",
         }
         serialized = json.dumps(payload, sort_keys=True).encode()
@@ -137,7 +137,7 @@ class AISafeHarborLedger:
         bundle = {
             "export_metadata": {
                 "format_version": "1.0.0",
-                "authority": "Watchdog AIDR v2.0 Cryptographic Evidence System",
+                "authority": "Watchdog v2.0 Cryptographic Evidence System",
                 "exported_at": datetime.now(timezone.utc).isoformat(),
                 "chain_status": msg,
                 "chain_valid": valid,

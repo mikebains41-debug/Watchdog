@@ -1,7 +1,7 @@
 # ConfidentialComputingIntegrityDetector
 
 **Author:** Manmohan (Mike) Bains
-**Company:** GPU Optimizer Inc. / Watchdog AIDR
+**Company:** GPU Optimizer Inc. / Watchdog
 **Status:** Detection logic complete, tested with mocked nvidia-smi
 output (4/4 tests passing). NOT yet run against real Confidential
 Computing hardware.

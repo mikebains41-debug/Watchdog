@@ -1,6 +1,6 @@
-# Author: Manmohan (Mike) Bains -- Watchdog AIDR
+# Author: Manmohan (Mike) Bains -- Watchdog
 """
-Watchdog AIDR v2.0 - Webhook Pipeline Integration Test
+Watchdog v2.0 - Webhook Pipeline Integration Test
 Tests full alert lifecycle: firing then resolved.
 Requires Watchdog API running: python3 watchdog.py --api
 """
