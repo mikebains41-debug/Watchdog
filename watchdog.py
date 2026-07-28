@@ -302,14 +302,26 @@ def main():
     if args.test: run_tests(); return
     alert_mgr = AlertManager(min_severity=args.severity, slack_webhook=args.slack, audit_log_path=os.path.join(args.output,'audit.log'))
     remediation = RemediationEngine(auto_remediate=args.auto_remediate)
+    # api_hooks lets on_alert/on_sample feed api/server.py's _state, but
+    # only when --api is actually in use. api/server.py's own comment
+    # records that update_state() was never called from here -- which
+    # meant /status, /alerts and /metrics returned empty data in every
+    # real run, regardless of what the detectors were actually finding.
+    api_hooks = {'update_state': None}
     def on_alert(alert):
         alert_mgr.handle(alert)
         remediation.handle(alert)
+        if api_hooks['update_state']:
+            api_hooks['update_state'](alerts=[alert])
+    def on_sample(row):
+        pipeline.process(row)
+        if api_hooks['update_state']:
+            api_hooks['update_state'](telemetry_row=row)
     pipeline = FullDetectionPipeline(on_alert=on_alert, fleet_size=args.fleet_size)
     print(f"[WATCHDOG] Detection engines: {pipeline.total_engine_count} active")
     if args.api:
         try:
-            from api.server import run_api, set_pipeline
+            from api.server import run_api, set_pipeline, update_state
             # Pass the FULL pipeline, not .base -- /throughput needs
             # base's calibrate_throughput/process_throughput, but
             # /hashrate needs hashrate_correlation which lives on
@@ -317,11 +329,13 @@ def main():
             # which object they need; passing .base here made the
             # hashrate detector unreachable.
             set_pipeline(pipeline)
+            api_hooks['update_state'] = update_state
+            update_state(gpu_count=len(gpus))
             t = threading.Thread(target=run_api, kwargs={'host':'0.0.0.0','port':args.api_port}, daemon=True)
             t.start()
             print(f"[WATCHDOG] API at http://0.0.0.0:{args.api_port}")
         except Exception as e: print(f"[API ERROR] {e}")
-    collector = TelemetryCollector(sample_hz=args.hz, output_dir=args.output, gpu_index=args.gpu, on_sample=pipeline.process)
+    collector = TelemetryCollector(sample_hz=args.hz, output_dir=args.output, gpu_index=args.gpu, on_sample=on_sample)
     try:
         print("[WATCHDOG] Running... Ctrl+C to stop\n")
         collector.start(duration_seconds=args.duration)
