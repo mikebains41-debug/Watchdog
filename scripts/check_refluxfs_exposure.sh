@@ -5,7 +5,11 @@
 #
 # Checks the three published exposure conditions for CVE-2026-64600
 # ("RefluXFS"), a Linux kernel XFS copy-on-write race condition
-# disclosed by Qualys 2026-07-22, fixed upstream 2026-07-16:
+# disclosed by Qualys 2026-07-22, fixed upstream 2026-07-16.
+# NVD record (independent government source, CVSS 3.1 base 7.8 HIGH,
+# local-access-only -- AV:L/AC:L/PR:L/UI:N):
+#   https://nvd.nist.gov/vuln/detail/CVE-2026-64600
+# Exposure preconditions:
 #   1. Kernel version >= 4.11 and unpatched
 #   2. An XFS filesystem is in use
 #   3. reflink is enabled on that XFS filesystem
