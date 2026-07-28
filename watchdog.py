@@ -28,6 +28,7 @@ from intelligence.swarm.telemetry_adapter import adapt_row_to_swarm_telemetry
 from detection.migration_recommendation import MigrationRecommendationGenerator
 from intelligence.cei_benchmark import CEIBenchmarkRunner
 from intelligence.compliance_metrics import ComplianceMetricsTracker
+from scripts.vram_residency_challenge import run_residency_challenge
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -82,6 +83,7 @@ class FullDetectionPipeline:
         self.migration_advisor = MigrationRecommendationGenerator()
         self.cei_benchmark = CEIBenchmarkRunner()
         self.compliance_metrics = ComplianceMetricsTracker()
+        self._last_residency_latency_ms = None
         # on_alert=None here deliberately: self.base's own internal _emit()
         # would otherwise call the external callback directly, and process()
         # below ALSO routes the returned alert list through fleet/ledger --
@@ -158,12 +160,45 @@ class FullDetectionPipeline:
                 had_alert = True
                 self._handle_alert(alert)
         self.compliance_metrics.record_sample(row, self.base.ghost_power.baseline_w)
-        swarm_telemetry = adapt_row_to_swarm_telemetry(row)
+        swarm_telemetry = adapt_row_to_swarm_telemetry(row, residency_latency_ms=self._last_residency_latency_ms)
         swarm_alerts = self.swarm.ingest(swarm_telemetry)
         if swarm_alerts:
             had_alert = True
         self._record_swarm_alerts(swarm_alerts)
         self.cert_gen.record_sample(had_alert=had_alert, timestamp=time.time())
+
+    def run_residency_probe(self, size_mb=512, hold_seconds=0):
+        """
+        Runs scripts/vram_residency_challenge.py's real latency probe
+        and caches the result for TenantIsolationRiskScorer's
+        memory_access_timing_ms signal, which nothing else in this
+        pipeline can supply. Deliberately a separate, explicitly-called
+        entry point -- not part of process(row) -- since it allocates
+        real VRAM (default 512MB) and holds it, not something to do
+        every sample.
+
+        HONEST STATUS: this measures read latency on a buffer WATCHDOG
+        ITSELF allocated and is holding -- not a live tenant's actual
+        memory. TenantIsolationRiskScorer treats elevated latency as
+        one signal contributing to isolation risk; that is a
+        defensible but indirect inference, stated here rather than
+        implied by the field name.
+
+        If the pattern's checksum fails to verify after the hold, the
+        reading is discarded and the cache is NOT updated -- a failed
+        checksum means something is already wrong (corruption, a bug,
+        or a real anomaly), and using its timing data as if it were
+        trustworthy would compound that rather than surface it.
+        Returns None if no CUDA GPU is available.
+        """
+        result = run_residency_challenge(size_mb=size_mb, hold_seconds=hold_seconds)
+        if result is None:
+            return None
+        if not result['checksum_valid']:
+            return {**result, 'discarded_reason':
+                     'checksum failed -- not used as a residency-timing signal'}
+        self._last_residency_latency_ms = result['read_latency_ms']
+        return result
 
     def _record_swarm_alerts(self, alerts):
         """

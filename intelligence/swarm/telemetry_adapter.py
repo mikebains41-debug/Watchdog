@@ -31,8 +31,9 @@ fabricated -- stated per field, not glossed over:
 
   memory_access_timing_ms: needs active latency probing (write a
     pattern, measure access time), not passive telemetry -- the same
-    technique security/active_vram_residency already uses elsewhere in
-    this project, not wired to this adapter. Left at 0.
+    technique scripts/vram_residency_challenge.py already implements
+    (write a seeded pattern, read back, measure latency and verify
+    checksum), not wired to this adapter. Left at 0.
     TenantIsolationRiskScorer (agent4) will NOT crash on this -- it
     defaults timing_ms to 0 internally -- but its timing-based signal
     (20% of its weighted confidence score) will always compute to 0,
@@ -41,7 +42,7 @@ fabricated -- stated per field, not glossed over:
 """
 
 
-def adapt_row_to_swarm_telemetry(row):
+def adapt_row_to_swarm_telemetry(row, residency_latency_ms=None):
     return {
         'power_watts': row.get('power.draw', 0) or 0,
         'gpu_util': row.get('utilization.gpu', 0) or 0,
@@ -55,5 +56,5 @@ def adapt_row_to_swarm_telemetry(row):
         'idle_power_w': 0,
         'crash_count': 0,
         'isolation_score': 1.0,
-        'memory_access_timing_ms': 0,
+        'memory_access_timing_ms': (residency_latency_ms if residency_latency_ms is not None else 0),
     }
