@@ -18,7 +18,7 @@ What to check on each instance (host_isolation_audit.sh + additions):
 Leftover tenant files in container filesystem — record age + count, do NOT inspect contents
 Unpatched kernel CVEs — check against CISA KEV, specifically:
   - CVE-2026-31431 ("Copy Fail") — kernel version string check, known fragile to backports
-  - CVE-2026-64600 ("RefluXFS") — scripts/check_refluxfs_exposure.sh, checks kernel version + XFS + reflink
+  - CVE-2026-64600 ("RefluXFS") — scripts/check_refluxfs_exposure.sh, checks kernel version + XFS + reflink. NVD: https://nvd.nist.gov/vuln/detail/CVE-2026-64600 (CVSS 3.1 7.8 HIGH, local-access-only, not remotely exploitable)
 Container overlay sanitization gap
 Host isolation: network, namespaces, IPC sockets, mount hygiene
 Noisy-neighbor throughput degradation (contention_benchmark.py) — repeat 3x for a real number
