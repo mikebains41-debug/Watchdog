@@ -432,9 +432,12 @@ alerting/siem.py (PagerDuty/Splunk/Sentinel/Datadog routing — safe by
 design, each integration no-ops without its own credential env var). Two
 modules remain dead imports — present, loaded, doing nothing:
 alerting/email_alerter.py and intelligence/threat_intel.py.
-email_alerter.py has one known bug independent of being wired in: it
-hardcodes a reference to CVE-2048350 into every alert email regardless of
-the alert's actual type.
+email_alerter.py's previously-documented bug -- a hardcoded
+CVE-2048350 reference in every alert email regardless of the alert's
+actual type -- is no longer present in the file; its body carries only
+timestamp, type, severity, GPU, confidence, and message. It does
+default to a hardcoded personal recipient address when none is
+configured, which any real deployment should override.
 
 intelligence/threat_intel.py additionally has a known problem in its own
 data, not just its wiring: KNOWN_IOCS previously listed named attack
@@ -442,6 +445,35 @@ campaigns with invented attribution, dates, and CVSS scores. That
 fabricated data has been removed entirely rather than "corrected" with
 more guessing — the correlation logic is intact and now honestly reports
 zero matches until real, sourced entries are added. Still not wired in.
+
+---
+
+## API security
+
+The API is off unless --api is passed. When enabled, every endpoint
+except /health requires an API key.
+
+Keys are generated with secrets.token_urlsafe(32) and only their SHA256
+hash is stored; the plaintext key is shown once at generation and never
+again. There is no default or fallback key -- a first run with none
+configured generates a fresh random one rather than falling back to
+anything predictable.
+
+Brute-force protection (api/rate_limit.py): 5 failed attempts from one
+client within 5 minutes blocks that client for 15 minutes, returning
+429 with a Retry-After header. A successful auth clears that client's
+failure count. Before this existed, an attacker could attempt unlimited
+keys as fast as the network allowed. Both the audit log and any active
+blocks persist to watchdog_data/auth_log.json, so neither is lost on
+restart; expired blocks are dropped on load rather than restored.
+
+Three limits stated rather than left to be found. Client identity is
+the peer address, so a deployment behind a proxy or load balancer must
+forward the real client address -- otherwise every request appears to
+come from one client and blocking one blocks everyone. Blocks are
+per-process: multiple API processes do not share state, so this is not
+a distributed rate limiter. And it raises the cost of guessing from one
+source without defending against a distributed attempt from many.
 
 ---
 
