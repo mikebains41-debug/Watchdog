@@ -118,3 +118,26 @@ Output: for each detector, one of three verdicts —
 
 That table is the other half of the pitch. Step 1 proves the problem is
 real. Step 2 proves the product solves it. Neither alone is enough.
+
+ADDED — SIGKILL accounting measurement (few minutes, high value)
+
+Open question the existing tests cannot answer: does SIGKILL release the
+527MB accounting residual that a graceful exit leaves behind?
+
+Both existing tests allocate a 256MB buffer to read memory back, so their
+reported memory figures include the instrument. One of them showed 863MB
+before the kill and 1417MB after -- an increase, which is the monitor's
+own allocation, not residue. That figure was cited as a finding in an
+earlier draft of the investor document and has been corrected.
+
+Correct method, allocate nothing:
+  1. Start a process that allocates a known amount of VRAM
+  2. Record memory.used while it holds
+  3. SIGKILL it
+  4. Record memory.used for 60s after, reading telemetry only
+  5. Repeat with a graceful exit for direct comparison
+
+Outcome either way is worth having: if SIGKILL releases it and graceful
+exit does not, that is a sharper and more interesting finding than the
+current one. If neither releases it, the residual is exit-path
+independent.

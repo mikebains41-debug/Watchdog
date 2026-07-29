@@ -72,8 +72,20 @@ class TenantIsolationRiskScorer:
     def __init__(self, gpu_id=0, gpu_arch='H200'):
         self.gpu_id = gpu_id
         self.gpu_arch = gpu_arch
-        self.vram_residual_baseline = SERIAL_ALICE_ISOLATION_VALIDATED[
-            'vram_residual_mb'].get(f'{gpu_arch}_SXM', 629)
+        # FIXED: previously fell back to 629 -- H200's figure -- for any
+        # architecture not in the table, scoring a B300 or any future card
+        # against another card's number as though measured for it. The
+        # fallback stays because the thresholds below need a number, but
+        # it is now flagged so a caller can tell a real figure from a
+        # borrowed one, and the alert carries which was used.
+        _t = SERIAL_ALICE_ISOLATION_VALIDATED['vram_residual_mb']
+        _k = f'{gpu_arch}_SXM'
+        self.vram_baseline_is_measured = _k in _t
+        self.vram_residual_baseline = _t.get(_k, 629)
+        if not self.vram_baseline_is_measured:
+            print(f"[AGENT4] No VRAM residual figure for {gpu_arch}; using "
+                  f"H200's 629MB. Scores for this architecture use a "
+                  f"borrowed baseline, not a measured one.")
 
         self.vram_history = collections.deque(maxlen=WINDOW_SIZE)
         self.power_history = collections.deque(maxlen=WINDOW_SIZE)
@@ -123,6 +135,7 @@ class TenantIsolationRiskScorer:
                 'timestamp': ts,
                 'gpu_arch': self.gpu_arch,
                 'vram_residual_baseline_mb': self.vram_residual_baseline,
+                'vram_baseline_is_measured': self.vram_baseline_is_measured,
                 'current_vram_mb': round(vram_used_mb, 1),
                 'breakdown': breakdown,
                 'cve_reference': SERIAL_ALICE_ISOLATION_VALIDATED['cve'],

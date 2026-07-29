@@ -23,9 +23,22 @@ utilization. Observed across A100, H100, H200, B200, and B300. The magnitude
 tracks memory clock: the HBM subsystem stays at full speed regardless of
 compute activity.
 
-VRAM residual — 382MB to 1.6GB of GPU memory remains allocated and readable
-after a process exits gracefully. SIGKILL reclaims it; a clean exit does
-not. NVML reports 0% memory utilization throughout.
+VRAM residual — GPU memory remains reported as allocated after a process
+exits. Measured on H200: memory.used ran at 773MB during an FP32 workload,
+dropped to 527MB after exit, and stayed there. NVML reports 0% memory
+utilization throughout.
+
+It is an accounting residual, not a data leak. Two tests wrote a known
+pattern into 256MB, ended the owning process (gracefully in one, by
+SIGKILL in the other), then allocated a fresh buffer and read it for 240
+seconds. Both returned zero pattern matches and zero nonzero bytes,
+sustained. Nothing recoverable by either path.
+
+Whether SIGKILL clears the 527MB accounting is not established. Both
+tests above allocate a 256MB buffer to perform their read, so their own
+memory figures include the instrument and cannot answer it. A separate
+measurement is needed: kill the process, watch memory.used, allocate
+nothing.
 
 The VRAM residual finding was reported to MITRE on 2026-05-31.
 No CVE has been assigned yet. Status: submitted, pending assignment.
