@@ -5,7 +5,33 @@ from datetime import datetime
 from telemetry.sampler import DeltaTimedSampler
 
 SAMPLE_HZ = 100
-QUERY_FIELDS = ['timestamp','index','uuid','name','power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu','pstate','ecc.errors.corrected.volatile.total','ecc.errors.uncorrected.volatile.total']
+CORE_FIELDS = ['timestamp','index','uuid','name','power.draw','power.limit','utilization.gpu','utilization.memory','memory.used','memory.free','memory.total','clocks.sm','clocks.mem','clocks.gr','temperature.gpu','pstate','ecc.errors.corrected.volatile.total','ecc.errors.uncorrected.volatile.total']
+
+# Throttle reasons report "Active" or "Not Active" -- flags, not values.
+# Added deliberately BECAUSE they need no threshold: every existing
+# detector infers constraint from a numeric threshold somebody had to
+# choose, and the one real-hardware session showed those thresholds
+# firing on nothing. These are the hardware reporting its own state
+# directly. Not yet consumed by any detector; collected first so a real
+# hardware session produces the data needed to decide whether they are
+# worth acting on, rather than guessing at that in advance.
+THROTTLE_FIELDS = ['clocks_throttle_reasons.sw_power_cap',
+                   'clocks_throttle_reasons.hw_slowdown',
+                   'clocks_throttle_reasons.hw_thermal_slowdown',
+                   'clocks_throttle_reasons.hw_power_brake_slowdown',
+                   'clocks_throttle_reasons.sw_thermal_slowdown',
+                   'clocks_throttle_reasons.sync_boost']
+
+QUERY_FIELDS = CORE_FIELDS + THROTTLE_FIELDS
+
+# Some driver and GPU combinations reject an entire --query-gpu call if
+# any single requested field is unsupported, which would take all
+# telemetry down rather than just the new fields. sample_gpu() therefore
+# tries the extended set once, and on failure falls back permanently to
+# CORE_FIELDS for the life of the process rather than retrying every
+# sample. Whether the fallback ever triggers is unknown until this runs
+# on real hardware -- no GPU was available to verify it here.
+_extended_fields_supported = True
 
 COMPUTE_APPS_FIELDS = ['gpu_uuid', 'pid', 'used_memory']
 
@@ -188,17 +214,31 @@ def sample_compute_apps():
 
 
 def sample_gpu(gpu_index=None):
-    cmd = ['nvidia-smi','--query-gpu='+','.join(QUERY_FIELDS),'--format=csv,noheader,nounits']
+    global _extended_fields_supported
+    fields = QUERY_FIELDS if _extended_fields_supported else CORE_FIELDS
+    cmd = ['nvidia-smi','--query-gpu='+','.join(fields),'--format=csv,noheader,nounits']
     if gpu_index is not None: cmd += [f'--id={gpu_index}']
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+        if r.returncode != 0 and _extended_fields_supported:
+            # This driver or GPU rejects one of the throttle fields.
+            # Drop to the core set permanently rather than losing all
+            # telemetry, and say so once rather than silently degrading.
+            _extended_fields_supported = False
+            print("[WATCHDOG] Extended telemetry fields (throttle reasons) "
+                  "not supported by this driver/GPU -- falling back to core "
+                  "fields for the remainder of this process.")
+            fields = CORE_FIELDS
+            cmd = ['nvidia-smi','--query-gpu='+','.join(fields),'--format=csv,noheader,nounits']
+            if gpu_index is not None: cmd += [f'--id={gpu_index}']
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
         compute_apps_by_gpu = sample_compute_apps()
         rows = []
         for line in r.stdout.strip().split('\n'):
             if not line.strip(): continue
             vals = [v.strip() for v in line.split(',')]
-            if len(vals) < len(QUERY_FIELDS): continue
-            row = dict(zip(QUERY_FIELDS, vals))
+            if len(vals) < len(fields): continue
+            row = dict(zip(fields, vals))
             row['iso_timestamp'] = datetime.now().isoformat()
             row = parse_numeric_fields(row)
             row['compute_apps'] = compute_apps_by_gpu.get(row.get('uuid'), [])
