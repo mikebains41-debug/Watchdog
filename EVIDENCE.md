@@ -104,15 +104,48 @@ The finding is that a rented instance was unpatched, not the CVEs.
 
 ## UNSOURCED — asserted, no measurement located in this repo
 
-### Ghost power: 67-146W at 0% utilization across A100/H100/H200/B200/B300
-No file in `validation_results/` matches ghost, power, or idle. The
-Serial Alice certificates give 80.36W idle and 147.96W peak for H200 only
-— one architecture, and that pair does not obviously produce the stated
-range across five.
-This is the headline finding and the basis of a filed patent. It may be
-measured somewhere outside this repo. Until a source is identified here,
-it is asserted, not evidenced.
-ACTION: locate the source or qualify the claim in both documents.
+### Ghost power — SOURCE LOCATED, figures corrected
+Source: `gpu-optimizer-nelson-tests-/h200wed.june24.2026/GHOST_POWER_REPORT.md`
+plus per-test summaries under the same directory (M2_ghost_detection,
+M6_sustained_run). Measured at 10Hz via nvidia-smi on real rented cloud
+hardware, timestamped, raw CSV preserved per test. Idle floor is measured
+fresh during a 15s baseline at the start of every run, so the detector is
+self-calibrating per GPU, driver version, and thermal state.
+
+Measured per architecture:
+
+| GPU | Cold boot | Post-load | HBM | Provider / date |
+|---|---|---|---|---|
+| A100 SXM | 61W | 146.66W (idle floor 67.1W, +79.56W) | HBM2e | RunPod 2026-05-29 |
+| H100 SXM | Clean | Clean — NONE DETECTED | HBM3 | RunPod, negative control |
+| H200 SXM | Clean | 598.41W peak (idle floor 74.59W) | HBM3e | Vast.ai 2026-06-24 |
+| B200 SXM | 184.46W | 233-234W | HBM3e | RunPod 2026-06-03 |
+| B300 SXM6 | 188.35W | 244-246W | HBM3e | RunPod 2026-06-03 |
+
+H200 strongest finding: 1,376 ghost samples out of 1,377 taken during the
+cooldown window — 99.9%. A separate 600s sustained run on H200 recorded
+917 ghost events in cooldown with a 146.12W peak and zero crashes.
+
+B200 and B300 show ghost power from COLD BOOT, before any workload runs,
+and B300 never recovers.
+
+Pattern claimed in the report: HBM clock speed predicts ghost power
+magnitude; higher bandwidth means a higher ghost floor, so it grows
+across generations rather than shrinking.
+
+TWO CORRECTIONS THIS SOURCE FORCED:
+
+1. The range "67-146W" was wrong. 67.1W is A100's IDLE FLOOR and 146.66W
+   is A100's GHOST FIGURE — a floor from one line paired with a ceiling
+   from the next, presented as a range, and excluding every other
+   architecture. Real peak is 598.41W on H200, roughly four times the
+   documented figure. The finding was being understated, not overstated.
+
+2. H100 was listed as an architecture where ghost power was observed. It
+   is the NEGATIVE CONTROL. The report states: "Ghost power: None
+   detected... confirms detector does not false-positive on clean
+   architectures." Claiming it as a positive finding inverts its purpose
+   and would be caught immediately by anyone holding the report.
 
 ### VRAM residual per-architecture: 382 / 625 / 629 / 728 MB
 Traced to a hardcoded dict in

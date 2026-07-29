@@ -19,7 +19,11 @@ It is built around two findings from our own hardware testing, both
 reproduced across multiple architectures:
 
 Ghost power — GPUs draw substantial power while NVML reports 0%
-utilization. Observed across A100, H100, H200, B200, and B300. The magnitude
+utilization. Confirmed on A100 SXM (146.66W), H200 SXM (598.41W peak,
+99.9% of cooldown samples), B200 SXM (233W, from cold boot with no
+workload), and B300 SXM6 (244W, never recovers). H100 SXM is the negative
+control: none detected, which is what confirms the detector does not
+false-positive. See EVIDENCE.md. The magnitude
 tracks memory clock: the HBM subsystem stays at full speed regardless of
 compute activity.
 
