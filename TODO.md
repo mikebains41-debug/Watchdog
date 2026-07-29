@@ -1,3 +1,16 @@
+=== STATUS (2026-07-29) ===
+Tools built and committed:
+  - gpu_audit.py          -> Step 1 (contention, tenant files, stale CVE)
+  - capture_contention.py -> Step 2 capture-first (records + offline verdict)
+  - aggregate_audits.py   -> the Step 1 comparison table
+All three tested on phone: correct NOT_RUN with no GPU. Unproven on real hardware.
+
+BLOCKED ON: one rented GPU instance.
+NEXT ACTION: rent one cheap box, git pull, pip install torch,
+  run gpu_audit.py then capture_contention.py, scp JSON+CSV back.
+Nothing goes in a pitch/doc/chart unless it's in EVIDENCE.md with a source.
+===========================
+
 Multi-Provider Audit Plan (Step 1 — the whole game)
 
 Goal: prove the Vast.ai finding is industry-wide, not a one-off.
