@@ -1,0 +1,23 @@
+=== CVE-2026-64600 (RefluXFS) Exposure Check ===
+
+--- Kernel version ---
+Running kernel: 6.8.0-107-generic
+NOTE: version-string matching is fragile -- see script header.
+Vulnerable range per Qualys: kernel >= 4.11, unpatched (fix merged 2026-07-16).
+Verify actual patch status against your distribution's own advisory,
+not this version string alone.
+
+--- XFS filesystems in use ---
+XFS filesystem(s) found:
+/etc/resolv.conf /dev/md1[/100000.100000/containers/4b3d472ffa95d77918737e63b1d78cd78b562fd59179a14b34d42e2053480c6e/resolv.conf]
+/etc/hostname    /dev/md1[/100000.100000/containers/4b3d472ffa95d77918737e63b1d78cd78b562fd59179a14b34d42e2053480c6e/hostname]
+/etc/hosts       /dev/md1[/100000.100000/containers/4b3d472ffa95d77918737e63b1d78cd78b562fd59179a14b34d42e2053480c6e/hosts]
+
+--- reflink status per XFS filesystem ---
+/etc/resolv.conf (/dev/md1[/100000.100000/containers/4b3d472ffa95d77918737e63b1d78cd78b562fd59179a14b34d42e2053480c6e/resolv.conf]): xfs_info not available -- cannot determine reflink status. Install xfsprogs to check.
+/etc/hostname (/dev/md1[/100000.100000/containers/4b3d472ffa95d77918737e63b1d78cd78b562fd59179a14b34d42e2053480c6e/hostname]): xfs_info not available -- cannot determine reflink status. Install xfsprogs to check.
+/etc/hosts (/dev/md1[/100000.100000/containers/4b3d472ffa95d77918737e63b1d78cd78b562fd59179a14b34d42e2053480c6e/hosts]): xfs_info not available -- cannot determine reflink status. Install xfsprogs to check.
+
+=== Verdict ===
+Exposure conditions NOT met on this host (XFS not in use, or
+reflink not enabled). No notification needed.
