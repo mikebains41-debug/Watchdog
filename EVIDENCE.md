@@ -187,3 +187,59 @@ Some document text has said 17. SUMMARY.md is the source; 16 is correct.
 | "1,417MB residual" | WRONG | Test's own 256MB buffer plus CUDA context, not residue. |
 | "No component run against real GPU hardware" | WRONG | Detectors were run; they found nothing across 35k+ samples. |
 | "seven architectures" for ghost power | WRONG | Five claimed: A100, H100, H200, B200, B300. Source still unlocated. |
+
+---
+
+## B200 REAL HARDWARE EVIDENCE (2026-07-30)
+
+All entries below are sourced from b200_watchdog/ in this repo, with commit hashes.
+Full detail in B200_FINDINGS_REPORT.md and B200_VRAM_RESIDUAL_REPORT.md.
+Every number here has a source file -- see B200_METRICS.md for the complete list.
+
+### VERIFIED
+
+Contention: -43% to -55% across 4 independent measurements, 2 methods, 2 pods.
+Verify: cat b200_watchdog/audit_b200_1.json b200_watchdog/audit_b200_2.json
+
+VRAM residual on B200: zero bytes recovered, both graceful exit and SIGKILL,
+identical ~1520MB accounting figure either way. Answers the open SIGKILL question
+from the earlier TODO.md entry -- residual is exit-path independent.
+Verify: cat b200_watchdog/vram_residual_b200_1.txt b200_watchdog/vram_residual_sigkill_b200_1.txt
+
+Cross-GPU isolation held: 4MB delta (noise-level) on a 976MB allocation.
+Verify: cat b200_watchdog/cross_gpu_b200_1.txt
+
+Clean 1-hour negative control: 13,710 samples, 1 alert, ~0.007% rate.
+Verify: tail -5 b200_watchdog/watchdog_idle_1hr_b200_2_gpu1.log
+
+NVLINK_CONTENTION fired correctly on a real, deliberately induced cross-GPU
+transfer. This required finding and fixing three separate bugs first (stale
+enable flag, dropped CSV columns, deprecated CLI flag) -- see agent/telemetry.py
+and watchdog.py commit history from this session.
+Verify: grep -A6 "WATCHDOG ALERT" b200_watchdog/nvlink_final_test_b200_1.log
+
+Four more detectors tested against real induced workloads: AGENT_ORCHESTRATION_ANOMALY
+(fired 2x), PROMPT_INJECTION_SIDEEFFECT (fired), AgentSessionVRAMRetentionDetector
+(correctly silent), InterAgentHandoffAnomalyDetector (inconclusive -- real sampling-
+rate limitation found, not a detector bug).
+
+### UNSOURCED / NOT YET SETTLED
+
+Tenant files on B200/RunPod: 2 scans, both clean. Compare against 5/5 dirty on
+H200/Vast.ai. Sample size too small to call this a settled provider comparison.
+
+CovertMiningDetector: real workload measured ~89.7% of TDP, just under the 90%
+threshold. Boundary case, not a pass or fail -- worth retesting with a heavier
+or longer workload.
+
+SequentialVRAMReadDetector: never actually triggered under correct conditions.
+Both attempts used the wrong operation (a compute-heavy reduction/copy, not a
+pure memory read) -- utilization.gpu stayed 90%+ both times against a <=5%
+requirement. Still untested under the right conditions.
+
+### CORRECTION
+
+Do not describe the VRAM residual finding (on B200 or H200) as evidence that a
+prior tenant's data is recoverable. It is the opposite: zero bytes recovered in
+every test, on both exit paths, on both architectures. The real "data left behind"
+evidence is the separate tenant-files-on-disk finding, not VRAM.

@@ -562,3 +562,45 @@ Public repo: https://github.com/mikebains41-debug/ai-gpu-energy-optimizer-
 ## License
 
 Source-available. See LICENSE.
+
+---
+
+## B200 real-hardware validation (2026-07-30)
+
+A second real-hardware campaign, this time on 2x NVIDIA B200 SXM (RunPod). Full
+detail in B200_FINDINGS_REPORT.md, B200_VRAM_RESIDUAL_REPORT.md, and B200_METRICS.md.
+Raw data in b200_watchdog/.
+
+Contention: measured -43% to -55% across four independent runs, two different
+methods, two different pods. Consistent with the original -9.5% single-measurement
+finding from the earlier Vast.ai/H200 session, though notably larger -- worth
+further investigation into why, not yet explained.
+
+VRAM residual: reproduced on a second architecture. Same result as H200 -- zero
+bytes recoverable, both graceful exit and SIGKILL. Also newly answers a question
+the H200 tests left open: SIGKILL and graceful exit produce the identical
+accounting residual (~1520MB), so the residual is exit-path independent.
+
+NVLinkContentionDetector: previously never fired on any real hardware. This
+session found and fixed three separate bugs preventing it from ever receiving
+real data (a stale enable flag, silently dropped CSV columns, and a deprecated
+CLI flag causing silent sampling failure). Now confirmed firing correctly on a
+real, deliberately induced cross-GPU transfer. This is the strongest confirmation
+in the project to date of a detector built on cited real-world attack research
+(Spy-in-the-GPU-box, NVBleed, SideLink) actually working end-to-end.
+
+Five more detectors were tested against genuine induced workloads rather than
+synthetic test harnesses this session: three fired correctly on real events, one
+correctly stayed silent on a clean VRAM release, and one produced an inconclusive
+but valuable finding -- short bursty (agentic-style) workloads are largely
+invisible at the current achieved sample rate (3.7-7.1Hz against a requested
+100Hz), confirmed on two separate pods.
+
+Tenant-files-left-on-disk scan: run twice on RunPod, both clean, in contrast to
+5/5 dirty on the original Vast.ai/H200 instances. Sample size is too small to
+call this a settled provider comparison.
+
+As with the H200 findings, stated plainly: VRAM residual is an accounting gap,
+not evidence that a previous tenant's actual data can be recovered by the next
+renter -- this was tested directly and repeatedly, and the result was zero
+recovery every time.

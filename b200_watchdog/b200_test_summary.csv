@@ -1,0 +1,30 @@
+test_name,category,result,key_metric,source_file
+contention_run1,contention,measured,-53.35%,audit_b200_1.json
+contention_run2,contention,measured,-54.7%,capture_b200_1.csv
+contention_run3,contention,measured,-53.38%,tenant_files_b200_2.json
+contention_run4,contention,measured,-43.23%,audit_b200_2.json
+vram_residual_graceful,vram,zero_bytes_recovered,0 bytes / ~1520MB accounting,vram_residual_b200_1.txt
+vram_residual_sigkill,vram,zero_bytes_recovered,0 bytes / ~1520MB accounting,vram_residual_sigkill_b200_1.txt
+cross_gpu_isolation,isolation,held,4MB delta on 976MB allocation,cross_gpu_b200_1.txt
+idle_control_contaminated,negative_control,invalid,5 alerts - test contamination,watchdog_idle_1hr_b200_1.log
+idle_control_clean,negative_control,valid,13710 samples / 1 alert,watchdog_idle_1hr_b200_2_gpu1.log
+cei_benchmark,performance,measured,7.03e10 FLOPs/joule,cei_benchmark_b200_1.json
+residency_probe,performance,measured,23.4ms read latency,residency_probe_b200_1.json
+throttle_fields,telemetry,confirmed,6/6 fields present,throttle_fields_b200_1.json
+pcie_telemetry,telemetry,confirmed,real non-zero rx/tx,pcie_telemetry_check_b200_1.txt
+nvlink_raw_first_capture,nvlink,confirmed,18 links idle at 0 KiB,nvlink_raw_output_b200_1.txt
+nvlink_cross_gpu_delta,nvlink,confirmed,Link0 Tx +14061 KiB,capture via direct nvidia-smi
+nvlink_pipeline_fixed,nvlink,fixed,3 bugs found and fixed,agent/telemetry.py + watchdog.py
+nvlink_contention_alert,nvlink,fired,61542977904 KB/s above baseline,nvlink_final_test_b200_1.log
+agent_orchestration_anomaly_1,detector,fired,50.9W above idle floor,live_detector_test_b200_1.log
+agent_orchestration_anomaly_2,detector,fired,51.9W above idle floor,watchdog_idle_1hr_b200_2_gpu1.log
+prompt_injection_sideeffect,detector,fired,127.5W above baseline,prompt_injection_test_b200_1.log
+agent_session_vram_retention,detector,correctly_silent,no false alert,agent_vram_test_b200_1.log
+covert_mining,detector,did_not_fire,89.7% of TDP - just under 90% threshold,covert_mining_test_b200_1.log
+sequential_vram_read_v1,detector,did_not_fire,wrong test op - util 90%,sequential_read_test_b200_1.log
+sequential_vram_read_v2,detector,did_not_fire,wrong test op - util 96%,sequential_read_test_b200_2.log
+inter_agent_handoff,detector,inconclusive,sampling rate limitation,handoff_test_b200_1.log
+tenant_files_scan1,tenant_files,clean,no foreign files,audit_b200_1.json
+tenant_files_scan2,tenant_files,clean,no foreign files,tenant_files_b200_2.json
+achieved_sample_rate_1,telemetry,measured,7.1Hz vs 100Hz requested,multiple logs
+achieved_sample_rate_2,telemetry,measured,3.756Hz vs 100Hz requested,watchdog_idle_1hr_b200_2_gpu1.log
