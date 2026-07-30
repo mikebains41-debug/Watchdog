@@ -1,0 +1,59 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-07-30T17:34:28.831702
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/covert_mining_test_b200_1.jsonl/telemetry_20260730_173428.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[t+60s] GPU0: 182.3W mem=0MB temp=29C util=0%
+[WATCHDOG] Actual achieved rate: 3.522Hz (requested 100Hz) -- min/mean/max interval: 234.02/283.954/748.355ms
+[t+60s] GPU0: 182.4W mem=0MB temp=29C util=0%
+[WATCHDOG] Actual achieved rate: 3.523Hz (requested 100Hz) -- min/mean/max interval: 234.02/283.812/748.355ms
+[t+60s] GPU0: 182.3W mem=0MB temp=29C util=0%
+[WATCHDOG] Actual achieved rate: 3.525Hz (requested 100Hz) -- min/mean/max interval: 234.02/283.676/748.355ms
+[t+60s] GPU0: 182.3W mem=0MB temp=29C util=0%
+[WATCHDOG] Actual achieved rate: 3.527Hz (requested 100Hz) -- min/mean/max interval: 234.02/283.489/748.355ms
+[SWARM AGENT 4] TENANT_ISOLATION_RISK GPU0 risk=80.0% severity=WARNING vram=1484MB
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.67 at lag 3 samples, amplitude 712.0W. Cause unconfirmed.
+[t+120s] GPU0: 896.2W mem=1740MB temp=49C util=100%
+[WATCHDOG] Actual achieved rate: 3.42Hz (requested 100Hz) -- min/mean/max interval: 234.02/292.399/1519.668ms
+[t+120s] GPU0: 897.0W mem=1740MB temp=49C util=100%
+[WATCHDOG] Actual achieved rate: 3.422Hz (requested 100Hz) -- min/mean/max interval: 234.02/292.269/1519.668ms
+[t+120s] GPU0: 897.5W mem=1740MB temp=49C util=100%
+[WATCHDOG] Actual achieved rate: 3.423Hz (requested 100Hz) -- min/mean/max interval: 234.02/292.142/1519.668ms
+[t+120s] GPU0: 898.8W mem=1740MB temp=49C util=100%
+[WATCHDOG] Actual achieved rate: 3.424Hz (requested 100Hz) -- min/mean/max interval: 234.02/292.044/1519.668ms
+[WARNING] PACKAGE_CRACK_PREDICTED — Junction temp delta 11.0C under sustained load — possible solder joint fatigue
+
+============================================================
+[WATCHDOG ALERT #0]
+Severity  : WARNING
+Type      : PACKAGE_CRACK_PREDICTED
+GPU       : 0
+Confidence: 0.5
+Message   : Junction temp delta 11.0C under sustained load — possible solder joint fatigue
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[WARNING] CAPACITOR_AGING_PREDICTED — Power ripple 56.3% under sustained load — possible PSU capacitor aging
+
+============================================================
+[WATCHDOG ALERT #1]
+Severity  : WARNING
+Type      : CAPACITOR_AGING_PREDICTED
+GPU       : 0
+Confidence: 0.5
+Message   : Power ripple 56.3% under sustained load — possible PSU capacitor aging
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[WATCHDOG] Done. 519 samples → b200_watchdog/covert_mining_test_b200_1.jsonl/telemetry_20260730_173428.csv
+[WATCHDOG] Final actual achieved rate: 3.458Hz (requested 100Hz)
+Samples: 519 | Alerts: 2 | Remediations: 2
