@@ -25,7 +25,7 @@ workload), and B300 SXM6 (244W, never recovers). H100 SXM is the negative
 control: none detected, which is what confirms the detector does not
 false-positive. See EVIDENCE.md. The magnitude
 tracks memory clock: the HBM subsystem stays at full speed regardless of
-compute activity.
+compute activity. This is normal HBM power behavior, surfaced here as a monitoring gap -- not, by itself, evidence of an attack. See Limitations for what has and has not been validated on real hardware.
 
 VRAM residual — GPU memory remains reported as allocated after a process
 exits. Measured on H200: memory.used ran at 773MB during an FP32 workload,
@@ -244,7 +244,7 @@ scripts/check_refluxfs_exposure.sh checks exposure to this CVE, with the
 same environment-mismatch warning.
 
 Container overlay sanitization gap. Files belonging to a previous tenant,
-17 days old, still present in the container filesystem. 5 independent
+16 days old, still present in the container filesystem. 5 independent
 confirmations across separate instances. Contents were not inspected.
 
 Noisy-neighbor degradation. Throughput dropped from 372.32 to 336.96
