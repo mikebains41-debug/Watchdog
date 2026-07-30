@@ -1,0 +1,65 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-07-30T18:41:29.830356
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/nvlink_final_test_b200_1.jsonl/telemetry_20260730_184129.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.95 at lag 3 samples, amplitude 147.9W. Cause unconfirmed.
+[t+60s] GPU0: 330.0W mem=938MB temp=32C util=95%
+[WATCHDOG] Actual achieved rate: 3.53Hz (requested 100Hz) -- min/mean/max interval: 220.072/283.303/2026.399ms
+[t+60s] GPU0: 330.1W mem=938MB temp=32C util=95%
+[WATCHDOG] Actual achieved rate: 3.533Hz (requested 100Hz) -- min/mean/max interval: 220.072/283.065/2026.399ms
+[t+60s] GPU0: 330.0W mem=938MB temp=32C util=95%
+[WATCHDOG] Actual achieved rate: 3.536Hz (requested 100Hz) -- min/mean/max interval: 220.072/282.823/2026.399ms
+[t+60s] GPU0: 330.2W mem=938MB temp=32C util=95%
+[WATCHDOG] Actual achieved rate: 3.539Hz (requested 100Hz) -- min/mean/max interval: 220.072/282.556/2026.399ms
+[t+60s] GPU0: 330.3W mem=938MB temp=32C util=95%
+[WATCHDOG] Actual achieved rate: 3.542Hz (requested 100Hz) -- min/mean/max interval: 220.072/282.364/2026.399ms
+[WARNING] INFERENCE_POWER_ANOMALY — Inference power deviation (robust z=5.09) from calibrated baseline -- cause unconfirmed, consistent with workload change, model swap, or adversarial input
+
+============================================================
+[WATCHDOG ALERT #0]
+Severity  : WARNING
+Type      : INFERENCE_POWER_ANOMALY
+GPU       : 0
+Confidence: 0.5
+Message   : Inference power deviation (robust z=5.09) from calibrated baseline -- cause unconfirmed, consistent with workload change, model swap, or adversarial input
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[t+120s] GPU0: 331.4W mem=938MB temp=32C util=96%
+[WATCHDOG] Actual achieved rate: 3.808Hz (requested 100Hz) -- min/mean/max interval: 208.849/262.581/2026.399ms
+[t+120s] GPU0: 331.7W mem=938MB temp=32C util=97%
+[WATCHDOG] Actual achieved rate: 3.81Hz (requested 100Hz) -- min/mean/max interval: 208.849/262.483/2026.399ms
+[t+120s] GPU0: 331.6W mem=938MB temp=32C util=97%
+[WATCHDOG] Actual achieved rate: 3.811Hz (requested 100Hz) -- min/mean/max interval: 208.849/262.394/2026.399ms
+[t+120s] GPU0: 331.8W mem=938MB temp=32C util=97%
+[WATCHDOG] Actual achieved rate: 3.812Hz (requested 100Hz) -- min/mean/max interval: 208.849/262.297/2026.399ms
+[SWARM AGENT 1] GHOST_POWER_PREDICTED GPU0 confidence=100.0% power=250.9W
+[CRITICAL] GHOST_POWER — Ghost power 52.7W above 182.1W idle floor at 0% utilization
+[WARNING] NVLINK_CONTENTION — NVLink traffic 61542977904KB/s above this GPU's own learned baseline at 0% compute -- cause unconfirmed, consistent with a covert-channel attempt (see Spy-in-the-GPU-box/NVBleed/SideLink) OR normal distributed-training collective communication (all-reduce/all-gather), which produces an identical signature and cannot be ruled out from this telemetry alone
+
+============================================================
+[WATCHDOG ALERT #1]
+Severity  : WARNING
+Type      : NVLINK_CONTENTION
+GPU       : 0
+Confidence: 0.5
+Message   : NVLink traffic 61542977904KB/s above this GPU's own learned baseline at 0% compute -- cause unconfirmed, consistent with a covert-channel attempt (see Spy-in-the-GPU-box/NVBleed/SideLink) OR normal distributed-training collective communication (all-reduce/all-gather), which produces an identical signature and cannot be ruled out from this telemetry alone
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.68 at lag 3 samples, amplitude 104.5W. Cause unconfirmed.
+[t+180s] GPU0: 182.6W mem=0MB temp=29C util=0%
+[WATCHDOG] Actual achieved rate: 3.891Hz (requested 100Hz) -- min/mean/max interval: 199.979/256.974/2026.399ms
+[WATCHDOG] Done. 701 samples → b200_watchdog/nvlink_final_test_b200_1.jsonl/telemetry_20260730_184129.csv
+[WATCHDOG] Final actual achieved rate: 3.891Hz (requested 100Hz)
+Samples: 701 | Alerts: 2 | Remediations: 2
