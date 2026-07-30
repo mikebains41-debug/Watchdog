@@ -1,0 +1,46 @@
+{
+  "tool": "watchdog/gpu_audit.py",
+  "schema": 1,
+  "host": "localhost",
+  "timestamp_utc": "2026-07-30T04:55:46.606833+00:00",
+  "provider": "runpod",
+  "gpu": "B200",
+  "region": "unknown",
+  "checks": {
+    "contention": {
+      "status": "NOT_RUN",
+      "reason": "torch+CUDA GPU not available on this host"
+    },
+    "tenant_files": {
+      "status": "OK",
+      "dirs_scanned": [
+        "/tmp"
+      ],
+      "contents_inspected": false,
+      "leftover_count": 0,
+      "oldest_age_days": 0,
+      "sample_paths_only": [],
+      "verdict": "no foreign-owned files in shared temp dirs"
+    },
+    "stale_cve": {
+      "status": "PARTIAL",
+      "kernel": "6.6.98-android15-8-pd6ff1cd-abogkiS938USQSBCZF5-4k",
+      "range_match": "NOT_IMPLEMENTED (no authoritative --cve-db supplied)",
+      "candidates_to_verify": [
+        {
+          "id": "CVE-2026-31431",
+          "name": "Copy Fail",
+          "ref": "CISA KEV",
+          "note": "container-escape; kernel version fragile to backports"
+        },
+        {
+          "id": "CVE-2026-64600",
+          "name": "RefluXFS",
+          "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-64600",
+          "note": "CVSS 7.8 HIGH, local-access-only"
+        }
+      ],
+      "verdict": "kernel 6.6.98-android15-8-pd6ff1cd-abogkiS938USQSBCZF5-4k; verify manually against the listed CVEs -- automated range match needs authoritative data"
+    }
+  }
+}
