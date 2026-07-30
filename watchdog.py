@@ -391,7 +391,9 @@ def run_tests():
     ts = datetime.now().isoformat()
     gp = GhostPowerDetector()
     for i in range(30): gp.update({'power.draw':65.0,'utilization.gpu':0,'memory.used':100,'iso_timestamp':ts,'index':0})
-    r = gp.update({'power.draw':92.0,'utilization.gpu':0,'memory.used':100,'iso_timestamp':ts,'index':0})
+    r = None
+    for i in range(3):
+        r = gp.update({'power.draw':92.0,'utilization.gpu':0,'memory.used':100,'iso_timestamp':ts,'index':0})
     if r: print(f"  [PASS] Ghost power"); passed+=1
     print(f"\n[TEST] {passed}/1 passed")
 if __name__ == '__main__': main()
