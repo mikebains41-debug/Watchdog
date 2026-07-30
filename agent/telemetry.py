@@ -354,7 +354,8 @@ class TelemetryCollector:
         print(f"[WATCHDOG] Actual achieved rate will be measured and "
               f"reported below, not assumed.")
         print(f"[WATCHDOG] GPUs: {detect_gpus()}")
-        fieldnames = ['iso_timestamp'] + QUERY_FIELDS + ['actual_interval_ms']
+        fieldnames = ['iso_timestamp'] + QUERY_FIELDS + ['actual_interval_ms',
+                     'nvlink_available', 'nvlink_tx_kbs', 'nvlink_rx_kbs']
         with open(csv_path,'w',newline='') as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
             writer.writeheader()

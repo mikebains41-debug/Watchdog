@@ -376,7 +376,7 @@ def main():
             t.start()
             print(f"[WATCHDOG] API at http://0.0.0.0:{args.api_port}")
         except Exception as e: print(f"[API ERROR] {e}")
-    collector = TelemetryCollector(sample_hz=args.hz, output_dir=args.output, gpu_index=args.gpu, on_sample=on_sample)
+    collector = TelemetryCollector(sample_hz=args.hz, output_dir=args.output, gpu_index=args.gpu, on_sample=on_sample, nvlink_enabled=True)
     try:
         print("[WATCHDOG] Running... Ctrl+C to stop\n")
         collector.start(duration_seconds=args.duration)
