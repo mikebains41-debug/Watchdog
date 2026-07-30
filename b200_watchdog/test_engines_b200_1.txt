@@ -1,0 +1,22 @@
+[PASS] correlation: severity is INFO, not EMERGENCY
+[PASS] ghost_power: median baseline resists contamination
+[PASS] ghost_power: edge-triggered, not per-sample
+[PASS] ghost_power: survives [N/A] fields
+[PASS] ghost_power NEGATIVE: silent on clean idle
+[PASS] ghost_power NEGATIVE: silent under legitimate load
+[PASS] ghost_power POSITIVE: fires on 70W above floor
+[PASS] ghost_power POSITIVE: severity CRITICAL above 50W delta
+[PASS] periodicity NEGATIVE: silent on flat power
+[PASS] periodicity NEGATIVE: silent on +-1W alternating jitter
+[PASS] periodicity POSITIVE: fires on 40-sample square wave
+[PASS] periodicity POSITIVE: recovers period near 40
+[PASS] PIPELINE NEGATIVE CONTROL: 3600 clean idle samples, 0 alerts
+       stats: {'samples': 3600, 'alerts': 0, 'alerts_per_sample': 0.0, 'ghost_power_baseline_w': 80.36, 'throughput_samples': 0, 'throughput_alerts': 0, 'throughput_alerts_per_sample': 0.0}
+[PASS] vram NEGATIVE: silent when memory is properly reclaimed
+[PASS] vram NEGATIVE: silent on resident model with live process
+[PASS] vram POSITIVE: fires when exited PID leaves memory allocated
+[PASS] vram: refuses to run without per-process data
+
+============================================================
+PASSED: 17   FAILED: 0
+============================================================
