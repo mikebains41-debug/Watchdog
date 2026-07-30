@@ -139,3 +139,13 @@ Message   : Power 51.7W above this GPU's own learned idle-with-context floor whi
 [WATCHDOG] Actual achieved rate: 6.681Hz (requested 100Hz) -- min/mean/max interval: 118.991/149.679/3265.965ms
 [t+720s] GPU0: 194.1W mem=0MB temp=42C util=0%
 [WATCHDOG] Actual achieved rate: 6.67Hz (requested 100Hz) -- min/mean/max interval: 118.991/149.927/3265.965ms
+[t+780s] GPU0: 194.0W mem=0MB temp=42C util=0%
+[WATCHDOG] Actual achieved rate: 6.687Hz (requested 100Hz) -- min/mean/max interval: 119.319/149.535/3265.965ms
+[t+780s] GPU0: 194.0W mem=0MB temp=41C util=0%
+[WATCHDOG] Actual achieved rate: 6.687Hz (requested 100Hz) -- min/mean/max interval: 119.319/149.546/3265.965ms
+[t+780s] GPU0: 194.1W mem=0MB temp=41C util=0%
+[WATCHDOG] Actual achieved rate: 6.685Hz (requested 100Hz) -- min/mean/max interval: 119.319/149.598/3265.965ms
+[t+780s] GPU0: 194.0W mem=0MB temp=42C util=0%
+[WATCHDOG] Actual achieved rate: 6.684Hz (requested 100Hz) -- min/mean/max interval: 119.319/149.608/3265.965ms
+[t+780s] GPU0: 194.0W mem=0MB temp=41C util=0%
+[WATCHDOG] Actual achieved rate: 6.683Hz (requested 100Hz) -- min/mean/max interval: 119.319/149.633/3265.965ms
