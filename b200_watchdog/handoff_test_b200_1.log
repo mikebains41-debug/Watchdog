@@ -1,0 +1,28 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-07-30T19:06:39.754870
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/handoff_test_b200_1.jsonl/telemetry_20260730_190639.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM AGENT 4] TENANT_ISOLATION_RISK GPU0 risk=80.0% severity=WARNING vram=1432MB
+[SWARM AGENT 1] GHOST_POWER_PREDICTED GPU0 confidence=100.0% power=234.1W
+[t+60s] GPU0: 182.2W mem=0MB temp=28C util=0%
+[WATCHDOG] Actual achieved rate: 3.623Hz (requested 100Hz) -- min/mean/max interval: 216.203/275.985/1351.21ms
+[t+60s] GPU0: 182.2W mem=0MB temp=28C util=0%
+[WATCHDOG] Actual achieved rate: 3.617Hz (requested 100Hz) -- min/mean/max interval: 216.203/276.45/1351.21ms
+[t+60s] GPU0: 182.2W mem=0MB temp=28C util=0%
+[WATCHDOG] Actual achieved rate: 3.619Hz (requested 100Hz) -- min/mean/max interval: 216.203/276.314/1351.21ms
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.72 at lag 3 samples, amplitude 52.8W. Cause unconfirmed.
+[t+120s] GPU0: 182.5W mem=0MB temp=29C util=0%
+[WATCHDOG] Actual achieved rate: 3.67Hz (requested 100Hz) -- min/mean/max interval: 196.025/272.467/1351.21ms
+[WATCHDOG] Done. 441 samples → b200_watchdog/handoff_test_b200_1.jsonl/telemetry_20260730_190639.csv
+[WATCHDOG] Final actual achieved rate: 3.67Hz (requested 100Hz)
+Samples: 441 | Alerts: 0 | Remediations: 0
