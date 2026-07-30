@@ -1,0 +1,7 @@
+
+[WATCHDOG v2.0] Start: 2026-07-30T06:15:03.588827
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[TEST] Running detection engine tests...
+  [PASS] Ghost power
+
+[TEST] 1/1 passed
