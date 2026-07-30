@@ -28,7 +28,10 @@ from intelligence.swarm.telemetry_adapter import adapt_row_to_swarm_telemetry
 from detection.migration_recommendation import MigrationRecommendationGenerator
 from intelligence.cei_benchmark import CEIBenchmarkRunner
 from intelligence.compliance_metrics import ComplianceMetricsTracker
-from scripts.vram_residency_challenge import run_residency_challenge
+try:
+    from scripts.vram_residency_challenge import run_challenge as run_residency_challenge
+except ImportError:
+    run_residency_challenge = None
 from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
@@ -191,7 +194,10 @@ class FullDetectionPipeline:
         trustworthy would compound that rather than surface it.
         Returns None if no CUDA GPU is available.
         """
-        result = run_residency_challenge(size_mb=size_mb, hold_seconds=hold_seconds)
+        if run_residency_challenge is None:
+            result = None
+        else:
+            result = run_residency_challenge(challenge_mb=size_mb)
         if result is None:
             return None
         if not result['checksum_valid']:
