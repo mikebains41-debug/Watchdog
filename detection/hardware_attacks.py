@@ -363,6 +363,16 @@ class NVLinkContentionDetector:
         # existing combined baseline above -- does not replace it.
         self.idle_samples_by_link = collections.defaultdict(lambda: collections.deque(maxlen=baseline_window))
         self.baseline_by_link = {}
+        # FIX: nvidia-smi's NVLink counters are cumulative since boot,
+        # not a rate. Everything below compared cumulative values
+        # directly, which is why a real 90s test produced 61.5 billion
+        # "KB/s" -- that was counter drift over an unmeasured span of
+        # time, not throughput. These three fields hold the previous
+        # sample so update() can convert to a genuine per-second rate
+        # before any baseline or threshold logic runs.
+        self._last_iso_ts = None
+        self._last_total_kbs = None
+        self._last_by_link = {}
 
     def update(self, row):
         if not row.get('nvlink_available'):
@@ -372,15 +382,51 @@ class NVLinkContentionDetector:
         rx = row.get('nvlink_rx_kbs')
         if util is None or tx is None or rx is None:
             return None
-        total_kbs = tx + rx
+        raw_total_kbs = tx + rx
 
         # NEW: per-link combined (tx+rx) totals, additive -- built the
         # same way as the existing combined total above.
         tx_by_link = row.get('nvlink_tx_kbs_by_link') or {}
         rx_by_link = row.get('nvlink_rx_kbs_by_link') or {}
-        combined_by_link = {}
+        raw_combined_by_link = {}
         for link in set(tx_by_link) | set(rx_by_link):
-            combined_by_link[link] = tx_by_link.get(link, 0.0) + rx_by_link.get(link, 0.0)
+            raw_combined_by_link[link] = tx_by_link.get(link, 0.0) + rx_by_link.get(link, 0.0)
+
+        # FIX: convert cumulative counters to a real per-second rate
+        # before any baseline/threshold logic runs. Comparing raw
+        # cumulative values (as this class did before this fix)
+        # measures elapsed time, not traffic, and will eventually cross
+        # any fixed threshold on a fully idle GPU given enough runtime.
+        iso_ts = row.get('iso_timestamp')
+        if not iso_ts:
+            # Can't compute a rate without a real timestamp on this row.
+            # Fail closed rather than guess, same discipline as the rest
+            # of this class.
+            return None
+        try:
+            now_dt = datetime.fromisoformat(iso_ts)
+        except (TypeError, ValueError):
+            return None
+
+        if self._last_iso_ts is None:
+            self._last_iso_ts = now_dt
+            self._last_total_kbs = raw_total_kbs
+            self._last_by_link = dict(raw_combined_by_link)
+            return None
+
+        elapsed = (now_dt - self._last_iso_ts).total_seconds()
+        if elapsed <= 0:
+            return None
+
+        total_kbs = max(0.0, raw_total_kbs - self._last_total_kbs) / elapsed
+        combined_by_link = {}
+        for link, val in raw_combined_by_link.items():
+            prev = self._last_by_link.get(link, val)
+            combined_by_link[link] = max(0.0, val - prev) / elapsed
+
+        self._last_iso_ts = now_dt
+        self._last_total_kbs = raw_total_kbs
+        self._last_by_link = dict(raw_combined_by_link)
 
         if self.baseline_kbs is None:
             if util < self.util_ceiling:
