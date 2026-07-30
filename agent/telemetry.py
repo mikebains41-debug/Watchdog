@@ -201,7 +201,7 @@ def sample_nvlink(gpu_index=0):
     for the full integration status.
     """
     try:
-        r = subprocess.run(['nvidia-smi', 'nvlink', '-g', str(gpu_index), '-gt', 'd'],
+        r = subprocess.run(['nvidia-smi', 'nvlink', '-gt', 'd', '-i', str(gpu_index)],
                             capture_output=True, text=True, timeout=5)
         if r.returncode != 0 or not r.stdout.strip():
             return {'nvlink_available': False, 'nvlink_tx_kbs': None, 'nvlink_rx_kbs': None,
