@@ -1,0 +1,41 @@
+============================================================
+1. STATIC PCIe LINK INFO (nvidia-smi --query-gpu)
+============================================================
+5, 5, 16, 16
+5, 5, 16, 16
+
+[INFO] These are STATIC capability fields (link generation
+       and lane width). They do NOT measure real-time
+       PCIe throughput -- see section 2.
+
+============================================================
+2. REAL-TIME PCIe THROUGHPUT (nvidia-smi dmon -s t)
+============================================================
+[INFO] Printing RAW output. This script does not parse dmon's
+       columns -- their exact format was not verified against
+       real hardware when this script was written. Read the
+       output below yourself before writing any parsing code
+       against it.
+
+# gpu  rxpci  txpci 
+# Idx   MB/s   MB/s 
+    0      5      5 
+    1      3      3 
+
+[INFO] If you see rxpci/txpci columns with numeric values
+       above, real-time PCIe throughput monitoring works
+       here. If you see an error or garbage instead, it
+       doesn't -- common inside restricted containers.
+
+============================================================
+SUMMARY
+============================================================
+Static PCIe link info available:   YES
+Real-time PCIe throughput (dmon):  MAYBE -- read raw output above
+============================================================
+This script does not conclude whether a PCIe bandwidth
+detector is buildable. That conclusion requires a human to
+read section 2's raw output and confirm it contains real,
+changing throughput numbers during an actual active PCIe
+transfer -- not just at idle.
+============================================================
