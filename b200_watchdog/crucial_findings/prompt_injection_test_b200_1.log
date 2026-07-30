@@ -1,0 +1,38 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-07-30T19:02:23.778507
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/prompt_injection_test_b200_1.jsonl/telemetry_20260730_190223.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[WARNING] PROMPT_INJECTION_SIDEEFFECT — Power 127.5W above this session's calibrated inference baseline -- cause unconfirmed, overlaps with InferencePowerFingerprintDetector's signal, consistent with a longer prompt, larger batch, or an adversarial input
+
+============================================================
+[WATCHDOG ALERT #0]
+Severity  : WARNING
+Type      : PROMPT_INJECTION_SIDEEFFECT
+GPU       : 0
+Confidence: 0.5
+Message   : Power 127.5W above this session's calibrated inference baseline -- cause unconfirmed, overlaps with InferencePowerFingerprintDetector's signal, consistent with a longer prompt, larger batch, or an adversarial input
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.82 at lag 3 samples, amplitude 754.7W. Cause unconfirmed.
+[t+60s] GPU0: 936.9W mem=2100MB temp=55C util=100%
+[WATCHDOG] Actual achieved rate: 3.717Hz (requested 100Hz) -- min/mean/max interval: 199.943/269.023/1344.951ms
+[t+60s] GPU0: 938.2W mem=2100MB temp=55C util=100%
+[WATCHDOG] Actual achieved rate: 3.718Hz (requested 100Hz) -- min/mean/max interval: 199.943/268.933/1344.951ms
+[t+60s] GPU0: 938.7W mem=2100MB temp=55C util=100%
+[WATCHDOG] Actual achieved rate: 3.719Hz (requested 100Hz) -- min/mean/max interval: 199.943/268.855/1344.951ms
+[SWARM AGENT 1] GHOST_POWER_PREDICTED GPU0 confidence=87.5% power=833.2W
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.64 at lag 3 samples, amplitude 697.9W. Cause unconfirmed.
+[WATCHDOG] Done. 341 samples → b200_watchdog/prompt_injection_test_b200_1.jsonl/telemetry_20260730_190223.csv
+[WATCHDOG] Final actual achieved rate: 3.781Hz (requested 100Hz)
+Samples: 341 | Alerts: 1 | Remediations: 1
