@@ -1,0 +1,68 @@
+{
+  "tool": "watchdog/gpu_audit.py",
+  "schema": 1,
+  "host": "4b3d472ffa95",
+  "timestamp_utc": "2026-07-30T05:53:27.261220+00:00",
+  "provider": "runpod",
+  "gpu": "B200",
+  "region": "unknown",
+  "checks": {
+    "contention": {
+      "status": "OK",
+      "runs": [
+        {
+          "baseline_iters_s": 454.14,
+          "contended_iters_s": 207.0,
+          "degradation_pct": 54.42
+        },
+        {
+          "baseline_iters_s": 457.55,
+          "contended_iters_s": 211.51,
+          "degradation_pct": 53.77
+        },
+        {
+          "baseline_iters_s": 457.58,
+          "contended_iters_s": 219.88,
+          "degradation_pct": 51.95
+        }
+      ],
+      "competitors": 1,
+      "mean_degradation_pct": 53.38,
+      "stdev_pct": 1.05,
+      "verdict": "measured 53.38% throughput loss under 1 noisy neighbour(s), +/- 1.05% across 3 runs"
+    },
+    "tenant_files": {
+      "status": "OK",
+      "dirs_scanned": [
+        "/tmp",
+        "/var/tmp",
+        "/dev/shm"
+      ],
+      "contents_inspected": false,
+      "leftover_count": 0,
+      "oldest_age_days": 0,
+      "sample_paths_only": [],
+      "verdict": "no foreign-owned files in shared temp dirs"
+    },
+    "stale_cve": {
+      "status": "PARTIAL",
+      "kernel": "6.8.0-107-generic",
+      "range_match": "NOT_IMPLEMENTED (no authoritative --cve-db supplied)",
+      "candidates_to_verify": [
+        {
+          "id": "CVE-2026-31431",
+          "name": "Copy Fail",
+          "ref": "CISA KEV",
+          "note": "container-escape; kernel version fragile to backports"
+        },
+        {
+          "id": "CVE-2026-64600",
+          "name": "RefluXFS",
+          "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-64600",
+          "note": "CVSS 7.8 HIGH, local-access-only"
+        }
+      ],
+      "verdict": "kernel 6.8.0-107-generic; verify manually against the listed CVEs -- automated range match needs authoritative data"
+    }
+  }
+}
