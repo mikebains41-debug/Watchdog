@@ -1,0 +1,66 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-07-30T17:12:41.980547
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/live_detector_test_b200_1.jsonl/telemetry_20260730_171242.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[t+60s] GPU0: 182.9W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.572Hz (requested 100Hz) -- min/mean/max interval: 234.516/279.951/551.174ms
+[t+60s] GPU0: 182.9W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.574Hz (requested 100Hz) -- min/mean/max interval: 234.516/279.767/551.174ms
+[t+60s] GPU0: 182.9W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.575Hz (requested 100Hz) -- min/mean/max interval: 234.516/279.681/551.174ms
+[t+60s] GPU0: 182.8W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.577Hz (requested 100Hz) -- min/mean/max interval: 234.516/279.565/551.174ms
+[t+120s] GPU0: 183.0W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.746Hz (requested 100Hz) -- min/mean/max interval: 218.822/266.97/644.57ms
+[t+120s] GPU0: 183.1W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.747Hz (requested 100Hz) -- min/mean/max interval: 218.822/266.885/644.57ms
+[t+120s] GPU0: 183.0W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.748Hz (requested 100Hz) -- min/mean/max interval: 218.822/266.809/644.57ms
+[t+120s] GPU0: 183.1W mem=0MB temp=30C util=0%
+[WATCHDOG] Actual achieved rate: 3.749Hz (requested 100Hz) -- min/mean/max interval: 218.822/266.751/644.57ms
+[CRITICAL] GHOST_POWER — Ghost power 50.8W above 182.9W idle floor at 0% utilization
+[INFO] BILLING_INTEGRITY_GAP — GPU reports 0% utilization (billed as idle) but drew 51.0W above this device's own learned idle floor -- a billing metering question, not necessarily a security one. Does not know your billing model; only the physical wattage gap is measured; no cost rate supplied.
+[REMEDIATION] log_only → LOGGED
+[WARNING] AGENT_ORCHESTRATION_ANOMALY — Power 50.9W above this GPU's own learned idle-with-context floor while claiming idle -- cause unconfirmed, overlaps with GhostPowerDetector
+
+============================================================
+[WATCHDOG ALERT #0]
+Severity  : WARNING
+Type      : AGENT_ORCHESTRATION_ANOMALY
+GPU       : 0
+Confidence: 0.5
+Message   : Power 50.9W above this GPU's own learned idle-with-context floor while claiming idle -- cause unconfirmed, overlaps with GhostPowerDetector
+============================================================
+
+[REMEDIATION] kill_process → SKIPPED_AUTO_DISABLED
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.69 at lag 3 samples, amplitude 51.3W. Cause unconfirmed.
+[CRITICAL] GHOST_POWER — Ghost power 50.3W above 182.9W idle floor at 0% utilization
+[SWARM AGENT 4] TENANT_ISOLATION_RISK GPU0 risk=80.0% severity=WARNING vram=972MB
+
+============================================================
+[WATCHDOG ALERT #1]
+Severity  : WARNING
+Type      : TENANT_ISOLATION_RISK
+GPU       : 0
+Confidence: 0.5
+Message   : Tenant isolation risk on GPU0. Risk score: 80.0%. VRAM residual baseline: 629MB. CVE-2048350 (pending MITRE assignment) CVSS 8.4 (self-assessed, not independently reviewed). Simulation only.
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[INFO] MIGRATION_RECOMMENDED — RECOMMENDATION (not automatic): GPU0 shows elevated tenant isolation risk (80.0%, simulation-based -- see TenantIsolationRiskScorer's own disclosed limitations, including its permanently degraded timing signal given current telemetry collection). Consider reviewing workload placement. This is NOT confirmation of an actual breach.
+[REMEDIATION] log_only → LOGGED
+[t+180s] GPU0: 815.1W mem=972MB temp=45C util=98%
+[WATCHDOG] Actual achieved rate: 3.59Hz (requested 100Hz) -- min/mean/max interval: 213.967/278.566/2351.948ms
+[WATCHDOG] Done. 647 samples → b200_watchdog/live_detector_test_b200_1.jsonl/telemetry_20260730_171242.csv
+[WATCHDOG] Final actual achieved rate: 3.59Hz (requested 100Hz)
+Samples: 647 | Alerts: 2 | Remediations: 3
