@@ -1,0 +1,5 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "/workspace/Watchdog/watchdog.py", line 31, in <module>
+    from scripts.vram_residency_challenge import run_residency_challenge
+ImportError: cannot import name 'run_residency_challenge' from 'scripts.vram_residency_challenge' (/workspace/Watchdog/scripts/vram_residency_challenge.py)
