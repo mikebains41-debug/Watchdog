@@ -128,9 +128,31 @@ def parse_nvlink_output(stdout_text):
     rx_by_link = {}
     mode = None
     found_any = False
+    import re
+    inline_re = re.compile(r'^Link\s+(\d+):\s+Data\s+(Tx|Rx):\s+([\d.]+)\s*KiB', re.IGNORECASE)
     for line in stdout_text.splitlines():
         line = line.strip()
         if not line:
+            continue
+        m = inline_re.match(line)
+        if m:
+            # Real B200 format: "Link N: Data Tx: X KiB" -- Tx/Rx interleaved
+            # per link on one line, confirmed against actual nvlink -gt d
+            # output. Checked BEFORE the header-style branches below, since
+            # this line also contains the substring "data tx"/"data rx" and
+            # would otherwise be misidentified as a header line and its
+            # value silently discarded via continue -- this was the exact
+            # bug that made nvlink_available=False on real hardware.
+            link_num = int(m.group(1))
+            kind = m.group(2).lower()
+            val = float(m.group(3))
+            found_any = True
+            if kind == 'tx':
+                tx_total += val
+                tx_by_link[link_num] = val
+            else:
+                rx_total += val
+                rx_by_link[link_num] = val
             continue
         if 'data tx' in line.lower():
             mode = 'tx'
