@@ -1,0 +1,29 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-07-30T17:47:33.214941
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/sequential_read_test_b200_1.jsonl/telemetry_20260730_174733.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM AGENT 1] GHOST_POWER_PREDICTED GPU0 confidence=100.0% power=621.5W
+
+============================================================
+[WATCHDOG ALERT #0]
+Severity  : WARNING
+Type      : GHOST_POWER_PREDICTED
+GPU       : 0
+Confidence: 0.5
+Message   : Ghost power predicted on GPU0 in 30-60 seconds. Confidence: 100.0%. Current power: 621.5W. Signature: HBM_LOCK_DIVERGENCE
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[WATCHDOG] Done. 150 samples → b200_watchdog/sequential_read_test_b200_1.jsonl/telemetry_20260730_174733.csv
+[WATCHDOG] Final actual achieved rate: 3.312Hz (requested 100Hz)
+Samples: 150 | Alerts: 1 | Remediations: 1
