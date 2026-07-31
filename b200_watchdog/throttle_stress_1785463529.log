@@ -1,0 +1,88 @@
+
+[WATCHDOG v2.0] Start: 2026-07-31T02:05:31.416668
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/throttle_stress_1785463529.jsonl/telemetry_20260731_020531.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.73 at lag 3 samples, amplitude 741.8W. Cause unconfirmed.
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.92 at lag 3 samples, amplitude 27.9W. Cause unconfirmed.
+[t+60s] GPU0: 938.5W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 5.977Hz (requested 100Hz) -- min/mean/max interval: 133.617/167.31/1446.232ms
+[t+60s] GPU0: 938.8W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 5.978Hz (requested 100Hz) -- min/mean/max interval: 133.617/167.291/1446.232ms
+[t+60s] GPU0: 939.5W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 5.98Hz (requested 100Hz) -- min/mean/max interval: 133.617/167.238/1446.232ms
+[t+60s] GPU0: 939.6W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 5.981Hz (requested 100Hz) -- min/mean/max interval: 133.617/167.204/1446.232ms
+[t+60s] GPU0: 939.9W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 5.982Hz (requested 100Hz) -- min/mean/max interval: 133.617/167.165/1446.232ms
+[t+60s] GPU0: 939.6W mem=2916MB temp=60C util=100%
+[WATCHDOG] Actual achieved rate: 5.983Hz (requested 100Hz) -- min/mean/max interval: 133.617/167.142/1446.232ms
+[t+60s] GPU0: 939.4W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 5.985Hz (requested 100Hz) -- min/mean/max interval: 133.617/167.096/1446.232ms
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.86 at lag 3 samples, amplitude 5.1W. Cause unconfirmed.
+[t+120s] GPU0: 938.9W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.112Hz (requested 100Hz) -- min/mean/max interval: 133.383/163.616/1446.232ms
+[t+120s] GPU0: 938.4W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.113Hz (requested 100Hz) -- min/mean/max interval: 133.383/163.595/1446.232ms
+[t+120s] GPU0: 939.2W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.113Hz (requested 100Hz) -- min/mean/max interval: 133.383/163.576/1446.232ms
+[t+120s] GPU0: 938.7W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.112Hz (requested 100Hz) -- min/mean/max interval: 133.383/163.601/1446.232ms
+[t+120s] GPU0: 939.1W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.112Hz (requested 100Hz) -- min/mean/max interval: 133.383/163.602/1446.232ms
+[t+120s] GPU0: 939.2W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.113Hz (requested 100Hz) -- min/mean/max interval: 133.383/163.584/1446.232ms
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.81 at lag 3 samples, amplitude 5.3W. Cause unconfirmed.
+[t+180s] GPU0: 946.9W mem=2916MB temp=64C util=100%
+[WATCHDOG] Actual achieved rate: 6.183Hz (requested 100Hz) -- min/mean/max interval: 133.383/161.746/443.142ms
+[t+180s] GPU0: 946.5W mem=2916MB temp=64C util=100%
+[WATCHDOG] Actual achieved rate: 6.183Hz (requested 100Hz) -- min/mean/max interval: 133.383/161.739/443.142ms
+[t+180s] GPU0: 946.7W mem=2916MB temp=64C util=100%
+[WATCHDOG] Actual achieved rate: 6.183Hz (requested 100Hz) -- min/mean/max interval: 133.383/161.729/443.142ms
+[t+180s] GPU0: 946.9W mem=2916MB temp=64C util=100%
+[WATCHDOG] Actual achieved rate: 6.183Hz (requested 100Hz) -- min/mean/max interval: 133.383/161.73/443.142ms
+[t+180s] GPU0: 947.1W mem=2916MB temp=64C util=100%
+[WATCHDOG] Actual achieved rate: 6.184Hz (requested 100Hz) -- min/mean/max interval: 133.383/161.719/443.142ms
+[t+180s] GPU0: 947.2W mem=2916MB temp=64C util=100%
+[WATCHDOG] Actual achieved rate: 6.183Hz (requested 100Hz) -- min/mean/max interval: 133.383/161.726/443.142ms
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.84 at lag 3 samples, amplitude 5.2W. Cause unconfirmed.
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.80 at lag 3 samples, amplitude 5.0W. Cause unconfirmed.
+[t+240s] GPU0: 941.4W mem=2916MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 6.165Hz (requested 100Hz) -- min/mean/max interval: 132.108/162.197/840.421ms
+[t+240s] GPU0: 941.6W mem=2916MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 6.166Hz (requested 100Hz) -- min/mean/max interval: 132.108/162.189/840.421ms
+[t+240s] GPU0: 941.3W mem=2916MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 6.165Hz (requested 100Hz) -- min/mean/max interval: 132.108/162.193/840.421ms
+[t+240s] GPU0: 941.1W mem=2916MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 6.165Hz (requested 100Hz) -- min/mean/max interval: 132.108/162.195/840.421ms
+[t+240s] GPU0: 941.8W mem=2916MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 6.165Hz (requested 100Hz) -- min/mean/max interval: 132.108/162.2/840.421ms
+[t+240s] GPU0: 942.3W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.165Hz (requested 100Hz) -- min/mean/max interval: 132.108/162.201/840.421ms
+[t+240s] GPU0: 942.0W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.165Hz (requested 100Hz) -- min/mean/max interval: 132.108/162.213/840.421ms
+[t+300s] GPU0: 940.3W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.196Hz (requested 100Hz) -- min/mean/max interval: 132.108/161.404/840.421ms
+[t+300s] GPU0: 940.9W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.196Hz (requested 100Hz) -- min/mean/max interval: 132.108/161.407/840.421ms
+[t+300s] GPU0: 941.4W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.195Hz (requested 100Hz) -- min/mean/max interval: 132.108/161.409/840.421ms
+[t+300s] GPU0: 940.9W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.195Hz (requested 100Hz) -- min/mean/max interval: 132.108/161.408/840.421ms
+[t+300s] GPU0: 940.7W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.193Hz (requested 100Hz) -- min/mean/max interval: 132.108/161.461/840.421ms
+[t+300s] GPU0: 940.8W mem=2916MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.192Hz (requested 100Hz) -- min/mean/max interval: 132.108/161.506/840.421ms
+[SWARM AGENT 1] GHOST_POWER_PREDICTED GPU0 confidence=100.0% power=737.2W
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.70 at lag 3 samples, amplitude 676.7W. Cause unconfirmed.
+[WATCHDOG] Done. 1911 samples → b200_watchdog/throttle_stress_1785463529.jsonl/telemetry_20260731_020531.csv
+[WATCHDOG] Final actual achieved rate: 6.205Hz (requested 100Hz)
+Samples: 1911 | Alerts: 0 | Remediations: 0
