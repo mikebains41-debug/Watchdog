@@ -1,0 +1,9 @@
+=== CPU-ONLY TEST BOUNDARY, Fri Jul 31 21:41:00 UTC 2026 ===
+watchdog.py --api on CPU-only pod:
+
+[WATCHDOG v2.0] Start: 2026-07-31T21:39:24.982612
+[ERROR] No GPUs.
+
+Conclusion: test_metrics_alert_firing.py and test_webhook_pipeline_delivery.py
+require a running Watchdog API, which requires a GPU. Not a missing-package
+issue -- requests is installed for python3.13. These are GPU-dependent.
