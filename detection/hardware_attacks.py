@@ -373,6 +373,7 @@ class NVLinkContentionDetector:
         self._last_iso_ts = None
         self._last_total_kbs = None
         self._last_by_link = {}
+        self._last_raw_total_kbs = None
 
     def update(self, row):
         if not row.get('nvlink_available'):
@@ -411,8 +412,24 @@ class NVLinkContentionDetector:
         if self._last_iso_ts is None:
             self._last_iso_ts = now_dt
             self._last_total_kbs = raw_total_kbs
+            self._last_raw_total_kbs = raw_total_kbs
             self._last_by_link = dict(raw_combined_by_link)
             return None
+
+        # FIX: the NVLink sampler's cache only refreshes once per
+        # nvlink_interval_s (5s default), but update() is called at the
+        # full telemetry sample rate (~6-7Hz observed). Between real
+        # refreshes, raw_total_kbs is a REPEATED cached value -- computing
+        # a rate against it produces delta=0, then the single sample where
+        # the cache DOES refresh shows the full 5s of growth compressed
+        # into one ~150ms interval, an artificial ~30x spike. That spike
+        # can satisfy delta_threshold_kbs but can never satisfy
+        # require_consecutive since every other sample resets to 0.
+        # Skip evaluation entirely on repeated cache values -- only
+        # compute a rate when the raw counter has genuinely changed.
+        if raw_total_kbs == self._last_raw_total_kbs:
+            return None
+        self._last_raw_total_kbs = raw_total_kbs
 
         elapsed = (now_dt - self._last_iso_ts).total_seconds()
         if elapsed <= 0:

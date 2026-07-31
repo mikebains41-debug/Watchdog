@@ -1,0 +1,144 @@
+
+[WATCHDOG v2.0] Start: 2026-07-31T00:34:29.703486
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/nvlink_retest_v3.jsonl/telemetry_20260731_003429.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM AGENT 4] TENANT_ISOLATION_RISK GPU0 risk=80.0% severity=WARNING vram=1488MB
+[CRITICAL] GHOST_POWER — Ghost power 51.7W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.7W above 193.7W idle floor at 0% utilization
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.70 at lag 3 samples, amplitude 56.3W. Cause unconfirmed.
+[CRITICAL] GHOST_POWER — Ghost power 55.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.9W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.7W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.1W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.1W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[t+60s] GPU0: 249.9W mem=1488MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 5.828Hz (requested 100Hz) -- min/mean/max interval: 127.547/171.586/868.799ms
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[t+60s] GPU0: 250.1W mem=1488MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 5.83Hz (requested 100Hz) -- min/mean/max interval: 127.547/171.528/868.799ms
+[t+60s] GPU0: 250.0W mem=1488MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 5.831Hz (requested 100Hz) -- min/mean/max interval: 127.547/171.501/868.799ms
+[t+60s] GPU0: 250.0W mem=1488MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 5.824Hz (requested 100Hz) -- min/mean/max interval: 127.547/171.718/868.799ms
+[t+60s] GPU0: 250.0W mem=1488MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 5.826Hz (requested 100Hz) -- min/mean/max interval: 127.547/171.634/868.799ms
+[t+60s] GPU0: 249.9W mem=1488MB temp=36C util=1%
+[WATCHDOG] Actual achieved rate: 5.829Hz (requested 100Hz) -- min/mean/max interval: 127.547/171.566/868.799ms
+[CRITICAL] GHOST_POWER — Ghost power 56.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.7W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 55.9W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.1W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.1W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.4W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.1W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.1W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.7W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.5W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.4W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.4W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.9W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.7W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.0W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.0W above 193.7W idle floor at 0% utilization
+[t+120s] GPU0: 250.6W mem=1488MB temp=37C util=1%
+[WATCHDOG] Actual achieved rate: 6.151Hz (requested 100Hz) -- min/mean/max interval: 125.148/162.569/868.799ms
+[t+120s] GPU0: 250.8W mem=1488MB temp=37C util=0%
+[WATCHDOG] Actual achieved rate: 6.152Hz (requested 100Hz) -- min/mean/max interval: 125.148/162.544/868.799ms
+[t+120s] GPU0: 250.6W mem=1488MB temp=37C util=0%
+[WATCHDOG] Actual achieved rate: 6.153Hz (requested 100Hz) -- min/mean/max interval: 125.148/162.511/868.799ms
+[CRITICAL] GHOST_POWER — Ghost power 57.0W above 193.7W idle floor at 0% utilization
+[t+120s] GPU0: 250.8W mem=1488MB temp=37C util=0%
+[WATCHDOG] Actual achieved rate: 6.154Hz (requested 100Hz) -- min/mean/max interval: 125.148/162.485/868.799ms
+[t+120s] GPU0: 250.6W mem=1488MB temp=37C util=1%
+[WATCHDOG] Actual achieved rate: 6.149Hz (requested 100Hz) -- min/mean/max interval: 125.148/162.625/868.799ms
+[t+120s] GPU0: 250.7W mem=1488MB temp=37C util=0%
+[WATCHDOG] Actual achieved rate: 6.15Hz (requested 100Hz) -- min/mean/max interval: 125.148/162.592/868.799ms
+[CRITICAL] GHOST_POWER — Ghost power 57.2W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.4W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 57.3W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.9W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.7W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.6W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.7W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.9W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.8W above 193.7W idle floor at 0% utilization
+[CRITICAL] GHOST_POWER — Ghost power 56.7W above 193.7W idle floor at 0% utilization
+[WATCHDOG] Done. 934 samples → b200_watchdog/nvlink_retest_v3.jsonl/telemetry_20260731_003429.csv
+[WATCHDOG] Final actual achieved rate: 6.223Hz (requested 100Hz)
+Samples: 934 | Alerts: 0 | Remediations: 0
