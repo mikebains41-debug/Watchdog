@@ -29,7 +29,9 @@ Achieved sample rate: 3.756Hz (run 2) / 7.105-7.128Hz (run 1), requested 100Hz b
 mean power 706.12W across 50 real power samples, matrix size 4096.
 
 ## Residency probe
-23.4ms real read latency on a 512MB VRAM buffer.
+23.4ms on first call (CUDA warm-up artifact, confirmed by two
+independent 5-run reproducibility tests), ~0.3ms steady-state real read
+latency on a 512MB VRAM buffer thereafter. See reproducibility_*.json.
 
 ## Throttle fields
 All 6 flags confirmed present in real telemetry (sw_power_cap, hw_slowdown,
