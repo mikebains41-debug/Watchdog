@@ -1,0 +1,8 @@
+=== CONTAINER RESOURCE VISIBILITY, Fri Jul 31 21:33:23 UTC 2026 ===
+kernel: 6.8.0-45-generic
+nproc (allocated): 32
+psutil cpu_count (host): 96
+usable affinity: 32 cores
+governor: schedutil
+sysctl sched_min_granularity_ns: sysctl: cannot stat /proc/sys/kernel/sched_min_granularity_ns: No such file or directory
+loadavg: 32.97 30.68 28.81 42/3510 2049
