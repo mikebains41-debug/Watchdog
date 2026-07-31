@@ -1,0 +1,22 @@
+=== ADVANCED CPU EXPERIMENTS, Fri Jul 31 21:59:31 UTC 2026 ===
+Host: AMD EPYC 9654, 1 socket, 96 cores, 12 NUMA nodes (8 cores each)
+Container: 32 cores = NUMA nodes 0-3
+
+#1 Cross-NUMA bandwidth: NO EFFECT MEASURED
+   within node0: 2.60 GB/s | within node3: 2.61 | spanning: 2.61
+   Test is single-threaded Python -- interpreter-bound, not memory-bound.
+   Cannot detect NUMA effects by construction. Needs real multithreaded
+   native code (C/OpenMP) to test this properly.
+
+#2 cgroup throttling: CANNOT TEST -- /sys/fs/cgroup/cpu.stat and cpu.max
+   do not exist in this container. No nr_throttled counter available.
+
+#3 IRQ jitter / #5 false sharing: require sub-microsecond timing precision
+   Python cannot reliably provide. Not attempted rather than faked.
+
+#4 AVX-512 frequency throttling: hardware supports it (avx512f, avx512_vnni,
+   avx512_bf16 all present) but numpy/native vector code needed. Not attempted.
+
+SIDE FINDING (real): cpu_all_tests.py TEST 9 'Cache Hierarchy' reports
+~1.6 GB/s identically from L1 through RAM. This is Python loop overhead,
+not cache bandwidth. The test cannot measure what it claims to measure.
