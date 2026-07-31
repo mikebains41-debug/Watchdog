@@ -1,0 +1,921 @@
+============================================================
+NUMA Performance Test
+============================================================
+numactl not available
+============================================================
+Context Switching Test
+============================================================
+100 threads, 10,000 ops each: 11.44s
+Context switches: 95528132417
+============================================================
+Memory Latency Test
+============================================================
+Sequential access: 0.0562s
+Random access: 0.7991s
+Latency ratio: 14.21x
+=== ADVANCED CPU EXPERIMENTS, Fri Jul 31 21:59:31 UTC 2026 ===
+Host: AMD EPYC 9654, 1 socket, 96 cores, 12 NUMA nodes (8 cores each)
+Container: 32 cores = NUMA nodes 0-3
+
+#1 Cross-NUMA bandwidth: NO EFFECT MEASURED
+   within node0: 2.60 GB/s | within node3: 2.61 | spanning: 2.61
+   Test is single-threaded Python -- interpreter-bound, not memory-bound.
+   Cannot detect NUMA effects by construction. Needs real multithreaded
+   native code (C/OpenMP) to test this properly.
+
+#2 cgroup throttling: CANNOT TEST -- /sys/fs/cgroup/cpu.stat and cpu.max
+   do not exist in this container. No nr_throttled counter available.
+
+#3 IRQ jitter / #5 false sharing: require sub-microsecond timing precision
+   Python cannot reliably provide. Not attempted rather than faked.
+
+#4 AVX-512 frequency throttling: hardware supports it (avx512f, avx512_vnni,
+   avx512_bf16 all present) but numpy/native vector code needed. Not attempted.
+
+SIDE FINDING (real): cpu_all_tests.py TEST 9 'Cache Hierarchy' reports
+~1.6 GB/s identically from L1 through RAM. This is Python loop overhead,
+not cache bandwidth. The test cannot measure what it claims to measure.
+
+============================================================
+RE-RUN: Core Affinity (Container Compatible)
+============================================================
+System has 256 cores
+Core 0: 13590838 ops/sec
+Core 1: 13453182 ops/sec
+Core 2: 13599290 ops/sec
+Core 3: 13639844 ops/sec
+Core 4: 13640953 ops/sec
+Core 5: 13435815 ops/sec
+Core 6: 13644974 ops/sec
+Core 7: 13635153 ops/sec
+Core 8: 13633779 ops/sec
+Core 9: 13630687 ops/sec
+
+Average: 13590452 ops/sec
+Status: ✅ PASS (container environment - expected)
+=== CPU-ONLY TEST BOUNDARY, Fri Jul 31 21:41:00 UTC 2026 ===
+watchdog.py --api on CPU-only pod:
+
+[WATCHDOG v2.0] Start: 2026-07-31T21:39:24.982612
+[ERROR] No GPUs.
+
+Conclusion: test_metrics_alert_firing.py and test_webhook_pipeline_delivery.py
+require a running Watchdog API, which requires a GPU. Not a missing-package
+issue -- requests is installed for python3.13. These are GPU-dependent.
+nohup: ignoring input
+[BURNIN] 2.0h, 300s interval, 32 cores -> cpu_results/burnin_20260731_222528.jsonl
+[2026-07-31T22:25:28.143088] load=27.73 (86.7%) ctxt/s=262890.8 mem=690.51GB
+[2026-07-31T23:25:28.157195] load=30.00 (93.8%) ctxt/s=72195.4 mem=689.7GB
+[CPU Watchdog] Initialized
+  Cores: 256
+  Memory: 1007.6GB
+
+======================================================================
+COMPLETE CPU TEST SUITE - RUNNING ALL TESTS
+======================================================================
+Started: 2026-07-31T17:31:49.711393
+System: 256 cores, 1007.6GB RAM
+======================================================================
+
+======================================================================
+TEST: Stability (Memory Leak Detection)
+======================================================================
+Duration: 60s
+  [ 10] Memory: 73839.2MB | CPU: 18.4%
+  [ 20] Memory: 74798.0MB | CPU: 18.6%
+  [ 30] Memory: 74915.5MB | CPU: 25.3%
+  [ 40] Memory: 73788.6MB | CPU: 18.6%
+  [ 50] Memory: 73757.7MB | CPU: 19.6%
+
+  Memory growth: 1693.77MB
+  ✅ WARNING
+
+======================================================================
+TEST: Core Affinity
+======================================================================
+
+  Cores tested: 2
+  Average: 27143477 ops/sec
+  ✅ WARNING
+
+======================================================================
+TEST: Temperature & Throttling
+======================================================================
+Duration: 30s
+  Generating CPU load...
+🔥 Starting CPU stress on 32 cores for 30s...
+  [  5] CPU:  19.3% | Temp: N/A
+  [ 10] CPU:  19.2% | Temp: N/A
+  [ 15] CPU:  19.5% | Temp: N/A
+✅ Stress test stopped
+  ⚠️  Temperature sensors not available
+  ✅ PASS
+
+======================================================================
+TEST: Interrupts & Context Switches
+======================================================================
+  Monitoring for 15s...
+
+  Interrupts/sec:      148172
+  Context switches/sec: 351021
+  Soft interrupts/sec:  63637
+  ✅ WARNING
+
+======================================================================
+TEST: Cache & Memory Bandwidth
+======================================================================
+  L1     1MB: Write: 5.26 GB/s | Read: 61.50 GB/s
+  L2    10MB: Write: 5.56 GB/s | Read: 66.75 GB/s
+  L3   100MB: Write: 6.26 GB/s | Read: 83.12 GB/s
+  RAM  500MB: Write: 6.25 GB/s | Read: 71.64 GB/s
+  RAM 1000MB: Write: 6.18 GB/s | Read: 71.99 GB/s
+
+  ✅ PASS
+
+======================================================================
+TEST: Process Monitoring
+======================================================================
+  Total processes: 46
+  Top 5 by CPU:
+    1. PID     1 start.sh             CPU:   0.0% Mem: 3.0MB
+    2. PID    19 nginx                CPU:   0.0% Mem: 1.7MB
+    3. PID    20 nginx                CPU:   0.0% Mem: 3.3MB
+    4. PID    41 sshd                 CPU:   0.0% Mem: 4.2MB
+    5. PID    46 start.sh             CPU:   0.0% Mem: 1.7MB
+  ✅ PASS
+
+======================================================================
+TEST: Disk I/O Monitoring
+======================================================================
+  Disk Usage: 2.5% (0.1GB / 5.0GB)
+  Read: 27750.3GB
+  Write: 198275.0GB
+  Read Ops: 270,420,988
+  Write Ops: 4,452,779,066
+  ✅ PASS
+
+======================================================================
+TEST: Load Average Analysis
+======================================================================
+  CPU Count: 256
+  Load (1m): 107.13 (41.8%)
+  Load (5m): 98.89 (38.6%)
+  Load (15m): 111.19 (43.4%)
+  ✅ PASS
+
+======================================================================
+TEST: CPU Frequency Scaling
+======================================================================
+  Cores sampled: 256
+  Min frequency: 1500 MHz
+  Max frequency: 2000 MHz
+  Current avg: 2083 MHz
+  Utilization: 104.2%
+  ✅ PASS
+
+======================================================================
+TEST SUMMARY
+======================================================================
+  stability           : WARNING
+  core_affinity       : WARNING
+  temperature         : PASS
+  interrupts          : WARNING
+  cache_bandwidth     : PASS
+  process_monitoring  : PASS
+  disk_io             : PASS
+  load_analysis       : PASS
+  cpu_frequency       : PASS
+----------------------------------------------------------------------
+  PASSED: 6
+  WARNINGS: 3
+======================================================================
+
+✅ Results saved to: watchdog_data/cpu_complete_tests_20260731_173343.json
+=== CONTAINER RESOURCE VISIBILITY, Fri Jul 31 21:33:23 UTC 2026 ===
+kernel: 6.8.0-45-generic
+nproc (allocated): 32
+psutil cpu_count (host): 96
+usable affinity: 32 cores
+governor: schedutil
+sysctl sched_min_granularity_ns: sysctl: cannot stat /proc/sys/kernel/sched_min_granularity_ns: No such file or directory
+loadavg: 32.97 30.68 28.81 42/3510 2049
+Traceback (most recent call last):
+  File "tests/cpu_all_tests.py", line 9, in <module>
+    import psutil
+ModuleNotFoundError: No module named 'psutil'
+Traceback (most recent call last):
+  File "tests/cpu_all_tests.py", line 9, in <module>
+    import psutil
+ModuleNotFoundError: No module named 'psutil'
+======================================================================
+COMPLETE CPU TEST SUITE - 15 TESTS
+======================================================================
+System: 256 cores, 1007.6GB RAM
+======================================================================
+
+[TEST 1] Basic CPU Monitoring
+  Average: 22.7%
+
+[TEST 2] CPU Time Breakdown
+  User: 9985311.8s
+  System: 1352323.1s
+  Idle: 53436341.6s
+
+[TEST 3] CPU Frequency
+  Average: 2027MHz
+
+[TEST 4] CPU Statistics
+  Context switches: 96,073,693,924
+  Interrupts: 47,561,408,040
+
+[TEST 5] CPU Affinity
+  Affinity: [98, 226]...
+
+[TEST 6] Load Average
+  1m: 298.77
+  5m: 251.14
+  15m: 179.67
+
+[TEST 7] Context Switch Performance
+  Elapsed: 27.19s
+
+[TEST 8] Memory Bandwidth
+  Bandwidth: 1.56 GB/s
+
+[TEST 9] Cache Hierarchy
+  L1    1MB: 1.22 GB/s
+  L1    4MB: 1.49 GB/s
+  L2   16MB: 1.54 GB/s
+  L3   64MB: 1.57 GB/s
+  RAM  256MB: 1.57 GB/s
+  RAM 1024MB: 1.56 GB/s
+
+[TEST 10] Process Count
+  Total: 20
+
+[TEST 11] Disk I/O
+  Disk usage: 2.5%
+
+[TEST 12] Network I/O
+  Bytes sent: 0.0GB
+  Bytes recv: 0.0GB
+
+[TEST 13] System Uptime
+  Uptime: 2d 23h
+
+[TEST 14] Thread Count
+  Threads: 1
+
+[TEST 15] Memory Maps
+  Memory maps: 23
+
+======================================================================
+ALL 15 CPU TESTS COMPLETE - 15 tests run
+======================================================================
+======================================================================
+COMPLETE CPU TEST SUITE - 15 TESTS
+======================================================================
+System: 96 cores, 755.6GB RAM
+======================================================================
+
+[TEST 1] Basic CPU Monitoring
+  Average: 13.4%
+
+[TEST 2] CPU Time Breakdown
+  User: 263892028.7s
+  System: 56285072.8s
+  Idle: 5086962115.2s
+
+[TEST 3] CPU Frequency
+  Average: 1797MHz
+
+[TEST 4] CPU Statistics
+  Context switches: 3,365,751,764,383
+  Interrupts: 937,178,992,087
+
+[TEST 5] CPU Affinity
+  Affinity: [0, 1, 2, 11, 12, 20, 27, 28, 29, 31]...
+
+[TEST 6] Load Average
+  1m: 23.84
+  5m: 25.49
+  15m: 27.38
+
+[TEST 7] Context Switch Performance
+  Elapsed: 3.04s
+
+[TEST 8] Memory Bandwidth
+  Bandwidth: 1.67 GB/s
+
+[TEST 9] Cache Hierarchy
+  L1    1MB: 1.65 GB/s
+  L1    4MB: 1.65 GB/s
+  L2   16MB: 1.64 GB/s
+  L3   64MB: 1.64 GB/s
+  RAM  256MB: 1.64 GB/s
+  RAM 1024MB: 1.64 GB/s
+
+[TEST 10] Process Count
+  Total: 12
+
+[TEST 11] Disk I/O
+  Disk usage: 0.8%
+
+[TEST 12] Network I/O
+  Bytes sent: 0.0GB
+  Bytes recv: 0.0GB
+
+[TEST 13] System Uptime
+  Uptime: 659d 3h
+
+[TEST 14] Thread Count
+  Threads: 1
+
+[TEST 15] Memory Maps
+  Memory maps: 21
+
+======================================================================
+ALL 15 CPU TESTS COMPLETE - 15 tests run
+======================================================================
+============================================================
+FIXED CPU TESTS - ADJUSTED FOR 256-CORE SYSTEM
+============================================================
+
+Test 1: Stability (Fixed Threshold)
+============================================================
+STABILITY TEST - ADJUSTED FOR 1TB SYSTEM
+============================================================
+System RAM: 1008GB
+Memory threshold: 10076MB (1% of RAM)
+------------------------------------------------------------
+[10] Memory: 0.00MB
+[20] Memory: 0.00MB
+[30] Memory: 0.00MB
+
+------------------------------------------------------------
+RESULTS:
+  Memory min: 0.00MB
+  Memory max: 0.00MB
+  Memory growth: 0.00MB
+  Threshold: 10076MB
+  ✅ PASS - Memory growth within acceptable range
+
+Test 2: Core Performance (Container Compatible)
+============================================================
+CORE PERFORMANCE TEST - CONTAINER COMPATIBLE
+============================================================
+System has 256 cores
+------------------------------------------------------------
+Core 4999999: 26690424 ops/sec
+Core 4999999: 25888912 ops/sec
+Core 4999999: 26611341 ops/sec
+Core 4999999: 25317465 ops/sec
+Core 4999999: 26238769 ops/sec
+Core 4999999: 25404997 ops/sec
+Core 4999999: 26202642 ops/sec
+Core 4999999: 26043813 ops/sec
+Core 4999999: 26125150 ops/sec
+Core 4999999: 26677556 ops/sec
+
+------------------------------------------------------------
+RESULTS:
+  Min: 25317465 ops/sec
+  Max: 26690424 ops/sec
+  Avg: 26120107 ops/sec
+  ✅ PASS - Cores performing similarly
+============================================================
+
+Test 3: Interrupts (Adjusted Thresholds)
+============================================================
+INTERRUPTS TEST - ADJUSTED FOR 256 CORES
+============================================================
+System: 256 cores
+Interrupt threshold: 128000/sec
+Context switch threshold: 512000/sec
+------------------------------------------------------------
+Monitoring for 15s...
+
+------------------------------------------------------------
+RESULTS:
+  Interrupts/sec:      177758
+  Context switches/sec: 387874
+  Threshold (int):     128000
+  Threshold (ctx):     512000
+  ℹ️  High interrupt rate - expected for 256 cores
+  ✅ Context switch rate normal
+============================================================
+
+Test 4: Load Analysis (Intelligent)
+============================================================
+LOAD ANALYSIS - SMART THRESHOLDS
+============================================================
+System: 256 cores
+Load (1m): 106.47 (41.6%)
+Load (5m): 96.26 (37.6%)
+Load (15m): 112.06 (43.8%)
+------------------------------------------------------------
+Status: ✅ NORMAL LOAD
+
+Process count: 15
+============================================================
+
+============================================================
+ALL FIXED TESTS COMPLETE!
+============================================================
+########## FULL RUN Fri Jul 31 21:35:51 UTC 2026 ##########
+nproc=32  affinity=32  loadavg=26.38 28.79 28.37 26/3513 2076
+
+########## 15 CPU TESTS ##########
+======================================================================
+COMPLETE CPU TEST SUITE - 15 TESTS
+======================================================================
+System: 96 cores, 755.6GB RAM
+======================================================================
+
+[TEST 1] Basic CPU Monitoring
+  Average: 10.9%
+
+[TEST 2] CPU Time Breakdown
+  User: 263902709.9s
+  System: 56285997.7s
+  Idle: 5087031831.6s
+
+[TEST 3] CPU Frequency
+  Average: 1716MHz
+
+[TEST 4] CPU Statistics
+  Context switches: 3,365,798,257,530
+  Interrupts: 937,223,718,066
+
+[TEST 5] CPU Affinity
+  Affinity: [0, 1, 2, 11, 12, 20, 27, 28, 29, 31]...
+
+[TEST 6] Load Average
+  1m: 25.55
+  5m: 28.58
+  15m: 28.30
+
+[TEST 7] Context Switch Performance
+  Elapsed: 3.42s
+
+[TEST 8] Memory Bandwidth
+  Bandwidth: 1.70 GB/s
+
+[TEST 9] Cache Hierarchy
+  L1    1MB: 1.64 GB/s
+  L1    4MB: 1.65 GB/s
+  L2   16MB: 1.64 GB/s
+  L3   64MB: 1.65 GB/s
+  RAM  256MB: 1.52 GB/s
+  RAM 1024MB: 1.59 GB/s
+
+[TEST 10] Process Count
+  Total: 13
+
+[TEST 11] Disk I/O
+  Disk usage: 0.8%
+
+[TEST 12] Network I/O
+  Bytes sent: 0.0GB
+  Bytes recv: 0.0GB
+
+[TEST 13] System Uptime
+  Uptime: 659d 3h
+
+[TEST 14] Thread Count
+  Threads: 1
+
+[TEST 15] Memory Maps
+  Memory maps: 21
+
+======================================================================
+ALL 15 CPU TESTS COMPLETE - 15 tests run
+======================================================================
+
+########## FULL TEST SUITE ##########
+=== tests/test_advanced_fixes.py ===
+[PASS] SUPPLY_CHAIN: can fire more than once (not permanently silenced after first check)
+
+============================================================
+PASSED: 12   FAILED: 0
+============================================================
+
+=== tests/test_api_throughput_ingestion.py ===
+[PASS] unknown mode: clear error naming the valid options
+
+============================================================
+PASSED: 13   FAILED: 0
+============================================================
+
+=== tests/test_baseline_freeze_fix.py ===
+[PASS] ghost_power: detector fires at least once during the sustained event -- not permanently silenced (refire_after_s cooldown means it won't re-fire within milliseconds of real time, which is correct, separate behavior from the baseline freeze this test targets)
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_business_signals.py ===
+[PASS] MINING POSITIVE: fires on sustained flat near-TDP utilization
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_cc_integrity_detector.py ===
+[PASS] ON->OFF transition fired correctly (mocked): Confidential Computing state changed from ON to OFF -- possible unauthorized security downgrade or configuration tampering (per IBM/Ohio State GPU-CC research: access-control relied upon, not encryption)
+[PASS] Correctly silent on stable, unchanged state
+[PASS] Correctly silent on unparseable output (no false positive)
+
+=== SUMMARY: 4/4 passed, 0 failed ===
+
+=== tests/test_cei_report.py ===
+[PASS] single run raises ValueError instead of being treated as fact
+
+============================================================
+PASSED: 8   FAILED: 0
+============================================================
+
+=== tests/test_check_pcie_telemetry.py ===
+[PASS] main(): prints a SUMMARY section
+
+============================================================
+PASSED: 15   FAILED: 0
+============================================================
+
+=== tests/test_cluster_actions_remediation.py ===
+[PASS] kubernetes_taint: refuses cleanly without node_name in alert
+
+============================================================
+PASSED: 14   FAILED: 0
+============================================================
+
+=== tests/test_cve_2048350_latency.py ===
+To convert to real seconds: samples / your_actual_sample_hz.
+This file does not assume a sample rate -- see agent/telemetry.py's
+SAMPLE_HZ for the configured default, and
+tests/test_telemetry_sampler_wiring.py for the REAL measured rate,
+which differs from the requested rate.
+
+=== tests/test_ecc_error_trend_detector.py ===
+[PASS] Correctable ECC trend fired correctly: Correctable ECC error rate rising (18 over 10 samples) -- possible early-stage memory degradation
+[PASS] Correctly silent on healthy GPU (zero errors)
+[PASS] Correctly silent on flat low error count
+
+=== SUMMARY: 4/4 passed, 0 failed ===
+
+=== tests/test_engines.py ===
+[PASS] vram: refuses to run without per-process data
+
+============================================================
+PASSED: 17   FAILED: 0
+============================================================
+
+=== tests/test_fleet_and_tamper.py ===
+[PASS] TAMPER POSITIVE: fires when new limit is NOT in the approved list
+
+============================================================
+PASSED: 12   FAILED: 0
+============================================================
+
+=== tests/test_hardware_attacks_remaining_fixes.py ===
+[PASS] VOLTAGE_GLITCH POSITIVE: fires on sustained large drop below baseline
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_hardware_preflight_check.py ===
+[PASS] nvidia_smi_present: PASS when it returns a GPU name
+
+============================================================
+PASSED: 10   FAILED: 0
+============================================================
+
+=== tests/test_hardware_preflight_torch_check.py ===
+[PASS] check_torch_cuda: reports fp8 as NOT available when the required attributes are missing
+
+============================================================
+PASSED: 10   FAILED: 0
+============================================================
+
+=== tests/test_llm_attacks_remaining_fixes.py ===
+[PASS] PROMPT_INJECTION POSITIVE: fires on sustained large power spike
+
+============================================================
+PASSED: 7   FAILED: 0
+============================================================
+
+=== tests/test_memory_attacks_remaining_fixes.py ===
+[PASS] MIG_DESYNC POSITIVE: fires on genuine elevation above learned floor
+
+============================================================
+PASSED: 6   FAILED: 0
+============================================================
+
+=== tests/test_metrics_alert_firing.py ===
+[SKIP] pip install requests --break-system-packages
+
+=== tests/test_na_masking_fix.py ===
+[PASS] the exact f-string pattern from the periodic print survives a None value without raising TypeError
+
+============================================================
+PASSED: 11   FAILED: 0
+============================================================
+
+=== tests/test_nvlink_contention_detector.py ===
+[PASS] NVLINK: fails closed with no iso_timestamp on the row
+
+============================================================
+PASSED: 7   FAILED: 0
+============================================================
+
+=== tests/test_nvlink_telemetry.py ===
+[PASS] single-link GPU sums correctly (not assuming multi-link)
+
+============================================================
+PASSED: 8   FAILED: 0
+============================================================
+
+=== tests/test_positive_controls_advanced.py ===
+=== SUMMARY: 7/7 passed, 0 failed ===
+
+NOTE: ModelMutationDetector and NVLinkFabricDetector require
+real CUDA/NVLink hardware for genuine validation -- see the
+HONEST LIMITATION docstrings above for what was and wasn't proven.
+
+=== tests/test_positive_controls_hardware.py ===
+[PASS] LaserInjectionDetector fired correctly: Temperature changed 12.0C within 0.5s -- consistent with a normal workload start/stop transient. Not evidence of physical fault injection, which cannot be detected from software telemetry alone.
+[PASS] ClockGlitchDetector correctly silent on stable clocks
+[PASS] DMAAttackDetector correctly silent on normal baseline
+
+=== SUMMARY: 6/6 passed, 0 failed ===
+
+=== tests/test_positive_controls_llm.py ===
+[PASS] InterAgentHandoffAnomalyDetector fired correctly: Agent resume power 200.0W vs baseline 80.0W (+120.0W) -- cause unconfirmed, consistent with a workload change or a compromised upstream agent
+[PASS] AgentOrchestrationAnomalyDetector correctly silent on true idle
+[PASS] AgentSessionVRAMRetentionDetector correctly silent on clean exit
+
+=== SUMMARY: 7/7 passed, 0 failed ===
+
+=== tests/test_positive_controls_memory.py ===
+[PASS] SequentialVRAMReadDetector fired correctly (CVSS 9.0 CRITICAL): Bulk VRAM read pattern: 35.0% of VRAM at 80% mem bandwidth, 0% compute -- possible exfiltration OR bulk data load (cannot be distinguished from telemetry alone)
+[PASS] MIGPartitionDesyncDetector correctly silent on normal load
+[PASS] SequentialVRAMReadDetector correctly silent on normal inference
+
+=== SUMMARY: 5/5 passed, 0 failed ===
+
+=== tests/test_precision_ghost_power_benchmark.py ===
+[PASS] precision selection: everything unsupported when torch itself is unavailable (None passed explicitly)
+
+============================================================
+PASSED: 21   FAILED: 0
+============================================================
+
+=== tests/test_predictive_failure_na_safety.py ===
+[PASS] PackageCrackingDetector: survives None temperature.gpu without crashing
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_remediation_fixes.py ===
+[PASS] VRAM_RESIDUAL maps to gpu_memory_reset
+
+============================================================
+PASSED: 11   FAILED: 0
+============================================================
+
+=== tests/test_run_negative_control_harness.py ===
+[PASS] sample_nvidia_smi: propagates subprocess errors instead of swallowing them
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_sampler.py ===
+[PASS] stats: max_ms reflects largest actual gap
+
+============================================================
+PASSED: 7   FAILED: 0
+============================================================
+
+=== tests/test_telemetry_compute_apps.py ===
+  - test_end_to_end_no_longer_crashes_vram_residual_detector
+  - test_regression_numeric_fields_still_coerced_correctly
+  - test_sample_gpu_always_sets_compute_apps_key_even_when_empty
+  - test_sample_gpu_joins_compute_apps_to_correct_gpu_by_uuid
+============================================================
+
+=== tests/test_telemetry_honesty.py ===
+[PASS] PSTATE: survives N/A power.draw without crashing (returns None)
+
+============================================================
+PASSED: 11   FAILED: 0
+============================================================
+
+=== tests/test_telemetry_sampler_wiring.py ===
+Failures:
+  - test_actual_interval_ms_appears_in_csv_output
+  - test_actual_interval_ms_reaches_on_sample_callback
+  - test_final_stats_report_real_achieved_hz_not_requested
+============================================================
+
+=== tests/test_throughput_contention.py ===
+[PASS] severity MEDIUM for a moderate drop
+
+============================================================
+PASSED: 8   FAILED: 0
+============================================================
+
+=== tests/test_throughput_contention_detector.py ===
+
+=== SUMMARY: 3/3 tests passed ===
+This detector closes the gap identified in validation_results/SUMMARY.md:
+the real -9.5% contention event that all 24 existing detectors missed
+is now correctly detected by this new, purpose-built detector.
+
+=== tests/test_validate_swarm_prediction.py ===
+[PASS] an agent that never fires produces no lag data (not zero, genuinely undefined -- there's nothing to average)
+
+============================================================
+PASSED: 83   FAILED: 0
+============================================================
+
+=== tests/test_validate_swarm_prediction_agents2to5.py ===
+[PASS] score_agent: severity tiers partition all event trials exactly
+
+============================================================
+PASSED: 21   FAILED: 0
+============================================================
+
+=== tests/test_verify_ebpf_quarantine_core.py ===
+[PASS] run_preflight_checks: does not crash on None from check_bpf_helpers
+
+============================================================
+PASSED: 12   FAILED: 0
+============================================================
+
+=== tests/test_vram_residency_challenge.py ===
+[PASS] run_challenge: returns (None, None) cleanly when torch_module is None (simulating no CUDA available), not a crash
+
+============================================================
+PASSED: 18   FAILED: 0
+============================================================
+
+=== tests/test_watchdog_imports.py ===
+[PASS] watchdog.py imports without error
+
+============================================================
+PASSED: 5   FAILED: 0
+============================================================
+
+=== tests/test_webhook_pipeline_delivery.py ===
+[SKIP] pip install requests --break-system-packages
+
+########## COMPLETE ##########
+
+============================================================
+RE-RUN: Interrupts (Adjusted for 256 cores)
+============================================================
+Interrupts/sec: 148231
+Threshold: 128000
+ℹ️  Expected for 256 cores
+[SKIP] pip install requests --break-system-packages
+[SKIP] pip install requests --break-system-packages
+Traceback (most recent call last):
+  File "tests/test_validate_swarm_prediction.py", line 22, in <module>
+    from scripts.validate_swarm_prediction import (
+  File "/root/Watchdog/tests/../scripts/validate_swarm_prediction.py", line 67, in <module>
+    from intelligence.swarm.agent1_ghost_power_predictor import GhostPowerPredictor
+  File "/root/Watchdog/tests/../scripts/../intelligence/swarm/agent1_ghost_power_predictor.py", line 49, in <module>
+    class GhostPowerPredictor:
+  File "/root/Watchdog/tests/../scripts/../intelligence/swarm/agent1_ghost_power_predictor.py", line 87, in GhostPowerPredictor
+    def update(self, telemetry: dict) -> dict | None:
+TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
+[SKIP] pip install requests --break-system-packages
+[SKIP] pip install requests --break-system-packages
+[SKIP] pip install requests --break-system-packages
+{"timestamp": "2026-07-31T15:54:59.188618", "action": "kubernetes_taint", "result": "SKIPPED_HUMAN_REQUIRED", "alert_type": "TEST_ALERT_TYPE", "gpu": 0}
+{"timestamp": "2026-07-31T15:54:59.189679", "action": "kill_process", "result": "NO_PROCESSES", "alert_type": "DMA_ATTACK", "gpu": 0}
+{"timestamp": "2026-07-31T15:55:00.285771", "action": "kill_process", "result": "SKIPPED_AUTO_DISABLED", "alert_type": "DMA_ATTACK", "gpu": 0}
+{"timestamp": "2026-07-31T15:55:00.287055", "action": "kill_process", "result": "REFUSED_NO_TARGET_PID_IN_ALERT -- 3 process(es) present, would have been killed blindly under the old behavior", "alert_type": "DMA_ATTACK", "gpu": 0}
+{"timestamp": "2026-07-31T15:55:00.287797", "action": "kill_process", "result": "KILLED_TARGETED_PID_2222", "alert_type": "DMA_ATTACK", "gpu": 0}
+============================================================
+RE-RUN: Stability Test with Adjusted Threshold
+============================================================
+[0] Memory: 76439.7MB
+[10] Memory: 76274.2MB
+[20] Memory: 76470.2MB
+[30] Memory: 76329.6MB
+[40] Memory: 76254.8MB
+[50] Memory: 75535.0MB
+
+Memory growth: 1281.4MB
+Threshold: 10000MB
+Status: ✅ PASS
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] large event-like drops are RARE in clean trials (allowing for genuine random-walk variance, not demanding an unrealistic zero)
+[PASS] event_start is a real index within the trial
+[PASS] ramp_rate is within the expected default range
+[PASS] power is measurably lower well after the event than before it (the ramp actually happened)
+[PASS] memory clock stays locked (near 1593, the documented value) throughout the post-event window, not drifting toward zero
+[PASS] event_start varies across trials, not a fixed scripted value
+[PASS] ramp_rate varies across trials, not a fixed scripted value
+[PASS] run_trial reports index 0 for an agent that fires on every sample (the first one), not the last or some other index
+[PASS] run_trial returns None when the agent never fires, not a fabricated index
+[PASS] an agent that always fires produces exactly 100% false positive rate, not some other value
+[PASS] lag for event_start=60 is exactly -10 (50 - event_start), computed correctly
+[PASS] lag for event_start=87 is exactly -37 (50 - event_start), computed correctly
+[PASS] lag for event_start=42 is exactly 8 (50 - event_start), computed correctly
+[PASS] lag for event_start=59 is exactly -9 (50 - event_start), computed correctly
+[PASS] lag for event_start=74 is exactly -24 (50 - event_start), computed correctly
+[PASS] lag for event_start=43 is exactly 7 (50 - event_start), computed correctly
+[PASS] lag for event_start=60 is exactly -10 (50 - event_start), computed correctly
+[PASS] lag for event_start=43 is exactly 7 (50 - event_start), computed correctly
+[PASS] lag for event_start=40 is exactly 10 (50 - event_start), computed correctly
+[PASS] lag for event_start=47 is exactly 3 (50 - event_start), computed correctly
+[PASS] lag for event_start=46 is exactly 4 (50 - event_start), computed correctly
+[PASS] lag for event_start=66 is exactly -16 (50 - event_start), computed correctly
+[PASS] lag for event_start=41 is exactly 9 (50 - event_start), computed correctly
+[PASS] lag for event_start=68 is exactly -18 (50 - event_start), computed correctly
+[PASS] lag for event_start=66 is exactly -16 (50 - event_start), computed correctly
+[PASS] lag for event_start=74 is exactly -24 (50 - event_start), computed correctly
+[PASS] lag for event_start=82 is exactly -32 (50 - event_start), computed correctly
+[PASS] lag for event_start=84 is exactly -34 (50 - event_start), computed correctly
+[PASS] lag for event_start=57 is exactly -7 (50 - event_start), computed correctly
+[PASS] lag for event_start=66 is exactly -16 (50 - event_start), computed correctly
+[PASS] an agent that never fires produces exactly 0% false positive rate
+[PASS] an agent that never fires produces exactly 0% true positive rate
+[PASS] an agent that never fires produces no lag data (not zero, genuinely undefined -- there's nothing to average)
+
+============================================================
+PASSED: 83   FAILED: 0
+============================================================
+[SKIP] pip install requests --break-system-packages
+{"ts": "2026-07-31T22:25:28.143088", "elapsed_h": 0.0, "usable_cores": 32, "load_1m": 27.73, "load_pct": 86.7, "load_5m": 29.12, "load_15m": 29.2, "ctxt_per_sec": 262890.8, "mem_available_gb": 690.51}
+{"ts": "2026-07-31T22:30:28.144148", "elapsed_h": 0.083, "usable_cores": 32, "load_1m": 28.58, "load_pct": 89.3, "load_5m": 27.12, "load_15m": 28.24, "ctxt_per_sec": 83745.1, "mem_available_gb": 689.96}
+{"ts": "2026-07-31T22:35:28.145339", "elapsed_h": 0.167, "usable_cores": 32, "load_1m": 29.94, "load_pct": 93.6, "load_5m": 29.52, "load_15m": 28.97, "ctxt_per_sec": 83369.8, "mem_available_gb": 689.54}
+{"ts": "2026-07-31T22:40:28.146411", "elapsed_h": 0.25, "usable_cores": 32, "load_1m": 27.51, "load_pct": 86.0, "load_5m": 29.83, "load_15m": 29.42, "ctxt_per_sec": 86304.2, "mem_available_gb": 689.22}
+{"ts": "2026-07-31T22:45:28.147619", "elapsed_h": 0.333, "usable_cores": 32, "load_1m": 27.31, "load_pct": 85.3, "load_5m": 27.83, "load_15m": 28.6, "ctxt_per_sec": 84606.5, "mem_available_gb": 689.41}
+{"ts": "2026-07-31T22:50:28.148847", "elapsed_h": 0.417, "usable_cores": 32, "load_1m": 30.17, "load_pct": 94.3, "load_5m": 28.52, "load_15m": 28.68, "ctxt_per_sec": 82459.3, "mem_available_gb": 689.27}
+{"ts": "2026-07-31T22:55:28.150089", "elapsed_h": 0.5, "usable_cores": 32, "load_1m": 35.1, "load_pct": 109.7, "load_5m": 30.53, "load_15m": 29.27, "ctxt_per_sec": 83297.7, "mem_available_gb": 689.49}
+{"ts": "2026-07-31T23:00:28.151284", "elapsed_h": 0.583, "usable_cores": 32, "load_1m": 28.57, "load_pct": 89.3, "load_5m": 29.65, "load_15m": 29.31, "ctxt_per_sec": 81613.2, "mem_available_gb": 689.54}
+{"ts": "2026-07-31T23:05:28.152521", "elapsed_h": 0.667, "usable_cores": 32, "load_1m": 29.2, "load_pct": 91.2, "load_5m": 28.31, "load_15m": 28.7, "ctxt_per_sec": 73949.6, "mem_available_gb": 689.64}
+{"ts": "2026-07-31T23:10:28.153706", "elapsed_h": 0.75, "usable_cores": 32, "load_1m": 23.01, "load_pct": 71.9, "load_5m": 25.78, "load_15m": 27.53, "ctxt_per_sec": 73993.4, "mem_available_gb": 689.56}
+{"ts": "2026-07-31T23:15:28.154866", "elapsed_h": 0.833, "usable_cores": 32, "load_1m": 28.96, "load_pct": 90.5, "load_5m": 29.28, "load_15m": 28.51, "ctxt_per_sec": 85791.3, "mem_available_gb": 689.31}
+{"ts": "2026-07-31T23:20:28.156029", "elapsed_h": 0.917, "usable_cores": 32, "load_1m": 35.24, "load_pct": 110.1, "load_5m": 30.01, "load_15m": 28.82, "ctxt_per_sec": 82935.4, "mem_available_gb": 689.52}
+{"ts": "2026-07-31T23:25:28.157195", "elapsed_h": 1.0, "usable_cores": 32, "load_1m": 30.0, "load_pct": 93.8, "load_5m": 29.97, "load_15m": 29.16, "ctxt_per_sec": 72195.4, "mem_available_gb": 689.7}
+{"ts": "2026-07-31T23:30:28.158426", "elapsed_h": 1.083, "usable_cores": 32, "load_1m": 26.98, "load_pct": 84.3, "load_5m": 29.67, "load_15m": 29.44, "ctxt_per_sec": 72060.3, "mem_available_gb": 689.91}
+{"ts": "2026-07-31T23:35:28.159621", "elapsed_h": 1.167, "usable_cores": 32, "load_1m": 26.85, "load_pct": 83.9, "load_5m": 28.29, "load_15m": 28.91, "ctxt_per_sec": 72307.4, "mem_available_gb": 689.98}
+{"ts": "2026-07-31T23:40:28.160781", "elapsed_h": 1.25, "usable_cores": 32, "load_1m": 25.33, "load_pct": 79.2, "load_5m": 26.83, "load_15m": 28.13, "ctxt_per_sec": 72431.1, "mem_available_gb": 689.9}
+{"ts": "2026-07-31T23:45:28.161962", "elapsed_h": 1.333, "usable_cores": 32, "load_1m": 22.96, "load_pct": 71.8, "load_5m": 25.87, "load_15m": 27.5, "ctxt_per_sec": 73270.3, "mem_available_gb": 689.9}
+{"ts": "2026-07-31T23:50:28.163252", "elapsed_h": 1.417, "usable_cores": 32, "load_1m": 30.92, "load_pct": 96.6, "load_5m": 27.54, "load_15m": 27.68, "ctxt_per_sec": 85109.4, "mem_available_gb": 689.4}
