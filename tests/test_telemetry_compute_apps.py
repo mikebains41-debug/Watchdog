@@ -103,6 +103,15 @@ def _fake_query_gpu_line(index, uuid, power=80.0, util=0, mem=100):
         'pstate': 'P0',
         'ecc.errors.corrected.volatile.total': '0',
         'ecc.errors.uncorrected.volatile.total': '0',
+        # THROTTLE_FIELDS, added to QUERY_FIELDS after this mock was
+        # written -- their absence caused KeyError in every test using
+        # this helper. Real code was correct; the mock was stale.
+        'clocks_throttle_reasons.sw_power_cap': 'Not Active',
+        'clocks_throttle_reasons.hw_slowdown': 'Not Active',
+        'clocks_throttle_reasons.hw_thermal_slowdown': 'Not Active',
+        'clocks_throttle_reasons.hw_power_brake_slowdown': 'Not Active',
+        'clocks_throttle_reasons.sw_thermal_slowdown': 'Not Active',
+        'clocks_throttle_reasons.sync_boost': 'Not Active',
     }
     return ",".join(vals[f] for f in QUERY_FIELDS)
 
