@@ -1,0 +1,166 @@
+{
+  "system": {
+    "timestamp": "2026-07-31T16:42:00.465628",
+    "cpu_cores": 256,
+    "memory_gb": 1007.6319313049316
+  },
+  "stability": {
+    "name": "stability",
+    "duration": 60,
+    "iterations": 55,
+    "memory_min_mb": 83023.578125,
+    "memory_max_mb": 84590.8046875,
+    "memory_avg_mb": 83963.25120738636,
+    "memory_growth_mb": 1567.2265625,
+    "avg_cpu": 21.901818181818186,
+    "status": "WARNING"
+  },
+  "core_affinity": {
+    "name": "core_affinity",
+    "cores_tested": 2,
+    "ops_min": 24070611.190817792,
+    "ops_max": 24134739.652563196,
+    "ops_avg": 24102675.421690494,
+    "status": "WARNING"
+  },
+  "temperature": {
+    "name": "temperature",
+    "duration": 30,
+    "samples": 0,
+    "temp_min": null,
+    "temp_max": null,
+    "temp_avg": null,
+    "avg_cpu_load": 18.916666666666668,
+    "status": "PASS"
+  },
+  "interrupts": {
+    "name": "interrupts",
+    "duration": 15,
+    "interrupts_per_sec": 135003.94627446827,
+    "ctx_switches_per_sec": 252330.81406199664,
+    "soft_interrupts_per_sec": 54623.23470099673,
+    "status": "WARNING"
+  },
+  "cache_bandwidth": {
+    "name": "cache_bandwidth",
+    "results": [
+      {
+        "size_mb": 1,
+        "write_gb_s": 5.473009086050241,
+        "read_gb_s": 70.37800687285224
+      },
+      {
+        "size_mb": 10,
+        "write_gb_s": 5.704735376044568,
+        "read_gb_s": 69.84993178717599
+      },
+      {
+        "size_mb": 100,
+        "write_gb_s": 6.123577867810851,
+        "read_gb_s": 80.72526606227828
+      },
+      {
+        "size_mb": 500,
+        "write_gb_s": 6.144153603840096,
+        "read_gb_s": 58.48754854923464
+      },
+      {
+        "size_mb": 1000,
+        "write_gb_s": 6.148397949052957,
+        "read_gb_s": 76.3165347523439
+      }
+    ],
+    "status": "PASS"
+  },
+  "process_monitoring": {
+    "name": "process_monitoring",
+    "total_processes": 45,
+    "top_processes": [
+      {
+        "pid": 1,
+        "name": "start.sh",
+        "cpu": 0.0,
+        "memory": 2.98046875
+      },
+      {
+        "pid": 19,
+        "name": "nginx",
+        "cpu": 0.0,
+        "memory": 1.69140625
+      },
+      {
+        "pid": 20,
+        "name": "nginx",
+        "cpu": 0.0,
+        "memory": 3.26953125
+      },
+      {
+        "pid": 41,
+        "name": "sshd",
+        "cpu": 0.0,
+        "memory": 4.2109375
+      },
+      {
+        "pid": 46,
+        "name": "start.sh",
+        "cpu": 0.0,
+        "memory": 1.6796875
+      },
+      {
+        "pid": 51,
+        "name": "jupyter-lab",
+        "cpu": 0.0,
+        "memory": 92.27734375
+      },
+      {
+        "pid": 53,
+        "name": "sleep",
+        "cpu": 0.0,
+        "memory": 1.41796875
+      },
+      {
+        "pid": 142,
+        "name": "gotty",
+        "cpu": 0.0,
+        "memory": 9.8984375
+      },
+      {
+        "pid": 1307,
+        "name": "sshd",
+        "cpu": 0.0,
+        "memory": 8.3515625
+      },
+      {
+        "pid": 1409,
+        "name": "bash",
+        "cpu": 0.0,
+        "memory": 4.171875
+      }
+    ],
+    "status": "PASS"
+  },
+  "disk_io": {
+    "name": "disk_io",
+    "disk_usage_percent": 2.5,
+    "disk_used_gb": 0.1228485107421875,
+    "disk_total_gb": 5.0,
+    "status": "PASS"
+  },
+  "load_analysis": {
+    "name": "load_analysis",
+    "load_1m": 287.91,
+    "load_5m": 275.21,
+    "load_15m": 252.33,
+    "cpu_count": 256,
+    "load_percent": 112.46484375000001,
+    "status": "WARNING"
+  },
+  "cpu_frequency": {
+    "name": "cpu_frequency",
+    "min_freq_mhz": 1500.0,
+    "max_freq_mhz": 2000.0,
+    "current_freq_mhz": 1960.599703125,
+    "utilization_percent": 98.02998515624999,
+    "status": "PASS"
+  }
+}

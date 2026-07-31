@@ -1,0 +1,5 @@
+{"timestamp": "2026-07-31T15:54:59.188618", "action": "kubernetes_taint", "result": "SKIPPED_HUMAN_REQUIRED", "alert_type": "TEST_ALERT_TYPE", "gpu": 0}
+{"timestamp": "2026-07-31T15:54:59.189679", "action": "kill_process", "result": "NO_PROCESSES", "alert_type": "DMA_ATTACK", "gpu": 0}
+{"timestamp": "2026-07-31T15:55:00.285771", "action": "kill_process", "result": "SKIPPED_AUTO_DISABLED", "alert_type": "DMA_ATTACK", "gpu": 0}
+{"timestamp": "2026-07-31T15:55:00.287055", "action": "kill_process", "result": "REFUSED_NO_TARGET_PID_IN_ALERT -- 3 process(es) present, would have been killed blindly under the old behavior", "alert_type": "DMA_ATTACK", "gpu": 0}
+{"timestamp": "2026-07-31T15:55:00.287797", "action": "kill_process", "result": "KILLED_TARGETED_PID_2222", "alert_type": "DMA_ATTACK", "gpu": 0}

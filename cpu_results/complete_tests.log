@@ -1,0 +1,125 @@
+[CPU Watchdog] Initialized
+  Cores: 256
+  Memory: 1007.6GB
+
+======================================================================
+COMPLETE CPU TEST SUITE - RUNNING ALL TESTS
+======================================================================
+Started: 2026-07-31T17:31:49.711393
+System: 256 cores, 1007.6GB RAM
+======================================================================
+
+======================================================================
+TEST: Stability (Memory Leak Detection)
+======================================================================
+Duration: 60s
+  [ 10] Memory: 73839.2MB | CPU: 18.4%
+  [ 20] Memory: 74798.0MB | CPU: 18.6%
+  [ 30] Memory: 74915.5MB | CPU: 25.3%
+  [ 40] Memory: 73788.6MB | CPU: 18.6%
+  [ 50] Memory: 73757.7MB | CPU: 19.6%
+
+  Memory growth: 1693.77MB
+  ✅ WARNING
+
+======================================================================
+TEST: Core Affinity
+======================================================================
+
+  Cores tested: 2
+  Average: 27143477 ops/sec
+  ✅ WARNING
+
+======================================================================
+TEST: Temperature & Throttling
+======================================================================
+Duration: 30s
+  Generating CPU load...
+🔥 Starting CPU stress on 32 cores for 30s...
+  [  5] CPU:  19.3% | Temp: N/A
+  [ 10] CPU:  19.2% | Temp: N/A
+  [ 15] CPU:  19.5% | Temp: N/A
+✅ Stress test stopped
+  ⚠️  Temperature sensors not available
+  ✅ PASS
+
+======================================================================
+TEST: Interrupts & Context Switches
+======================================================================
+  Monitoring for 15s...
+
+  Interrupts/sec:      148172
+  Context switches/sec: 351021
+  Soft interrupts/sec:  63637
+  ✅ WARNING
+
+======================================================================
+TEST: Cache & Memory Bandwidth
+======================================================================
+  L1     1MB: Write: 5.26 GB/s | Read: 61.50 GB/s
+  L2    10MB: Write: 5.56 GB/s | Read: 66.75 GB/s
+  L3   100MB: Write: 6.26 GB/s | Read: 83.12 GB/s
+  RAM  500MB: Write: 6.25 GB/s | Read: 71.64 GB/s
+  RAM 1000MB: Write: 6.18 GB/s | Read: 71.99 GB/s
+
+  ✅ PASS
+
+======================================================================
+TEST: Process Monitoring
+======================================================================
+  Total processes: 46
+  Top 5 by CPU:
+    1. PID     1 start.sh             CPU:   0.0% Mem: 3.0MB
+    2. PID    19 nginx                CPU:   0.0% Mem: 1.7MB
+    3. PID    20 nginx                CPU:   0.0% Mem: 3.3MB
+    4. PID    41 sshd                 CPU:   0.0% Mem: 4.2MB
+    5. PID    46 start.sh             CPU:   0.0% Mem: 1.7MB
+  ✅ PASS
+
+======================================================================
+TEST: Disk I/O Monitoring
+======================================================================
+  Disk Usage: 2.5% (0.1GB / 5.0GB)
+  Read: 27750.3GB
+  Write: 198275.0GB
+  Read Ops: 270,420,988
+  Write Ops: 4,452,779,066
+  ✅ PASS
+
+======================================================================
+TEST: Load Average Analysis
+======================================================================
+  CPU Count: 256
+  Load (1m): 107.13 (41.8%)
+  Load (5m): 98.89 (38.6%)
+  Load (15m): 111.19 (43.4%)
+  ✅ PASS
+
+======================================================================
+TEST: CPU Frequency Scaling
+======================================================================
+  Cores sampled: 256
+  Min frequency: 1500 MHz
+  Max frequency: 2000 MHz
+  Current avg: 2083 MHz
+  Utilization: 104.2%
+  ✅ PASS
+
+======================================================================
+TEST SUMMARY
+======================================================================
+  stability           : WARNING
+  core_affinity       : WARNING
+  temperature         : PASS
+  interrupts          : WARNING
+  cache_bandwidth     : PASS
+  process_monitoring  : PASS
+  disk_io             : PASS
+  load_analysis       : PASS
+  cpu_frequency       : PASS
+----------------------------------------------------------------------
+  PASSED: 6
+  WARNINGS: 3
+======================================================================
+
+✅ Results saved to: watchdog_data/cpu_complete_tests_20260731_173343.json

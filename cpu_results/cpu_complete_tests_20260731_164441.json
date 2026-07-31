@@ -1,0 +1,120 @@
+{
+  "stability": {
+    "name": "stability",
+    "duration": 30,
+    "iterations": 28,
+    "memory_min_mb": 84043.5703125,
+    "memory_max_mb": 85016.734375,
+    "memory_avg_mb": 84529.18233816964,
+    "memory_growth_mb": 973.1640625,
+    "avg_cpu": 19.575,
+    "status": "WARNING"
+  },
+  "cache_bandwidth": {
+    "name": "cache_bandwidth",
+    "results": [
+      {
+        "size_mb": 1,
+        "write_gb_s": 5.159989921894684,
+        "read_gb_s": 54.75935828877005
+      },
+      {
+        "size_mb": 10,
+        "write_gb_s": 5.716199620408619,
+        "read_gb_s": 72.52124645892351
+      },
+      {
+        "size_mb": 100,
+        "write_gb_s": 6.195490723402195,
+        "read_gb_s": 80.49998034668448
+      },
+      {
+        "size_mb": 500,
+        "write_gb_s": 6.224515350967839,
+        "read_gb_s": 79.20179441565473
+      },
+      {
+        "size_mb": 1000,
+        "write_gb_s": 6.045160418131467,
+        "read_gb_s": 79.08710007530266
+      }
+    ],
+    "status": "PASS"
+  },
+  "process_monitoring": {
+    "name": "process_monitoring",
+    "total_processes": 13,
+    "top_processes": [
+      {
+        "pid": 1,
+        "name": "start.sh",
+        "cpu": 0.0,
+        "memory": 2.98046875
+      },
+      {
+        "pid": 19,
+        "name": "nginx",
+        "cpu": 0.0,
+        "memory": 1.69140625
+      },
+      {
+        "pid": 20,
+        "name": "nginx",
+        "cpu": 0.0,
+        "memory": 3.26953125
+      },
+      {
+        "pid": 41,
+        "name": "sshd",
+        "cpu": 0.0,
+        "memory": 4.2109375
+      },
+      {
+        "pid": 46,
+        "name": "start.sh",
+        "cpu": 0.0,
+        "memory": 1.6796875
+      },
+      {
+        "pid": 51,
+        "name": "jupyter-lab",
+        "cpu": 0.0,
+        "memory": 92.27734375
+      },
+      {
+        "pid": 53,
+        "name": "sleep",
+        "cpu": 0.0,
+        "memory": 1.41796875
+      },
+      {
+        "pid": 142,
+        "name": "gotty",
+        "cpu": 0.0,
+        "memory": 9.8984375
+      },
+      {
+        "pid": 1307,
+        "name": "sshd",
+        "cpu": 0.0,
+        "memory": 8.3515625
+      },
+      {
+        "pid": 1409,
+        "name": "bash",
+        "cpu": 0.0,
+        "memory": 4.171875
+      }
+    ],
+    "status": "PASS"
+  },
+  "load_analysis": {
+    "name": "load_analysis",
+    "load_1m": 252.77,
+    "load_5m": 268.2,
+    "load_15m": 251.06,
+    "cpu_count": 256,
+    "load_percent": 98.73828125,
+    "status": "WARNING"
+  }
+}
