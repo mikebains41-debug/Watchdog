@@ -1,0 +1,86 @@
+
+[WATCHDOG v2.0] Start: 2026-07-31T01:20:53.617149
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/covert_mining_retest_1785460851.jsonl/telemetry_20260731_012053.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[INFO] LASER_INJECTION — Temperature changed 9.0C within 0.5s -- consistent with a normal workload start/stop transient. Not evidence of physical fault injection, which cannot be detected from software telemetry alone.
+[REMEDIATION] log_only → LOGGED
+[WARNING] PACKAGE_CRACK_PREDICTED — Junction temp delta 9.0C under sustained load — possible solder joint fatigue
+
+============================================================
+[WATCHDOG ALERT #0]
+Severity  : WARNING
+Type      : PACKAGE_CRACK_PREDICTED
+GPU       : 0
+Confidence: 0.5
+Message   : Junction temp delta 9.0C under sustained load — possible solder joint fatigue
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.72 at lag 3 samples, amplitude 708.4W. Cause unconfirmed.
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.92 at lag 3 samples, amplitude 18.6W. Cause unconfirmed.
+[t+60s] GPU0: 909.0W mem=2244MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 5.987Hz (requested 100Hz) -- min/mean/max interval: 136.144/167.042/1417.167ms
+[t+60s] GPU0: 908.9W mem=2244MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 5.988Hz (requested 100Hz) -- min/mean/max interval: 136.144/166.993/1417.167ms
+[t+60s] GPU0: 908.7W mem=2244MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 5.989Hz (requested 100Hz) -- min/mean/max interval: 136.144/166.969/1417.167ms
+[t+60s] GPU0: 908.3W mem=2244MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 5.99Hz (requested 100Hz) -- min/mean/max interval: 136.144/166.942/1417.167ms
+[t+60s] GPU0: 909.0W mem=2244MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 5.991Hz (requested 100Hz) -- min/mean/max interval: 136.144/166.925/1417.167ms
+[t+60s] GPU0: 909.6W mem=2244MB temp=62C util=100%
+[WATCHDOG] Actual achieved rate: 5.992Hz (requested 100Hz) -- min/mean/max interval: 136.144/166.884/1417.167ms
+[WARNING] COVERT_MINING_PATTERN — Sustained 100.0% utilization, essentially flat (variance 1.0%), at 90% of TDP for 600 consecutive samples -- consistent with unattended mining-pattern load. This does NOT confirm the activity is unauthorized -- only that its shape differs from typical variable ML training/inference workloads.
+
+============================================================
+[WATCHDOG ALERT #1]
+Severity  : WARNING
+Type      : COVERT_MINING_PATTERN
+GPU       : 0
+Confidence: 0.5
+Message   : Sustained 100.0% utilization, essentially flat (variance 1.0%), at 90% of TDP for 600 consecutive samples -- consistent with unattended mining-pattern load. This does NOT confirm the activity is unauthorized -- only that its shape differs from typical variable ML training/inference workloads.
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[t+120s] GPU0: 906.8W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.048Hz (requested 100Hz) -- min/mean/max interval: 136.144/165.347/1417.167ms
+[t+120s] GPU0: 907.7W mem=2244MB temp=60C util=100%
+[WATCHDOG] Actual achieved rate: 6.049Hz (requested 100Hz) -- min/mean/max interval: 136.144/165.33/1417.167ms
+[t+120s] GPU0: 907.4W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.049Hz (requested 100Hz) -- min/mean/max interval: 136.144/165.314/1417.167ms
+[t+120s] GPU0: 906.8W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.05Hz (requested 100Hz) -- min/mean/max interval: 136.144/165.294/1417.167ms
+[t+120s] GPU0: 907.3W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.044Hz (requested 100Hz) -- min/mean/max interval: 136.144/165.463/1417.167ms
+[t+120s] GPU0: 907.4W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.044Hz (requested 100Hz) -- min/mean/max interval: 136.144/165.442/1417.167ms
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.64 at lag 3 samples, amplitude 5.1W. Cause unconfirmed.
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.61 at lag 3 samples, amplitude 5.1W. Cause unconfirmed.
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.60 at lag 3 samples, amplitude 5.1W. Cause unconfirmed.
+[t+180s] GPU0: 906.1W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.118Hz (requested 100Hz) -- min/mean/max interval: 127.656/163.456/526.411ms
+[t+180s] GPU0: 906.3W mem=2244MB temp=60C util=100%
+[WATCHDOG] Actual achieved rate: 6.118Hz (requested 100Hz) -- min/mean/max interval: 127.656/163.455/526.411ms
+[t+180s] GPU0: 906.8W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.118Hz (requested 100Hz) -- min/mean/max interval: 127.656/163.464/526.411ms
+[t+180s] GPU0: 907.0W mem=2244MB temp=60C util=100%
+[WATCHDOG] Actual achieved rate: 6.117Hz (requested 100Hz) -- min/mean/max interval: 127.656/163.467/526.411ms
+[t+180s] GPU0: 906.8W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.117Hz (requested 100Hz) -- min/mean/max interval: 127.656/163.481/526.411ms
+[t+180s] GPU0: 906.4W mem=2244MB temp=61C util=100%
+[WATCHDOG] Actual achieved rate: 6.117Hz (requested 100Hz) -- min/mean/max interval: 127.656/163.487/526.411ms
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.61 at lag 3 samples, amplitude 5.1W. Cause unconfirmed.
+[SWARM AGENT 1] GHOST_POWER_PREDICTED GPU0 confidence=100.0% power=734.2W
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.69 at lag 3 samples, amplitude 644.0W. Cause unconfirmed.
+[WATCHDOG] Done. 1341 samples → b200_watchdog/covert_mining_retest_1785460851.jsonl/telemetry_20260731_012053.csv
+[WATCHDOG] Final actual achieved rate: 6.122Hz (requested 100Hz)
+Samples: 1341 | Alerts: 2 | Remediations: 3
