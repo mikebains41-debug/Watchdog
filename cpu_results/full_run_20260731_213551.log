@@ -1,0 +1,351 @@
+########## FULL RUN Fri Jul 31 21:35:51 UTC 2026 ##########
+nproc=32  affinity=32  loadavg=26.38 28.79 28.37 26/3513 2076
+
+########## 15 CPU TESTS ##########
+======================================================================
+COMPLETE CPU TEST SUITE - 15 TESTS
+======================================================================
+System: 96 cores, 755.6GB RAM
+======================================================================
+
+[TEST 1] Basic CPU Monitoring
+  Average: 10.9%
+
+[TEST 2] CPU Time Breakdown
+  User: 263902709.9s
+  System: 56285997.7s
+  Idle: 5087031831.6s
+
+[TEST 3] CPU Frequency
+  Average: 1716MHz
+
+[TEST 4] CPU Statistics
+  Context switches: 3,365,798,257,530
+  Interrupts: 937,223,718,066
+
+[TEST 5] CPU Affinity
+  Affinity: [0, 1, 2, 11, 12, 20, 27, 28, 29, 31]...
+
+[TEST 6] Load Average
+  1m: 25.55
+  5m: 28.58
+  15m: 28.30
+
+[TEST 7] Context Switch Performance
+  Elapsed: 3.42s
+
+[TEST 8] Memory Bandwidth
+  Bandwidth: 1.70 GB/s
+
+[TEST 9] Cache Hierarchy
+  L1    1MB: 1.64 GB/s
+  L1    4MB: 1.65 GB/s
+  L2   16MB: 1.64 GB/s
+  L3   64MB: 1.65 GB/s
+  RAM  256MB: 1.52 GB/s
+  RAM 1024MB: 1.59 GB/s
+
+[TEST 10] Process Count
+  Total: 13
+
+[TEST 11] Disk I/O
+  Disk usage: 0.8%
+
+[TEST 12] Network I/O
+  Bytes sent: 0.0GB
+  Bytes recv: 0.0GB
+
+[TEST 13] System Uptime
+  Uptime: 659d 3h
+
+[TEST 14] Thread Count
+  Threads: 1
+
+[TEST 15] Memory Maps
+  Memory maps: 21
+
+======================================================================
+ALL 15 CPU TESTS COMPLETE - 15 tests run
+======================================================================
+
+########## FULL TEST SUITE ##########
+=== tests/test_advanced_fixes.py ===
+[PASS] SUPPLY_CHAIN: can fire more than once (not permanently silenced after first check)
+
+============================================================
+PASSED: 12   FAILED: 0
+============================================================
+
+=== tests/test_api_throughput_ingestion.py ===
+[PASS] unknown mode: clear error naming the valid options
+
+============================================================
+PASSED: 13   FAILED: 0
+============================================================
+
+=== tests/test_baseline_freeze_fix.py ===
+[PASS] ghost_power: detector fires at least once during the sustained event -- not permanently silenced (refire_after_s cooldown means it won't re-fire within milliseconds of real time, which is correct, separate behavior from the baseline freeze this test targets)
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_business_signals.py ===
+[PASS] MINING POSITIVE: fires on sustained flat near-TDP utilization
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_cc_integrity_detector.py ===
+[PASS] ON->OFF transition fired correctly (mocked): Confidential Computing state changed from ON to OFF -- possible unauthorized security downgrade or configuration tampering (per IBM/Ohio State GPU-CC research: access-control relied upon, not encryption)
+[PASS] Correctly silent on stable, unchanged state
+[PASS] Correctly silent on unparseable output (no false positive)
+
+=== SUMMARY: 4/4 passed, 0 failed ===
+
+=== tests/test_cei_report.py ===
+[PASS] single run raises ValueError instead of being treated as fact
+
+============================================================
+PASSED: 8   FAILED: 0
+============================================================
+
+=== tests/test_check_pcie_telemetry.py ===
+[PASS] main(): prints a SUMMARY section
+
+============================================================
+PASSED: 15   FAILED: 0
+============================================================
+
+=== tests/test_cluster_actions_remediation.py ===
+[PASS] kubernetes_taint: refuses cleanly without node_name in alert
+
+============================================================
+PASSED: 14   FAILED: 0
+============================================================
+
+=== tests/test_cve_2048350_latency.py ===
+To convert to real seconds: samples / your_actual_sample_hz.
+This file does not assume a sample rate -- see agent/telemetry.py's
+SAMPLE_HZ for the configured default, and
+tests/test_telemetry_sampler_wiring.py for the REAL measured rate,
+which differs from the requested rate.
+
+=== tests/test_ecc_error_trend_detector.py ===
+[PASS] Correctable ECC trend fired correctly: Correctable ECC error rate rising (18 over 10 samples) -- possible early-stage memory degradation
+[PASS] Correctly silent on healthy GPU (zero errors)
+[PASS] Correctly silent on flat low error count
+
+=== SUMMARY: 4/4 passed, 0 failed ===
+
+=== tests/test_engines.py ===
+[PASS] vram: refuses to run without per-process data
+
+============================================================
+PASSED: 17   FAILED: 0
+============================================================
+
+=== tests/test_fleet_and_tamper.py ===
+[PASS] TAMPER POSITIVE: fires when new limit is NOT in the approved list
+
+============================================================
+PASSED: 12   FAILED: 0
+============================================================
+
+=== tests/test_hardware_attacks_remaining_fixes.py ===
+[PASS] VOLTAGE_GLITCH POSITIVE: fires on sustained large drop below baseline
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_hardware_preflight_check.py ===
+[PASS] nvidia_smi_present: PASS when it returns a GPU name
+
+============================================================
+PASSED: 10   FAILED: 0
+============================================================
+
+=== tests/test_hardware_preflight_torch_check.py ===
+[PASS] check_torch_cuda: reports fp8 as NOT available when the required attributes are missing
+
+============================================================
+PASSED: 10   FAILED: 0
+============================================================
+
+=== tests/test_llm_attacks_remaining_fixes.py ===
+[PASS] PROMPT_INJECTION POSITIVE: fires on sustained large power spike
+
+============================================================
+PASSED: 7   FAILED: 0
+============================================================
+
+=== tests/test_memory_attacks_remaining_fixes.py ===
+[PASS] MIG_DESYNC POSITIVE: fires on genuine elevation above learned floor
+
+============================================================
+PASSED: 6   FAILED: 0
+============================================================
+
+=== tests/test_metrics_alert_firing.py ===
+[SKIP] pip install requests --break-system-packages
+
+=== tests/test_na_masking_fix.py ===
+[PASS] the exact f-string pattern from the periodic print survives a None value without raising TypeError
+
+============================================================
+PASSED: 11   FAILED: 0
+============================================================
+
+=== tests/test_nvlink_contention_detector.py ===
+[PASS] NVLINK: fails closed with no iso_timestamp on the row
+
+============================================================
+PASSED: 7   FAILED: 0
+============================================================
+
+=== tests/test_nvlink_telemetry.py ===
+[PASS] single-link GPU sums correctly (not assuming multi-link)
+
+============================================================
+PASSED: 8   FAILED: 0
+============================================================
+
+=== tests/test_positive_controls_advanced.py ===
+=== SUMMARY: 7/7 passed, 0 failed ===
+
+NOTE: ModelMutationDetector and NVLinkFabricDetector require
+real CUDA/NVLink hardware for genuine validation -- see the
+HONEST LIMITATION docstrings above for what was and wasn't proven.
+
+=== tests/test_positive_controls_hardware.py ===
+[PASS] LaserInjectionDetector fired correctly: Temperature changed 12.0C within 0.5s -- consistent with a normal workload start/stop transient. Not evidence of physical fault injection, which cannot be detected from software telemetry alone.
+[PASS] ClockGlitchDetector correctly silent on stable clocks
+[PASS] DMAAttackDetector correctly silent on normal baseline
+
+=== SUMMARY: 6/6 passed, 0 failed ===
+
+=== tests/test_positive_controls_llm.py ===
+[PASS] InterAgentHandoffAnomalyDetector fired correctly: Agent resume power 200.0W vs baseline 80.0W (+120.0W) -- cause unconfirmed, consistent with a workload change or a compromised upstream agent
+[PASS] AgentOrchestrationAnomalyDetector correctly silent on true idle
+[PASS] AgentSessionVRAMRetentionDetector correctly silent on clean exit
+
+=== SUMMARY: 7/7 passed, 0 failed ===
+
+=== tests/test_positive_controls_memory.py ===
+[PASS] SequentialVRAMReadDetector fired correctly (CVSS 9.0 CRITICAL): Bulk VRAM read pattern: 35.0% of VRAM at 80% mem bandwidth, 0% compute -- possible exfiltration OR bulk data load (cannot be distinguished from telemetry alone)
+[PASS] MIGPartitionDesyncDetector correctly silent on normal load
+[PASS] SequentialVRAMReadDetector correctly silent on normal inference
+
+=== SUMMARY: 5/5 passed, 0 failed ===
+
+=== tests/test_precision_ghost_power_benchmark.py ===
+[PASS] precision selection: everything unsupported when torch itself is unavailable (None passed explicitly)
+
+============================================================
+PASSED: 21   FAILED: 0
+============================================================
+
+=== tests/test_predictive_failure_na_safety.py ===
+[PASS] PackageCrackingDetector: survives None temperature.gpu without crashing
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_remediation_fixes.py ===
+[PASS] VRAM_RESIDUAL maps to gpu_memory_reset
+
+============================================================
+PASSED: 11   FAILED: 0
+============================================================
+
+=== tests/test_run_negative_control_harness.py ===
+[PASS] sample_nvidia_smi: propagates subprocess errors instead of swallowing them
+
+============================================================
+PASSED: 9   FAILED: 0
+============================================================
+
+=== tests/test_sampler.py ===
+[PASS] stats: max_ms reflects largest actual gap
+
+============================================================
+PASSED: 7   FAILED: 0
+============================================================
+
+=== tests/test_telemetry_compute_apps.py ===
+  - test_end_to_end_no_longer_crashes_vram_residual_detector
+  - test_regression_numeric_fields_still_coerced_correctly
+  - test_sample_gpu_always_sets_compute_apps_key_even_when_empty
+  - test_sample_gpu_joins_compute_apps_to_correct_gpu_by_uuid
+============================================================
+
+=== tests/test_telemetry_honesty.py ===
+[PASS] PSTATE: survives N/A power.draw without crashing (returns None)
+
+============================================================
+PASSED: 11   FAILED: 0
+============================================================
+
+=== tests/test_telemetry_sampler_wiring.py ===
+Failures:
+  - test_actual_interval_ms_appears_in_csv_output
+  - test_actual_interval_ms_reaches_on_sample_callback
+  - test_final_stats_report_real_achieved_hz_not_requested
+============================================================
+
+=== tests/test_throughput_contention.py ===
+[PASS] severity MEDIUM for a moderate drop
+
+============================================================
+PASSED: 8   FAILED: 0
+============================================================
+
+=== tests/test_throughput_contention_detector.py ===
+
+=== SUMMARY: 3/3 tests passed ===
+This detector closes the gap identified in validation_results/SUMMARY.md:
+the real -9.5% contention event that all 24 existing detectors missed
+is now correctly detected by this new, purpose-built detector.
+
+=== tests/test_validate_swarm_prediction.py ===
+[PASS] an agent that never fires produces no lag data (not zero, genuinely undefined -- there's nothing to average)
+
+============================================================
+PASSED: 83   FAILED: 0
+============================================================
+
+=== tests/test_validate_swarm_prediction_agents2to5.py ===
+[PASS] score_agent: severity tiers partition all event trials exactly
+
+============================================================
+PASSED: 21   FAILED: 0
+============================================================
+
+=== tests/test_verify_ebpf_quarantine_core.py ===
+[PASS] run_preflight_checks: does not crash on None from check_bpf_helpers
+
+============================================================
+PASSED: 12   FAILED: 0
+============================================================
+
+=== tests/test_vram_residency_challenge.py ===
+[PASS] run_challenge: returns (None, None) cleanly when torch_module is None (simulating no CUDA available), not a crash
+
+============================================================
+PASSED: 18   FAILED: 0
+============================================================
+
+=== tests/test_watchdog_imports.py ===
+[PASS] watchdog.py imports without error
+
+============================================================
+PASSED: 5   FAILED: 0
+============================================================
+
+=== tests/test_webhook_pipeline_delivery.py ===
+[SKIP] pip install requests --break-system-packages
+
+########## COMPLETE ##########
