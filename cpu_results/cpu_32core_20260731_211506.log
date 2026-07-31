@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "tests/cpu_all_tests.py", line 9, in <module>
+    import psutil
+ModuleNotFoundError: No module named 'psutil'
