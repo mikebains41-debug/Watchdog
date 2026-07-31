@@ -1,0 +1,12 @@
+[SKIP] pip install requests --break-system-packages
+Traceback (most recent call last):
+  File "tests/test_validate_swarm_prediction.py", line 22, in <module>
+    from scripts.validate_swarm_prediction import (
+  File "/root/Watchdog/tests/../scripts/validate_swarm_prediction.py", line 67, in <module>
+    from intelligence.swarm.agent1_ghost_power_predictor import GhostPowerPredictor
+  File "/root/Watchdog/tests/../scripts/../intelligence/swarm/agent1_ghost_power_predictor.py", line 49, in <module>
+    class GhostPowerPredictor:
+  File "/root/Watchdog/tests/../scripts/../intelligence/swarm/agent1_ghost_power_predictor.py", line 87, in GhostPowerPredictor
+    def update(self, telemetry: dict) -> dict | None:
+TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
+[SKIP] pip install requests --break-system-packages
