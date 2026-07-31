@@ -1,0 +1,18 @@
+
+============================================================
+RE-RUN: Core Affinity (Container Compatible)
+============================================================
+System has 256 cores
+Core 0: 13590838 ops/sec
+Core 1: 13453182 ops/sec
+Core 2: 13599290 ops/sec
+Core 3: 13639844 ops/sec
+Core 4: 13640953 ops/sec
+Core 5: 13435815 ops/sec
+Core 6: 13644974 ops/sec
+Core 7: 13635153 ops/sec
+Core 8: 13633779 ops/sec
+Core 9: 13630687 ops/sec
+
+Average: 13590452 ops/sec
+Status: ✅ PASS (container environment - expected)

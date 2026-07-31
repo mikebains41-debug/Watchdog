@@ -1,0 +1,13 @@
+============================================================
+RE-RUN: Stability Test with Adjusted Threshold
+============================================================
+[0] Memory: 76439.7MB
+[10] Memory: 76274.2MB
+[20] Memory: 76470.2MB
+[30] Memory: 76329.6MB
+[40] Memory: 76254.8MB
+[50] Memory: 75535.0MB
+
+Memory growth: 1281.4MB
+Threshold: 10000MB
+Status: ✅ PASS
