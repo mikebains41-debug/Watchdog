@@ -1,0 +1,87 @@
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] clean trial reports no true event
+[PASS] large event-like drops are RARE in clean trials (allowing for genuine random-walk variance, not demanding an unrealistic zero)
+[PASS] event_start is a real index within the trial
+[PASS] ramp_rate is within the expected default range
+[PASS] power is measurably lower well after the event than before it (the ramp actually happened)
+[PASS] memory clock stays locked (near 1593, the documented value) throughout the post-event window, not drifting toward zero
+[PASS] event_start varies across trials, not a fixed scripted value
+[PASS] ramp_rate varies across trials, not a fixed scripted value
+[PASS] run_trial reports index 0 for an agent that fires on every sample (the first one), not the last or some other index
+[PASS] run_trial returns None when the agent never fires, not a fabricated index
+[PASS] an agent that always fires produces exactly 100% false positive rate, not some other value
+[PASS] lag for event_start=60 is exactly -10 (50 - event_start), computed correctly
+[PASS] lag for event_start=87 is exactly -37 (50 - event_start), computed correctly
+[PASS] lag for event_start=42 is exactly 8 (50 - event_start), computed correctly
+[PASS] lag for event_start=59 is exactly -9 (50 - event_start), computed correctly
+[PASS] lag for event_start=74 is exactly -24 (50 - event_start), computed correctly
+[PASS] lag for event_start=43 is exactly 7 (50 - event_start), computed correctly
+[PASS] lag for event_start=60 is exactly -10 (50 - event_start), computed correctly
+[PASS] lag for event_start=43 is exactly 7 (50 - event_start), computed correctly
+[PASS] lag for event_start=40 is exactly 10 (50 - event_start), computed correctly
+[PASS] lag for event_start=47 is exactly 3 (50 - event_start), computed correctly
+[PASS] lag for event_start=46 is exactly 4 (50 - event_start), computed correctly
+[PASS] lag for event_start=66 is exactly -16 (50 - event_start), computed correctly
+[PASS] lag for event_start=41 is exactly 9 (50 - event_start), computed correctly
+[PASS] lag for event_start=68 is exactly -18 (50 - event_start), computed correctly
+[PASS] lag for event_start=66 is exactly -16 (50 - event_start), computed correctly
+[PASS] lag for event_start=74 is exactly -24 (50 - event_start), computed correctly
+[PASS] lag for event_start=82 is exactly -32 (50 - event_start), computed correctly
+[PASS] lag for event_start=84 is exactly -34 (50 - event_start), computed correctly
+[PASS] lag for event_start=57 is exactly -7 (50 - event_start), computed correctly
+[PASS] lag for event_start=66 is exactly -16 (50 - event_start), computed correctly
+[PASS] an agent that never fires produces exactly 0% false positive rate
+[PASS] an agent that never fires produces exactly 0% true positive rate
+[PASS] an agent that never fires produces no lag data (not zero, genuinely undefined -- there's nothing to average)
+
+============================================================
+PASSED: 83   FAILED: 0
+============================================================
