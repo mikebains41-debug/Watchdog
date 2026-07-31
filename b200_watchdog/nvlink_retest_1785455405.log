@@ -1,0 +1,95 @@
+
+[WATCHDOG v2.0] Start: 2026-07-30T23:50:08.488857
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/nvlink_retest_1785455405.jsonl/telemetry_20260730_235008.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[ATTEST] Baseline established for GPU 0: 14829c2b1f6530db...
+[CRITICAL] GHOST_POWER — Ghost power 54.6W above 194.0W idle floor at 0% utilization
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.65 at lag 3 samples, amplitude 166.0W. Cause unconfirmed.
+[WARNING] CAPACITOR_AGING_PREDICTED — Power ripple 27.7% under sustained load — possible PSU capacitor aging
+
+============================================================
+[WATCHDOG ALERT #0]
+Severity  : WARNING
+Type      : CAPACITOR_AGING_PREDICTED
+GPU       : 0
+Confidence: 0.5
+Message   : Power ripple 27.7% under sustained load — possible PSU capacitor aging
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[t+60s] GPU0: 361.9W mem=938MB temp=38C util=96%
+[WATCHDOG] Actual achieved rate: 5.732Hz (requested 100Hz) -- min/mean/max interval: 134.686/174.455/1553.799ms
+[t+60s] GPU0: 361.9W mem=938MB temp=38C util=96%
+[WATCHDOG] Actual achieved rate: 5.716Hz (requested 100Hz) -- min/mean/max interval: 134.686/174.959/1553.799ms
+[t+60s] GPU0: 361.9W mem=938MB temp=38C util=96%
+[WATCHDOG] Actual achieved rate: 5.718Hz (requested 100Hz) -- min/mean/max interval: 134.686/174.872/1553.799ms
+[t+60s] GPU0: 362.0W mem=938MB temp=38C util=96%
+[WATCHDOG] Actual achieved rate: 5.721Hz (requested 100Hz) -- min/mean/max interval: 134.686/174.792/1553.799ms
+[t+60s] GPU0: 362.0W mem=938MB temp=38C util=96%
+[WATCHDOG] Actual achieved rate: 5.724Hz (requested 100Hz) -- min/mean/max interval: 134.686/174.713/1553.799ms
+[WARNING] INFERENCE_POWER_ANOMALY — Inference power deviation (robust z=2.51) from calibrated baseline -- cause unconfirmed, consistent with workload change, model swap, or adversarial input
+
+============================================================
+[WATCHDOG ALERT #1]
+Severity  : WARNING
+Type      : INFERENCE_POWER_ANOMALY
+GPU       : 0
+Confidence: 0.5
+Message   : Inference power deviation (robust z=2.51) from calibrated baseline -- cause unconfirmed, consistent with workload change, model swap, or adversarial input
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[t+120s] GPU0: 365.0W mem=938MB temp=41C util=96%
+[WATCHDOG] Actual achieved rate: 6.118Hz (requested 100Hz) -- min/mean/max interval: 126.116/163.464/1553.799ms
+[t+120s] GPU0: 365.0W mem=938MB temp=41C util=96%
+[WATCHDOG] Actual achieved rate: 6.119Hz (requested 100Hz) -- min/mean/max interval: 126.116/163.432/1553.799ms
+[t+120s] GPU0: 364.9W mem=938MB temp=41C util=96%
+[WATCHDOG] Actual achieved rate: 6.12Hz (requested 100Hz) -- min/mean/max interval: 126.116/163.406/1553.799ms
+[t+120s] GPU0: 364.9W mem=938MB temp=41C util=96%
+[WATCHDOG] Actual achieved rate: 6.121Hz (requested 100Hz) -- min/mean/max interval: 126.116/163.376/1553.799ms
+[t+120s] GPU0: 364.9W mem=938MB temp=41C util=96%
+[WATCHDOG] Actual achieved rate: 6.122Hz (requested 100Hz) -- min/mean/max interval: 126.116/163.347/1553.799ms
+[t+120s] GPU0: 364.9W mem=938MB temp=41C util=96%
+[WATCHDOG] Actual achieved rate: 6.123Hz (requested 100Hz) -- min/mean/max interval: 126.116/163.331/1553.799ms
+[t+120s] GPU0: 364.9W mem=938MB temp=41C util=96%
+[WATCHDOG] Actual achieved rate: 6.124Hz (requested 100Hz) -- min/mean/max interval: 126.116/163.299/1553.799ms
+[SWARM AGENT 1] GHOST_POWER_PREDICTED GPU0 confidence=88.0% power=335.0W
+
+============================================================
+[WATCHDOG ALERT #2]
+Severity  : WARNING
+Type      : GHOST_POWER_PREDICTED
+GPU       : 0
+Confidence: 0.5
+Message   : Ghost power predicted on GPU0 in 30-60 seconds. Confidence: 88.0%. Current power: 335.0W. Signature: HBM_LOCK_DIVERGENCE
+============================================================
+
+[REMEDIATION] log_only → LOGGED
+[INFO] BILLING_INTEGRITY_GAP — GPU reports 0% utilization (billed as idle) but drew 106.8W above this device's own learned idle floor -- a billing metering question, not necessarily a security one. Does not know your billing model; only the physical wattage gap is measured; no cost rate supplied.
+[REMEDIATION] log_only → LOGGED
+[CRITICAL] GHOST_POWER — Ghost power 84.3W above 194.0W idle floor at 0% utilization
+[WARNING] AGENT_ORCHESTRATION_ANOMALY — Power 58.8W above this GPU's own learned idle-with-context floor while claiming idle -- cause unconfirmed, overlaps with GhostPowerDetector
+
+============================================================
+[WATCHDOG ALERT #3]
+Severity  : WARNING
+Type      : AGENT_ORCHESTRATION_ANOMALY
+GPU       : 0
+Confidence: 0.5
+Message   : Power 58.8W above this GPU's own learned idle-with-context floor while claiming idle -- cause unconfirmed, overlaps with GhostPowerDetector
+============================================================
+
+[REMEDIATION] kill_process → SKIPPED_AUTO_DISABLED
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.67 at lag 3 samples, amplitude 113.1W. Cause unconfirmed.
+[WATCHDOG] Done. 971 samples → b200_watchdog/nvlink_retest_1785455405.jsonl/telemetry_20260730_235008.csv
+[WATCHDOG] Final actual achieved rate: 6.26Hz (requested 100Hz)
+Samples: 971 | Alerts: 4 | Remediations: 4

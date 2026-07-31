@@ -1,0 +1,16 @@
+
+[WATCHDOG v2.0] Start: 2026-07-31T01:37:06.880021
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 5 agents active
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → b200_watchdog/handoff_rate_probe_1785461824.jsonl/telemetry_20260731_013706.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[WATCHDOG] Done. 86 samples → b200_watchdog/handoff_rate_probe_1785461824.jsonl/telemetry_20260731_013706.csv
+[WATCHDOG] Final actual achieved rate: 5.679Hz (requested 100Hz)
+Samples: 86 | Alerts: 0 | Remediations: 0
