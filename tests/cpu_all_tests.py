@@ -112,7 +112,28 @@ class AllCPUTests:
         self.results['memory_bandwidth'] = {'write_gb_s': bandwidth}
 
     def test_9_cache_hierarchy(self):
+        """DISABLED: pure Python cannot measure cache hierarchy.
+
+        Verified empirically on AMD EPYC 9654: a correctly-designed
+        benchmark (fixed loop work, varying working-set 16KB -> 512MB,
+        cache-line stride) produced 11.90M / 11.88M / 11.80M / 11.81M
+        ops/sec for L1 / L2 / L3 / RAM -- a 1.01x spread. Python's
+        ~85ns/iteration interpreter overhead swamps the ~1ns vs ~80ns
+        L1-to-RAM difference by roughly two orders of magnitude.
+
+        The original test reported ~1.6 GB/s identically across every
+        tier, which looked like a measurement but was loop overhead.
+        Reporting a number that cannot vary with the thing it claims to
+        measure is worse than reporting nothing. Needs native code
+        (C/OpenMP) or a tool like lmbench to test properly.
+        """
         print("\n[TEST 9] Cache Hierarchy")
+        print("  SKIPPED: not measurable from pure Python "
+              "(verified: 1.01x L1/RAM spread). See docstring.")
+        self.results['cache'] = {'status': 'skipped',
+                                  'reason': 'interpreter-bound',
+                                  'measured_l1_ram_spread': 1.01}
+        return
         sizes = [1, 4, 16, 64, 256, 1024]
         for mb in sizes:
             arr = bytearray(mb * 1024 * 1024)
