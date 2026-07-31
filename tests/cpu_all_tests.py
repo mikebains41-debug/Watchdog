@@ -18,12 +18,20 @@ from datetime import datetime
 class AllCPUTests:
     def __init__(self):
         self.results = {}
-        self.cpu_count = multiprocessing.cpu_count()
+        # FIX: multiprocessing.cpu_count() and psutil.cpu_count() both
+        # report the HOST's core count (96 here), not the container's
+        # cgroup allocation (32). Every load-average percentage computed
+        # from the host count understates real saturation by 3x. Use the
+        # scheduler affinity mask, which respects the container boundary.
+        self.cpu_count = len(os.sched_getaffinity(0))
+        self.host_cpu_count = multiprocessing.cpu_count()
         self.memory = psutil.virtual_memory()
         print("="*70)
         print("COMPLETE CPU TEST SUITE - 15 TESTS")
         print("="*70)
-        print(f"System: {self.cpu_count} cores, {self.memory.total/1024**3:.1f}GB RAM")
+        print(f"System: {self.cpu_count} cores usable "
+              f"(host reports {self.host_cpu_count}), "
+              f"{self.memory.total/1024**3:.1f}GB RAM")
         print("="*70)
 
     def test_1_cpu_basic(self):
@@ -65,10 +73,17 @@ class AllCPUTests:
     def test_6_cpu_load(self):
         print("\n[TEST 6] Load Average")
         load = psutil.getloadavg()
-        print(f"  1m: {load[0]:.2f}")
+        pct = (load[0] / self.cpu_count) * 100
+        print(f"  1m: {load[0]:.2f}  ({pct:.0f}% of {self.cpu_count} usable cores)")
         print(f"  5m: {load[1]:.2f}")
         print(f"  15m: {load[2]:.2f}")
-        self.results['load'] = {'1m': load[0], '5m': load[1], '15m': load[2]}
+        if pct > 100:
+            print(f"  SATURATED: load exceeds usable cores. This is a real"
+                  f" measurement, not a threshold artifact.")
+        self.results['load'] = {'1m': load[0], '5m': load[1], '15m': load[2],
+                                 'pct_of_usable': round(pct, 1),
+                                 'usable_cores': self.cpu_count,
+                                 'host_cores': self.host_cpu_count}
 
     def test_7_context_switch_perf(self):
         print("\n[TEST 7] Context Switch Performance")
