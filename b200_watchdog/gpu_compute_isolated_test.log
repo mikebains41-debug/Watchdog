@@ -1,0 +1,17 @@
+=== Isolated per-process FP16 matmul benchmark (CUDA_VISIBLE_DEVICES isolation) ===
+Method: each GPU benchmarked in a separate process to avoid cross-GPU CUDA context bleed.
+Warmup: 5 iterations before timing, 20 iterations timed.
+Matrix: 8192x8192 FP16
+
+GPU0 isolated: 1637.8 TFLOPS
+GPU1 isolated: 1613.8 TFLOPS
+(1.5% variance -- consistent with two identical B200s)
+
+Note: earlier same-process, multi-GPU-in-one-script attempts produced
+physically impossible results (122,325 TFLOPS) due to CUDA context
+bleed between devices. Discarded, not used. This isolated-process
+result is the valid one.
+
+=== ECC + thermal check ===
+GPU0: 0 corrected, 0 uncorrected ECC errors, 34C, 198.10W
+GPU1: 0 corrected, 0 uncorrected ECC errors, 35C, 199.54W
