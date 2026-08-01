@@ -1,0 +1,26 @@
+=== Live reproduction: Ghost Power + VRAM Residual (both flagship findings) ===
+Date: 2026-08-01, RunPod 2x B200 pod
+Method: FP16 8192x8192 matmul x30 iterations, then del + empty_cache(),
+then sample power/util/memory every 1s for 5s post-exit.
+
+GPU0:
+  Before workload:  199.2W  util=0.0%  mem=0.0MB
+  t+0s after exit:  239.28W util=0.0%  mem=714.0MB
+  t+1s after exit:  255.13W util=0.0%  mem=714.0MB
+  t+2s after exit:  255.08W util=0.0%  mem=714.0MB
+  t+3s after exit:  255.08W util=0.0%  mem=714.0MB
+  t+4s after exit:  255.11W util=0.0%  mem=714.0MB
+  t+5s after exit:  255.10W util=0.0%  mem=714.0MB
+  Ghost power: +55.9W sustained above baseline, util=0% throughout
+  VRAM residual: 714MB never released despite del + empty_cache()
+
+GPU1:
+  Before workload:  201.0W  util=0.0%  mem=4.0MB
+  t+0s after exit:  250.87W util=0.0%  mem=714.0MB
+  t+5s after exit:  257.34W util=0.0%  mem=714.0MB
+  Ghost power: +56.3W sustained above baseline, util=0% throughout
+  VRAM residual: 714MB never released
+
+CONCLUSION: Both flagship Watchdog findings (ghost power, VRAM residual)
+reproduced live on this session's B200 hardware. Not from historical
+capture -- fresh, timestamped, this run.
