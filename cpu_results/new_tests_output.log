@@ -1,0 +1,42 @@
+[BURNIN] 288 cores -> cpu_new_tests/burnin_20260801_180758.jsonl
+2026-08-01T18:07:58.459526 load=33.71
+2026-08-01T18:08:03.468179 load=32.77
+2026-08-01T18:08:08.475440 load=36.96
+2026-08-01T18:08:13.487257 load=51.45
+2026-08-01T18:08:18.497018 load=49.10
+2026-08-01T18:08:23.507051 load=54.21
+2026-08-01T18:08:28.514752 load=51.63
+2026-08-01T18:08:33.523617 load=51.90
+2026-08-01T18:08:38.531793 load=49.51
+2026-08-01T18:08:43.540115 load=46.75
+DONE
+=== TEST 2: container_cores ===
+✅ Container-aware cores: 288
+Host: 288, Container: 288
+✅ Match
+=== TEST 3: native_hardware ===
+=== Native CPU Hardware Tests ===
+--- Cache ---
+L1d cache:                               6.8 MiB (144 instances)
+L1i cache:                               9 MiB (144 instances)
+L2 cache:                                288 MiB (144 instances)
+L3 cache:                                864 MiB (2 instances)
+Vulnerability L1tf:                      Not affected
+--- Memory ---
+               total        used        free      shared  buff/cache   available
+Mem:           3.0Ti       296Gi       388Gi        86Gi       2.4Ti       2.7Ti
+Swap:             0B          0B          0B
+--- CPU ---
+CPU(s):                                  288
+On-line CPU(s) list:                     0-287
+Model name:                              Intel(R) Xeon(R) 6960P
+CPU(s) scaling MHz:                      32%
+CPU max MHz:                             3900.0000
+CPU min MHz:                             800.0000
+NUMA node0 CPU(s):                       0-23,144-167
+NUMA node1 CPU(s):                       24-47,168-191
+NUMA node2 CPU(s):                       48-71,192-215
+NUMA node3 CPU(s):                       72-95,216-239
+NUMA node4 CPU(s):                       96-119,240-263
+NUMA node5 CPU(s):                       120-143,264-287
+=== ALL FOUR TESTS COMPLETE ===

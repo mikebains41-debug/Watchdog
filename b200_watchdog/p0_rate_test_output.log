@@ -1,0 +1,9 @@
+=== TEST 4: B200 P0 rate capture ===
+[WATCHDOG] Streaming backend -- requested 100Hz (loop 10ms) -> b200_watchdog/telemetry_20260801_180849.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA B200', '1, NVIDIA B200']
+[t+60s] GPU0: 198.6W mem=0MB temp=33C util=0%
+[t+60s] GPU1: 198.5W mem=0MB temp=28C util=0%
+[WATCHDOG] Actual achieved rate: 81.126Hz (requested 100Hz) -- min/mean/max interval: 0.024/12.327/207.523ms
+[WATCHDOG] Done. 9768 samples -> b200_watchdog/telemetry_20260801_180849.csv
+[WATCHDOG] Final actual achieved rate: 81.126Hz (requested 100Hz)

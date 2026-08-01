@@ -1,0 +1,112 @@
+=== FULL CPU TEST RUN: 20260801_182659 ===
+
+--- Ensuring psutil is available ---
+
+=== ORIGINAL 15-TEST SUITE (tests/cpu_all_tests.py) ===
+======================================================================
+COMPLETE CPU TEST SUITE - 15 TESTS
+======================================================================
+System: 288 cores usable (host reports 288), 3023.4GB RAM
+======================================================================
+
+[TEST 1] Basic CPU Monitoring
+  Average: 11.2%
+
+[TEST 2] CPU Time Breakdown
+  User: 25479497.2s
+  System: 7816766.0s
+  Idle: 710334079.5s
+
+[TEST 3] CPU Frequency
+  Average: 1254MHz
+
+[TEST 4] CPU Statistics
+  Context switches: 138,220,395,287
+  Interrupts: 194,232,436,196
+
+[TEST 5] CPU Affinity
+  Affinity: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]...
+
+[TEST 6] Load Average
+  1m: 38.46  (13% of 288 usable cores)
+  5m: 41.07
+  15m: 38.35
+
+[TEST 7] Context Switch Performance
+  Elapsed: 40.56s
+
+[TEST 8] Memory Bandwidth
+  Bandwidth: 2.05 GB/s
+
+[TEST 9] Cache Hierarchy
+  SKIPPED: not measurable from pure Python (verified: 1.01x L1/RAM spread). See docstring.
+
+[TEST 10] Process Count
+  Total: 13
+
+[TEST 11] Disk I/O
+  Disk usage: 0.1%
+
+[TEST 12] Network I/O
+  Bytes sent: 0.0GB
+  Bytes recv: 0.0GB
+
+[TEST 13] System Uptime
+  Uptime: 30d 1h
+
+[TEST 14] Thread Count
+  Threads: 1
+
+[TEST 15] Memory Maps
+  Memory maps: 20
+
+======================================================================
+ALL 15 CPU TESTS COMPLETE - 15 tests run
+======================================================================
+
+=== NEW TEST 1: burnin_stability ===
+[BURNIN] 288 cores -> cpu_new_tests/burnin_20260801_182741.jsonl
+2026-08-01T18:27:41.157450 load=31.78
+2026-08-01T18:27:46.165678 load=30.43
+2026-08-01T18:27:51.173376 load=29.36
+2026-08-01T18:27:56.181783 load=33.41
+2026-08-01T18:28:01.190683 load=33.86
+2026-08-01T18:28:06.201412 load=32.83
+2026-08-01T18:28:11.209719 load=32.20
+2026-08-01T18:28:16.220100 load=30.99
+2026-08-01T18:28:21.228954 load=30.03
+2026-08-01T18:28:26.237476 load=29.22
+DONE
+
+=== NEW TEST 2: container_cores ===
+✅ Container-aware cores: 288
+Host: 288, Container: 288
+✅ Match
+
+=== NEW TEST 3: native_hardware ===
+=== Native CPU Hardware Tests ===
+--- Cache ---
+L1d cache:                               6.8 MiB (144 instances)
+L1i cache:                               9 MiB (144 instances)
+L2 cache:                                288 MiB (144 instances)
+L3 cache:                                864 MiB (2 instances)
+Vulnerability L1tf:                      Not affected
+--- Memory ---
+               total        used        free      shared  buff/cache   available
+Mem:           3.0Ti       285Gi       372Gi        88Gi       2.4Ti       2.7Ti
+Swap:             0B          0B          0B
+--- CPU ---
+CPU(s):                                  288
+On-line CPU(s) list:                     0-287
+Model name:                              Intel(R) Xeon(R) 6960P
+CPU(s) scaling MHz:                      52%
+CPU max MHz:                             3900.0000
+CPU min MHz:                             800.0000
+NUMA node0 CPU(s):                       0-23,144-167
+NUMA node1 CPU(s):                       24-47,168-191
+NUMA node2 CPU(s):                       48-71,192-215
+NUMA node3 CPU(s):                       72-95,216-239
+NUMA node4 CPU(s):                       96-119,240-263
+NUMA node5 CPU(s):                       120-143,264-287
+
+=== ALL CPU TESTS COMPLETE: Sat Aug  1 18:28:31 UTC 2026 ===

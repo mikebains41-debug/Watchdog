@@ -1,0 +1,17 @@
+=== 2x B200 Distributed Inference Test (vLLM tensor_parallel_size=2) ===
+Date: 2026-08-01
+Model: Qwen/Qwen2.5-7B-Instruct
+GPUs: 2x NVIDIA B200 (CUDA_VISIBLE_DEVICES=0,1)
+Fix required: LD_LIBRARY_PATH set to locate libnvrtc.so.13
+  (was: ImportError: libnvrtc.so.13: cannot open shared object file)
+  (fix: export LD_LIBRARY_PATH=/usr/local/lib/python3.12/dist-packages/nvidia/cu13/lib:$LD_LIBRARY_PATH)
+
+Engine init: 22.85s (compilation: 3.69s)
+Rendering prompts: 100% 1/1 [17.07it/s]
+Processed prompts: 100% 1/1 [3.82it/s]
+
+Prompt: "Explain the concept of tensor parallelism in AI inference in one paragraph."
+
+Generated text: "Tensor parallelism is a technique used in AI inference to speed up computations by distributing the workload across multiple processing units or nodes. It involves breaking down large tensor operations into smaller, parallelizable tasks that can be executed concurrently on different processors. By leveraging parallelism, tensor parallelism allows for efficient utilization of hardware resources, reducing inference time and improving overall performance, especially when dealing with large models and high-dimensional data. This approach enables the scalable execution of complex AI models, making real-time inference more feasible for applications with stringent latency requirements."
+
+Shutdown: clean, all workers exited gracefully
