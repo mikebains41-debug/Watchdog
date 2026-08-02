@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 20: CPU LLC Flood Prevention
-Locks CPU to low frequency when L3 cache misses spike >500%.
 """
 import subprocess, time, datetime, json
 
@@ -10,22 +9,32 @@ def now_iso():
 
 def get_llc_misses():
     try:
-        out = subprocess.check_output(["perf", "stat", "-e", "LLC-load-misses", "-x", ",", "sleep", "1"], text=True, timeout=3, stderr=subprocess.DEVNULL)
-        first = out.strip().splitlines()[0]
-        return float(first.split(",")[0])
+        out = subprocess.check_output(
+            ["perf", "stat", "-e", "LLC-load-misses", "-x", ",", "sleep", "1"],
+            text=True, timeout=4, stderr=subprocess.STDOUT
+        )
+        for line in out.strip().splitlines():
+            parts = line.split(",")
+            try:
+                return float(parts[0].replace(",", "").strip())
+            except:
+                continue
+        return 0
     except:
         return 0
 
 def lock_cpu_low():
     try:
-        subprocess.check_output(["cpupower", "frequency-set", "-f", "800MHz"], text=True, timeout=3, stderr=subprocess.DEVNULL)
+        # -f takes Hz
+        subprocess.check_output(["cpupower", "frequency-set", "-f", "800000"], text=True, timeout=3, stderr=subprocess.DEVNULL)
         return True
     except:
         return False
 
 def unlock_cpu():
     try:
-        subprocess.check_output(["cpupower", "frequency-set", "-f", "performance"], text=True, timeout=3, stderr=subprocess.DEVNULL)
+        # -g takes governor name
+        subprocess.check_output(["cpupower", "frequency-set", "-g", "performance"], text=True, timeout=3, stderr=subprocess.DEVNULL)
         return True
     except:
         return False
@@ -49,7 +58,7 @@ def main():
                 }) + "\n")
                 time.sleep(5)
                 if unlock_cpu():
-                    log.write(json.dumps({"event":"LLC_UNLOCK"}))
+                    log.write(json.dumps({"event":"LLC_UNLOCK"}) + "\n")  # fixed: was missing \n
         time.sleep(2)
 
 if __name__ == "__main__":

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 26: GPU Clock Glitch Prevention
-Prevents GPU clock glitching used to skip security checks.
 """
 import subprocess, time, datetime, json
 

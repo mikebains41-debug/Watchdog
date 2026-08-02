@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 19: GPU Driver & Context Prevention
-Combines:
-- gpu_context_heartbeat.py (kill unknown PID + reset CUDA context)
-- gpu_driver_unload_guard.py (reload driver on unload)
 """
 import subprocess, time, datetime, json, os, signal
 
@@ -13,7 +10,7 @@ def now_iso():
 def get_compute_apps():
     try:
         out = subprocess.check_output(["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader,nounits"], text=True, timeout=3)
-        return [p.strip() for p in out.strip().splitlines()]
+        return [p.strip() for p in out.strip().splitlines() if p.strip()]
     except:
         return []
 
@@ -55,8 +52,9 @@ def main():
         apps = get_compute_apps()
         for pid in apps:
             try:
-                with open(f'/proc/{pid}/cmdline', 'r') as f:
-                    cmd = f.read().strip()
+                with open(f'/proc/{pid}/cmdline', 'rb') as f:
+                    raw = f.read()
+                cmd = raw.replace(b'\x00', b' ').decode('utf-8', errors='replace').strip()
                 if "unknown" in cmd or "miner" in cmd:
                     if kill_pid(pid):
                         log.write(json.dumps({
@@ -67,7 +65,6 @@ def main():
             except:
                 pass
 
-        # Detect empty apps but stale memory
         if not apps:
             try:
                 mem = subprocess.check_output(["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"], text=True, timeout=2)
@@ -80,7 +77,6 @@ def main():
             except:
                 pass
 
-        # Driver reload
         mods = get_loaded_modules()
         if "nvidia" not in mods and "nvidia_uvm" not in mods:
             if reload_module("nvidia"):

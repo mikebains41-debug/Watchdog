@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 24: NVLink Session Integrity
-Prevents session hijacking across NVLink.
 """
 import subprocess, time, datetime, json
 
@@ -11,9 +10,9 @@ def now_iso():
 def get_compute_apps():
     try:
         out = subprocess.check_output(["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader,nounits"], text=True, timeout=3)
-        return [p.strip() for p in out.strip().splitlines()]
+        return set(p.strip() for p in out.strip().splitlines() if p.strip())
     except:
-        return []
+        return set()
 
 def get_nvlink_traffic():
     try:
@@ -35,8 +34,11 @@ def kill_pid(pid):
     except:
         return False
 
-def reset_nvlink():
+def bounce_nvlink():
+    """Disable then re-enable NVLink to reset session state."""
     try:
+        subprocess.check_output(["nvidia-smi", "nvlink", "-d", "-i", "0"], text=True, timeout=3, stderr=subprocess.DEVNULL)
+        time.sleep(2)
         subprocess.check_output(["nvidia-smi", "nvlink", "-e", "-i", "0"], text=True, timeout=3, stderr=subprocess.DEVNULL)
         return True
     except:
@@ -49,25 +51,25 @@ def main():
     log.write(json.dumps({"event":"RUN_START","module":"24_nvlink_session_integrity","ts":now_iso()}) + "\n")
 
     prev_traffic = get_nvlink_traffic()
-    apps = get_compute_apps()
+    known_apps = get_compute_apps()
 
     while True:
         traffic = get_nvlink_traffic()
         current_apps = get_compute_apps()
 
-        # If traffic spikes but no known app owns it
         if prev_traffic and traffic > prev_traffic * 10:
-            for pid in current_apps:
-                if pid not in apps:
-                    if kill_pid(pid):
-                        log.write(json.dumps({
-                            "event":"NVLINK_SESSION_HIJACK_BLOCKED",
-                            "pid":pid,
-                            "action":"pid_killed"
-                        }) + "\n")
-                        if reset_nvlink():
-                            log.write(json.dumps({"event":"NVLINK_RESET"}))
-            apps = current_apps
+            new_pids = current_apps - known_apps
+            for pid in new_pids:
+                if kill_pid(pid):
+                    log.write(json.dumps({
+                        "event":"NVLINK_SESSION_HIJACK_BLOCKED",
+                        "pid":pid,
+                        "action":"pid_killed"
+                    }) + "\n")
+            if new_pids:
+                if bounce_nvlink():
+                    log.write(json.dumps({"event":"NVLINK_BOUNCED"}) + "\n")
+            known_apps = current_apps
 
         prev_traffic = traffic
         time.sleep(2)

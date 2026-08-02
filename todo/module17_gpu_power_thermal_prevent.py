@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 17: GPU Power & Thermal Prevention
-Combines:
-- gpu_thermal_attack_prevent.py (fan 100% + power limit 50W on thermal stress)
-- gpu_pstate_lock.py (force P-state lock on P-state hijack)
 """
 import subprocess, time, datetime, json
 
@@ -33,14 +30,14 @@ def get_pstate():
         out = subprocess.check_output(["nvidia-smi", "-q", "-d", "CLOCK"], text=True, timeout=3, stderr=subprocess.DEVNULL)
         for line in out.splitlines():
             if "Performance State" in line:
-                return line.split(":")[-1].strip()
+                return line.split(":")[-1].strip().replace("P", "")
         return None
     except:
         return None
 
 def set_fan_speed(pct):
     try:
-        subprocess.check_output(["nvidia-smi", "--fan-speed", f"{pct}"], text=True, timeout=3, stderr=subprocess.DEVNULL)
+        subprocess.check_output(["nvidia-smi", "--fan-speed", str(pct)], text=True, timeout=3, stderr=subprocess.DEVNULL)
         return True
     except:
         return False
@@ -52,12 +49,24 @@ def set_power_limit(w):
     except:
         return False
 
-def lock_pstate():
+def get_max_clocks():
     try:
-        subprocess.check_output(["nvidia-smi", "-ac", "0,1"], text=True, timeout=3, stderr=subprocess.DEVNULL)
-        return True
+        out = subprocess.check_output(["nvidia-smi", "--query-supported-clocks=memory,graphics", "--format=csv,noheader,nounits"], text=True, timeout=3)
+        first = out.strip().splitlines()[0]
+        parts = first.split(",")
+        return int(parts[0].strip()), int(parts[1].strip())
     except:
-        return False
+        return None, None
+
+def lock_pstate():
+    mem, gpu = get_max_clocks()
+    if mem and gpu:
+        try:
+            subprocess.check_output(["nvidia-smi", "-ac", f"{mem},{gpu}"], text=True, timeout=3, stderr=subprocess.DEVNULL)
+            return True
+        except:
+            return False
+    return False
 
 def main():
     stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")

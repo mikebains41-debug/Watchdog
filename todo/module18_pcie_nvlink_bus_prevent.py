@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 18: PCIe / NVLink Bus Prevention
-Combines:
-- pcie_bus_snoop_block.py (unbind on IOMMU/DMA fault)
-- nvlink_sidechannel_blind.py (drop to Gen1 on spike)
-- pcie_speed_check_guard.py (renegotiate on link degradation)
 """
-import subprocess, time, datetime, json, re
+import subprocess, time, datetime, json, re, os
 
 def now_iso():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+def acquire_lock(event):
+    try:
+        fd = os.open(f"/tmp/watchdog_{event}.lock", os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.close(fd)
+        return True
+    except FileExistsError:
+        return False
+
+def release_lock(event):
+    try:
+        os.unlink(f"/tmp/watchdog_{event}.lock")
+    except:
+        pass
 
 def check_dmesg_for_iommu():
     try:
@@ -20,7 +30,8 @@ def check_dmesg_for_iommu():
 
 def unbind_pcie():
     try:
-        subprocess.check_output(["echo", "1", ">", "/sys/bus/pci/devices/0000:00:00.0/remove"], shell=True, timeout=3, stderr=subprocess.DEVNULL)
+        with open("/sys/bus/pci/devices/0000:00:00.0/remove", "w") as f:
+            f.write("1")
         return True
     except:
         return False
@@ -38,9 +49,16 @@ def get_nvlink_bw():
     except:
         return 0
 
-def set_nvlink_gen1():
+def disable_nvlink():
     try:
-        subprocess.check_output(["nvidia-smi", "nvlink", "-s", "1"], text=True, timeout=3, stderr=subprocess.DEVNULL)
+        subprocess.check_output(["nvidia-smi", "nvlink", "-d", "-i", "0"], text=True, timeout=3, stderr=subprocess.DEVNULL)
+        return True
+    except:
+        return False
+
+def enable_nvlink():
+    try:
+        subprocess.check_output(["nvidia-smi", "nvlink", "-e", "-i", "0"], text=True, timeout=3, stderr=subprocess.DEVNULL)
         return True
     except:
         return False
@@ -59,7 +77,8 @@ def get_pcie_speed():
 
 def renegotiate_pcie():
     try:
-        subprocess.check_output(["echo", "1", ">", "/sys/bus/pci/devices/0000:00:00.0/reset"], shell=True, timeout=3, stderr=subprocess.DEVNULL)
+        with open("/sys/bus/pci/devices/0000:00:00.0/reset", "w") as f:
+            f.write("1")
         return True
     except:
         return False
@@ -73,23 +92,28 @@ def main():
     prev_bw = get_nvlink_bw()
     while True:
         if check_dmesg_for_iommu():
-            if unbind_pcie():
-                log.write(json.dumps({
-                    "event":"PCIe_UNBOUND",
-                    "action":"unbind 30s",
-                    "reason":"IOMMU/DMA fault"
-                }) + "\n")
-                time.sleep(30)
-                log.write(json.dumps({"event":"PCIe_REBOUND"}) + "\n")
+            if acquire_lock("iommu"):
+                if unbind_pcie():
+                    log.write(json.dumps({
+                        "event":"PCIe_UNBOUND",
+                        "action":"unbind 30s",
+                        "reason":"IOMMU/DMA fault"
+                    }) + "\n")
+                    time.sleep(30)
+                    log.write(json.dumps({"event":"PCIe_REBOUND"}) + "\n")
+                release_lock("iommu")
 
         bw = get_nvlink_bw()
         if prev_bw and bw > prev_bw * 10:
-            if set_nvlink_gen1():
+            if disable_nvlink():
                 log.write(json.dumps({
-                    "event":"NVLINK_DROPPED_TO_GEN1",
+                    "event":"NVLINK_DISABLED",
                     "bw":bw,
-                    "action":"nvlink -s 1"
+                    "action":"nvlink_disabled"
                 }) + "\n")
+                time.sleep(5)
+                if enable_nvlink():
+                    log.write(json.dumps({"event":"NVLINK_REENABLED"}) + "\n")
         prev_bw = bw
 
         speed = get_pcie_speed()

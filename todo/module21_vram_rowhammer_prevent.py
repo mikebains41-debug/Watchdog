@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 21: VRAM Rowhammer Prevention
-Resets GPU when ECC errors spike >10× baseline in 1s.
 """
 import subprocess, time, datetime, json
 from collections import deque

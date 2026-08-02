@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 25: CPU Side-Channel & Speculative Prevention
-Combines:
-- cpu_smt_sidechannel_prevent.py (SMT / Hyperthreading covert channels)
-- cpu_spectre_meltdown_prevent.py (Spectre/Meltdown speculative execution)
-- cpu_cache_timing_mitigator.py (L1/L2 cache timing side-channels)
 """
-import subprocess, time, datetime, json, os
+import subprocess, time, datetime, json
+
+SPECTRE_COOLDOWN = 1800  # 30 min — dmesg lines are static after boot, avoid infinite loop
 
 def now_iso():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -24,23 +22,33 @@ def check_dmesg_for_spectre():
 
 def disable_smt():
     try:
-        subprocess.check_output(["echo", "off", ">", "/sys/devices/system/cpu/smt/control"], shell=True, timeout=3, stderr=subprocess.DEVNULL)
+        with open("/sys/devices/system/cpu/smt/control", "w") as f:
+            f.write("off")
         return True
     except:
         return False
 
 def flush_cache():
     try:
-        subprocess.check_output(["echo", "1", ">", "/proc/sys/vm/drop_caches"], shell=True, timeout=3, stderr=subprocess.DEVNULL)
+        with open("/proc/sys/vm/drop_caches", "w") as f:
+            f.write("3")
         return True
     except:
         return False
 
 def get_llc_misses():
     try:
-        out = subprocess.check_output(["perf", "stat", "-e", "LLC-load-misses", "-x", ",", "sleep", "1"], text=True, timeout=3, stderr=subprocess.DEVNULL)
-        first = out.strip().splitlines()[0]
-        return float(first.split(",")[0])
+        out = subprocess.check_output(
+            ["perf", "stat", "-e", "LLC-load-misses", "-x", ",", "sleep", "1"],
+            text=True, timeout=4, stderr=subprocess.STDOUT
+        )
+        for line in out.strip().splitlines():
+            parts = line.split(",")
+            try:
+                return float(parts[0].replace(",", "").strip())
+            except:
+                continue
+        return 0
     except:
         return 0
 
@@ -51,15 +59,20 @@ def main():
     log.write(json.dumps({"event":"RUN_START","module":"25_cpu_sidechannel_speculative","ts":now_iso()}) + "\n")
 
     baseline = get_llc_misses()
+    last_spectre_trigger = 0
+
     while True:
-        line = check_dmesg_for_spectre()
-        if line:
-            if flush_cache():
-                log.write(json.dumps({
-                    "event":"SPECTRE_CACHE_FLUSH",
-                    "log":line,
-                    "action":"cache_flush"
-                }) + "\n")
+        now = time.time()
+        if now - last_spectre_trigger > SPECTRE_COOLDOWN:
+            line = check_dmesg_for_spectre()
+            if line:
+                if flush_cache():
+                    log.write(json.dumps({
+                        "event":"SPECTRE_CACHE_FLUSH",
+                        "log":line,
+                        "action":"cache_flush"
+                    }) + "\n")
+                    last_spectre_trigger = now
 
         misses = get_llc_misses()
         if baseline > 0 and misses > baseline * 5:
