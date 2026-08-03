@@ -1,0 +1,116 @@
+{
+  "title": "GPU Optimizer - Quantum Infrastructure (AWAITING_HARDWARE_TEST)",
+  "description": "Dashboard for M_quantum_prometheus_exporter.py metrics on :9093/metrics. STATUS: AWAITING_HARDWARE_TEST - all underlying values are modeled, not measured on live hardware. Do not present these panels as validated production data until the exporter is fed real cryostat telemetry.",
+  "tags": ["gpu-optimizer", "quantum", "awaiting-hardware-test"],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Fleet Efficiency Score (AWAITING_HARDWARE_TEST)",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": 0 },
+              { "color": "orange", "value": 20 },
+              { "color": "yellow", "value": 45 },
+              { "color": "green", "value": 75 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        { "expr": "quantum_fleet_efficiency_score", "legendFormat": "Fleet Score" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Fleet Watts per Qubit (AWAITING_HARDWARE_TEST)",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "watt" }
+      },
+      "targets": [
+        { "expr": "quantum_fleet_watts_per_qubit", "legendFormat": "W/qubit" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Exporter Status",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "1": { "text": "UP" }, "0": { "text": "DOWN" } } }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": 0 },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        { "expr": "quantum_exporter_status", "legendFormat": "Exporter" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Per-Fridge Efficiency Score",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "min": 0, "max": 100 }
+      },
+      "targets": [
+        { "expr": "quantum_fridge_efficiency_score", "legendFormat": "{{unit}}" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Per-Fridge Watts per Qubit",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "watt" }
+      },
+      "targets": [
+        { "expr": "quantum_fridge_watts_per_qubit", "legendFormat": "{{unit}}" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Per-Fridge Carnot Efficiency (%)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 }
+      },
+      "targets": [
+        { "expr": "quantum_fridge_carnot_efficiency_pct", "legendFormat": "{{unit}}" }
+      ],
+      "description": "Closeness to the theoretical Carnot-limited floor per fridge unit. Higher is better. See M_cryo_thermal_cascade.py for the underlying physics - this is a theoretical bound, not a measured efficiency."
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "name": "AWAITING_HARDWARE_TEST notice",
+        "enable": true,
+        "iconColor": "red"
+      }
+    ]
+  }
+}
