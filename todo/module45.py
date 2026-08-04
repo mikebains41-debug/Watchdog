@@ -9,9 +9,19 @@ rotation endpoint. Flagging here triggers manual action or incident response.
 If using IBM Quantum Platform, key rotation is manual via the web console.
 Requires: qiskit-ibm-runtime
 Credentials: IBM_QUANTUM_TOKEN env var
+
+Quantum physics/cost model integration: reports the estimated dollar cost
+of a detected shot-burst using M_qubit_hour_economics, so the alert carries
+a concrete financial number, not just a raw shot/job count.
 """
-import json, datetime, os, time
+import json, datetime, os, time, sys
 from collections import deque
+
+sys.path.append("/data/data/com.termux/files/home/Watchdog/quantum_models")
+try:
+    from M_qubit_hour_economics import cost_per_shot
+except ImportError:
+    cost_per_shot = 0.001  # fallback: $0.001/shot if model unavailable
 
 DRAIN_WINDOW_S      = 3600     # 1 hour rolling window
 MAX_SHOTS_PER_HOUR  = 100_000  # flag if total shots exceed this
@@ -30,7 +40,7 @@ def load_job_log() -> dict:
     try:
         with open(JOB_LOG_FILE) as f:
             return json.load(f)
-    except:
+    except Exception:
         return {"jobs": []}
 
 def save_job_log(log: dict):
@@ -40,7 +50,7 @@ def save_job_log(log: dict):
     try:
         with open(JOB_LOG_FILE, "w") as f:
             json.dump(log, f)
-    except:
+    except Exception:
         pass
 
 def fetch_job_history(token: str) -> list:
@@ -67,7 +77,7 @@ def fetch_job_history(token: str) -> list:
                     "status":     str(job.status()),
                     "ts":         job.creation_date.timestamp() if job.creation_date else time.time(),
                 })
-            except:
+            except Exception:
                 pass
 
         return job_records
@@ -103,6 +113,7 @@ def detect_credential_drain(job_log: dict, new_jobs: list) -> list:
             "total_shots_in_window": total_shots,
             "threshold": MAX_SHOTS_PER_HOUR,
             "window_s": DRAIN_WINDOW_S,
+            "estimated_cost_usd": round(total_shots * cost_per_shot, 2),
             "confidence": 0.85,
             "note":     ("Excessive shots in 1-hour window — consistent with "
                          "stolen API key running maximum workloads"),
@@ -116,6 +127,7 @@ def detect_credential_drain(job_log: dict, new_jobs: list) -> list:
             "total_jobs_in_window": total_jobs,
             "threshold": MAX_JOBS_PER_HOUR,
             "window_s": DRAIN_WINDOW_S,
+            "estimated_cost_usd": round(total_shots * cost_per_shot, 2),
             "confidence": 0.80,
             "note":     "Abnormal job count — possible credential drain",
             "action":   "Rotate IBM_QUANTUM_TOKEN immediately"
@@ -130,6 +142,7 @@ def detect_credential_drain(job_log: dict, new_jobs: list) -> list:
                 "job_id":    job.get("job_id"),
                 "n_circuits": job.get("n_circuits"),
                 "threshold": MAX_CIRCUITS_PER_JOB,
+                "estimated_cost_usd": round(job.get("shots", 0) * cost_per_shot, 2),
                 "confidence": 0.70,
                 "note":      "Single job with unusually large circuit count"
             })
@@ -151,6 +164,7 @@ def main():
               "max_jobs_per_hour":     MAX_JOBS_PER_HOUR,
               "max_circuits_per_job":  MAX_CIRCUITS_PER_JOB,
           },
+          "cost_per_shot_usd": cost_per_shot,
           "credentials": "present" if token else "absent"})
 
     if not token:

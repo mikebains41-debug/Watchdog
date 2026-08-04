@@ -8,9 +8,20 @@ consistent with thermal attack, electromagnetic interference, or wiring fault.
 Source: IBM Quantum backend.properties() — real API, no simulation.
 Requires: qiskit-ibm-runtime (pip install qiskit-ibm-runtime)
 Credentials: IBM_QUANTUM_TOKEN env var
+
+Quantum physics model integration: cross-checks spike magnitude against
+M_quasiparticle_heating_reference before firing CRITICAL, since natural
+quasiparticle heating (e.g. a cosmic ray hit) can also cause simultaneous
+multi-qubit error spikes and shouldn't be scored the same as a coordinated attack.
 """
-import json, datetime, os, time, math
+import json, datetime, os, time, math, sys
 from collections import deque, defaultdict
+
+sys.path.append("/data/data/com.termux/files/home/Watchdog/quantum_models")
+try:
+    from M_quasiparticle_heating_reference import EXPECTED_HEATING_RATE
+except ImportError:
+    EXPECTED_HEATING_RATE = 0.01  # fallback: 1% error-rate multiplier if model unavailable
 
 BASELINE_FILE       = "/tmp/watchdog_qubit_error_baseline.json"
 ERROR_SPIKE_MULT    = 5.0    # flag if gate error exceeds baseline × this
@@ -18,6 +29,10 @@ ERROR_SPIKE_MIN     = 3      # minimum qubits spiking simultaneously to alert
 READOUT_SPIKE_MULT  = 3.0    # readout error multiplier for alert
 BASELINE_SAMPLES    = 6      # number of samples to build per-qubit baseline
 POLL_INTERVAL       = 300    # seconds between checks
+
+# Multiplier above EXPECTED_HEATING_RATE beyond which a spike is scored as
+# attack rather than natural quasiparticle heating.
+HEATING_ATTACK_MULT = 2.0
 
 def now_iso():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -29,14 +44,14 @@ def load_baseline() -> dict:
     try:
         with open(BASELINE_FILE) as f:
             return json.load(f)
-    except:
+    except Exception:
         return {"gate_error": {}, "readout_error": {}, "sample_count": 0}
 
 def save_baseline(b: dict):
     try:
         with open(BASELINE_FILE, "w") as f:
             json.dump(b, f)
-    except:
+    except Exception:
         pass
 
 def fetch_qubit_errors(token: str, backend_name: str = None) -> dict | None:
@@ -58,7 +73,7 @@ def fetch_qubit_errors(token: str, backend_name: str = None) -> dict | None:
         if props is None:
             return None
 
-        gate_errors    = defaultdict(list)   # qubit_id → [error_rates from all gates]
+        gate_errors    = defaultdict(list)   # qubit_id -> [error_rates from all gates]
         readout_errors = {}
 
         # Single-qubit gate errors per qubit
@@ -67,7 +82,7 @@ def fetch_qubit_errors(token: str, backend_name: str = None) -> dict | None:
                 for param in gate.parameters:
                     if param.name == "gate_error" and len(gate.qubits) == 1:
                         gate_errors[str(gate.qubits[0])].append(param.value)
-            except:
+            except Exception:
                 pass
 
         # Average gate error per qubit
@@ -78,7 +93,7 @@ def fetch_qubit_errors(token: str, backend_name: str = None) -> dict | None:
         for i in range(backend.num_qubits):
             try:
                 readout_errors[str(i)] = props.readout_error(i)
-            except:
+            except Exception:
                 pass
 
         return {
@@ -119,6 +134,8 @@ def update_baseline(baseline: dict, current: dict) -> dict:
 def detect_anomalies(baseline: dict, current: dict) -> list:
     """
     Detect simultaneous multi-qubit error spikes.
+    Cross-checks against M_quasiparticle_heating_reference to distinguish
+    natural heating events from coordinated-attack-shaped spikes.
     Returns list of alert dicts.
     """
     if baseline["sample_count"] < BASELINE_SAMPLES:
@@ -150,15 +167,31 @@ def detect_anomalies(baseline: dict, current: dict) -> list:
 
     # Only alert if 3+ qubits spike simultaneously
     if len(spiked_gate) >= ERROR_SPIKE_MIN:
+        max_current = max(s["current"] for s in spiked_gate)
+        if max_current > EXPECTED_HEATING_RATE * HEATING_ATTACK_MULT:
+            severity   = "CRITICAL"
+            event_name = "QUBIT_GATE_ERROR_SPIKE"
+            note = (f"{len(spiked_gate)} qubits gate error spiked >{ERROR_SPIKE_MULT}x "
+                    f"simultaneously, exceeding quasiparticle-heating reference by "
+                    f">{HEATING_ATTACK_MULT}x — consistent with coordinated thermal/EM attack on QPU")
+            confidence = 0.85
+        else:
+            severity   = "WARN"
+            event_name = "QUBIT_GATE_ERROR_SPIKE_NATURAL"
+            note = (f"{len(spiked_gate)} qubits gate error spiked >{ERROR_SPIKE_MULT}x "
+                    f"simultaneously, within quasiparticle-heating reference range — "
+                    f"consistent with natural heating (e.g. cosmic ray event), not attack")
+            confidence = 0.5
+
         alerts.append({
-            "event":    "QUBIT_GATE_ERROR_SPIKE",
-            "severity": "CRITICAL",
+            "event":    event_name,
+            "severity": severity,
             "spiked_qubits": spiked_gate,
             "count":    len(spiked_gate),
             "backend":  current.get("backend"),
-            "note":     (f"{len(spiked_gate)} qubits gate error spiked >{ERROR_SPIKE_MULT}x "
-                         f"simultaneously — consistent with thermal or EM attack on QPU"),
-            "confidence": 0.85
+            "heating_reference": EXPECTED_HEATING_RATE,
+            "note":     note,
+            "confidence": confidence
         })
 
     if len(spiked_readout) >= ERROR_SPIKE_MIN:
@@ -187,7 +220,9 @@ def main():
 
     emit({"event": "RUN_START", "module": "35_qubit_error_anomaly",
           "credentials": "present" if token else "absent",
-          "spike_threshold": f"{ERROR_SPIKE_MULT}x baseline on {ERROR_SPIKE_MIN}+ qubits simultaneously"})
+          "spike_threshold": f"{ERROR_SPIKE_MULT}x baseline on {ERROR_SPIKE_MIN}+ qubits simultaneously",
+          "heating_reference": EXPECTED_HEATING_RATE,
+          "heating_attack_multiplier": HEATING_ATTACK_MULT})
 
     if not token:
         emit({"event": "STATUS", "status": "NO_CREDENTIALS",
