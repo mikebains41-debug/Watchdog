@@ -570,6 +570,63 @@ test("compliance claims include qpu_attacks", lambda: any(c["type"] == "no_qpu_a
 
 # SUMMARY
 # ═══════════════════════════════════════
+
+# ═══════════════════════════════════════
+# MODULE 51 — Circuit Result Verification
+# ═══════════════════════════════════════
+section("module51.py — Circuit Result Verification")
+import module51
+test("PROBE_SHOTS = 4096", lambda: module51.PROBE_SHOTS == 4096)
+test("CHI2_THRESHOLD = 30.0", lambda: module51.CHI2_THRESHOLD == 30.0)
+test("Noise floor min = 0.002", lambda: module51.NOISE_FLOOR_MIN == 0.002)
+test("Bell expected is 50/50", lambda: module51.bell_expected() == {"00": 0.5, "11": 0.5})
+test("GHZ expected is 50/50", lambda: module51.ghz_expected() == {"000": 0.5, "111": 0.5})
+test("chi_squared returns 0 for perfect fit", lambda: module51.chi_squared({"00": 500, "11": 500}, {"00": 0.5, "11": 0.5}, 1000) < 0.001)
+test("chi_squared nonzero for bad fit", lambda: module51.chi_squared({"00": 1000, "11": 0}, {"00": 0.5, "11": 0.5}, 1000) > 100)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module51.main))
+
+# ═══════════════════════════════════════
+# MODULE 52 — Transpiler Integrity
+# ═══════════════════════════════════════
+section("module52.py — Transpiler Integrity")
+import module52
+test("DEPTH_RATIO_THRESHOLD = 1.50", lambda: module52.DEPTH_RATIO_THRESHOLD == 1.50)
+test("UNITARY_CHECK_MAX_QUBITS = 5", lambda: module52.UNITARY_CHECK_MAX_QUBITS == 5)
+test("two_qubit_gate_count counts cx", lambda: module52.two_qubit_gate_count({"cx": 5, "h": 3}) == 5)
+test("two_qubit_gate_count counts ecr", lambda: module52.two_qubit_gate_count({"ecr": 4, "rz": 10}) == 4)
+test("two_qubit_gate_count ignores 1q gates", lambda: module52.two_qubit_gate_count({"h": 10, "rz": 20}) == 0)
+test("two_qubit_gate_count sums multiple types", lambda: module52.two_qubit_gate_count({"cx": 2, "cz": 3}) == 5)
+test("unitary check uses Operator", lambda: "Operator" in inspect.getsource(module52.check_unitary_equivalence))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module52.main))
+
+# ═══════════════════════════════════════
+# MODULE 53 — Qubit Mapping Attack
+# ═══════════════════════════════════════
+section("module53.py — Qubit Mapping Attack")
+import module53
+test("BAD_PERCENTILE = 0.25", lambda: module53.BAD_PERCENTILE == 0.25)
+test("CRITICAL_PERCENTILE = 0.10", lambda: module53.CRITICAL_PERCENTILE == 0.10)
+test("percentile_rank: best value ranks 1.0", lambda: module53.percentile_rank(100, [10,20,30,40], True) == 1.0)
+test("percentile_rank: worst value ranks 0.0", lambda: module53.percentile_rank(1, [10,20,30,40], True) == 0.0)
+test("percentile_rank: error rate inverted", lambda: module53.percentile_rank(0.001, [0.01,0.02,0.03], False) == 1.0)
+test("percentile_rank: empty population = 0.5", lambda: module53.percentile_rank(5, [], True) == 0.5)
+test("BETTER_LAYOUT_MARGIN = 1.50", lambda: module53.BETTER_LAYOUT_MARGIN == 1.50)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module53.main))
+
+# ═══════════════════════════════════════
+# MODULE 54 — Session Hijacking
+# ═══════════════════════════════════════
+section("module54.py — Session Hijacking")
+import module54
+test("QUEUE_TIME_TOLERANCE_S = 30", lambda: module54.QUEUE_TIME_TOLERANCE_S == 30)
+test("UTILIZATION_FLOOR = 0.40", lambda: module54.UTILIZATION_FLOOR == 0.40)
+test("PENDING_JOBS_TOLERANCE = 0", lambda: module54.PENDING_JOBS_TOLERANCE == 0)
+test("parse_iso handles Z suffix", lambda: module54.parse_iso("2026-08-05T12:00:00Z") is not None)
+test("parse_iso returns None on garbage", lambda: module54.parse_iso("not-a-date") is None)
+test("in_window returns False for None", lambda: not module54.in_window(None, None, None))
+test("reservation window read from env", lambda: "WD_RESERVATION_START" in inspect.getsource(module54.get_reservation_window))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module54.main))
+
 passed = sum(1 for _, r in results if r)
 failed = sum(1 for _, r in results if not r)
 total  = len(results)
