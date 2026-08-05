@@ -7,3 +7,17 @@ watchdog_data/
 resp*.json
 test_audit_ledger.jsonl
 graphify-out/
+
+# Watchdog runtime outputs
+*.jsonl
+compliance_*.json
+module*_????????_??????.jsonl
+watchdog_supervisor_*.jsonl
+/tmp/watchdog_*
+
+# Collected results (raw data — tracked selectively)
+cpu_results/CPU_SUMMARY_*.txt
+cpu_results/*.tar.gz
+b200_watchdog/B200_SUMMARY_*.txt
+collect_*.sh
+main
