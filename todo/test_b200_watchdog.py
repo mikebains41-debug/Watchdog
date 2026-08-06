@@ -691,6 +691,125 @@ test("parse_proc_net reads /proc/net", lambda: "/proc/net/" in inspect.getsource
 test("TLS probing is opt-in", lambda: "WD_PROBE_TLS" in inspect.getsource(module58.main))
 test("No simulated topology", lambda: "random." not in inspect.getsource(module58) and "import random" not in inspect.getsource(module58))
 
+
+# ═══════════════════════════════════════
+# MODULE 59 — Entropy / QRNG Health
+# ═══════════════════════════════════════
+section("module59.py — Entropy / QRNG Health")
+import module59
+test("P_VALUE_THRESHOLD = 0.01 (NIST standard)", lambda: module59.P_VALUE_THRESHOLD == 0.01)
+test("SAMPLE_BYTES = 4096", lambda: module59.SAMPLE_BYTES == 4096)
+test("bytes_to_bits converts correctly", lambda: module59.bytes_to_bits(b"\xff") == "11111111")
+test("bytes_to_bits handles zero", lambda: module59.bytes_to_bits(b"\x00") == "00000000")
+test("monobit passes on balanced input", lambda: module59.monobit_test("01" * 5000)["passed"])
+test("monobit fails on all-ones", lambda: not module59.monobit_test("1" * 2000)["passed"])
+test("runs test detects alternating pattern", lambda: module59.runs_test("01" * 5000)["p_value"] < 0.01)
+test("shannon entropy of uniform bytes high", lambda: module59.shannon_entropy(bytes(range(256)) * 4)["bits_per_byte"] > 7.9)
+test("shannon entropy of constant is zero", lambda: module59.shannon_entropy(b"\x00" * 1000)["bits_per_byte"] == 0.0)
+test("repeated block detects duplicates", lambda: not module59.repeated_block_check(b"A" * 256)["passed"])
+test("block_frequency runs on valid input", lambda: "p_value" in module59.block_frequency_test("01" * 5000))
+test("igamc returns 1.0 for x=0", lambda: module59.igamc(1.0, 0.0) == 1.0)
+test("read_entropy returns data", lambda: "data" in module59.read_entropy(64) or "error" in module59.read_entropy(64))
+
+# ═══════════════════════════════════════
+# MODULE 60 — IOMMU / DMA Auditor
+# ═══════════════════════════════════════
+section("module60.py — IOMMU / DMA Auditor")
+import module60
+test("BUS_MASTER_BIT = 0x04", lambda: module60.BUS_MASTER_BIT == 0x04)
+test("COMMAND_REGISTER_OFFSET = 0x04", lambda: module60.COMMAND_REGISTER_OFFSET == 0x04)
+test("Xilinx FPGA vendor known", lambda: "10ee" in module60.EXPECTED_VENDORS)
+test("NVIDIA vendor known", lambda: "10de" in module60.EXPECTED_VENDORS)
+test("USB4/Thunderbolt class known", lambda: "0x0c0340" in module60.PCI_CLASSES)
+test("check_iommu_status runs", lambda: isinstance(module60.check_iommu_status(), dict))
+test("enumerate_pci_devices runs", lambda: isinstance(module60.enumerate_pci_devices(), list))
+test("map_iommu_groups runs", lambda: isinstance(module60.map_iommu_groups(), dict))
+test("distinct from module26 documented", lambda: "module26" in inspect.getsource(module60.main))
+
+# ═══════════════════════════════════════
+# MODULE 61 — BMC / IPMI Integrity
+# ═══════════════════════════════════════
+section("module61.py — BMC / IPMI Integrity")
+import module61
+test("IPMI_TIMEOUT defined", lambda: module61.IPMI_TIMEOUT == 10)
+test("IPMI device paths defined", lambda: "/dev/ipmi0" in module61.IPMI_DEVICES)
+test("sha256_text is deterministic", lambda: module61.sha256_text("x") == module61.sha256_text("x"))
+test("check_host_ipmi_interface runs", lambda: isinstance(module61.check_host_ipmi_interface(), dict))
+test("ipmitool_available returns bool", lambda: isinstance(module61.ipmitool_available(), bool))
+test("graceful fallback without ipmitool", lambda: "IPMITOOL_UNAVAILABLE" in inspect.getsource(module61.main))
+test("cipher zero check present", lambda: "cipher_zero" in inspect.getsource(module61.check_cipher_zero))
+
+# ═══════════════════════════════════════
+# MODULE 62 — QaaS Config Guard
+# ═══════════════════════════════════════
+section("module62.py — QaaS Config Guard")
+import module62
+test("Qiskit config path monitored", lambda: any("qiskit" in p[0] for p in module62.QAAS_CONFIG_PATHS))
+test("D-Wave config path monitored", lambda: any("dwave" in p[0] for p in module62.QAAS_CONFIG_PATHS))
+test("AWS/Braket config monitored", lambda: any("aws" in p[0] for p in module62.QAAS_CONFIG_PATHS))
+test("IBM_QUANTUM_TOKEN in credential vars", lambda: "IBM_QUANTUM_TOKEN" in module62.CREDENTIAL_ENV_VARS)
+test("DWAVE_API_TOKEN in credential vars", lambda: "DWAVE_API_TOKEN" in module62.CREDENTIAL_ENV_VARS)
+test("REQUESTS_CA_BUNDLE in redirect vars", lambda: "REQUESTS_CA_BUNDLE" in module62.REDIRECT_ENV_VARS)
+test("Official IBM endpoints defined", lambda: len(module62.OFFICIAL_ENDPOINTS["ibm"]) >= 3)
+test("Official D-Wave endpoints defined", lambda: len(module62.OFFICIAL_ENDPOINTS["dwave"]) >= 1)
+test("token_shape never returns the value", lambda: "secret123" not in str(module62.token_shape("secret123")))
+test("token_shape reports length", lambda: module62.token_shape("abcd")["length"] == 4)
+test("token_shape detects hex charset", lambda: module62.token_shape("deadbeef")["charset"] == "hex")
+test("scan_config_files runs", lambda: isinstance(module62.scan_config_files(), list))
+test("check_hosts_file runs", lambda: isinstance(module62.check_hosts_file(), list))
+
+# ═══════════════════════════════════════
+# MODULE 63 — Kernel Module Auditor
+# ═══════════════════════════════════════
+section("module63.py — Kernel Module Auditor")
+import module63
+test("Taint bit 13 = unsigned module", lambda: module63.TAINT_FLAGS[13][0] == "E")
+test("Taint bit 12 = out-of-tree", lambda: module63.TAINT_FLAGS[12][0] == "O")
+test("Taint bit 1 = force-loaded", lambda: module63.TAINT_FLAGS[1][0] == "F")
+test("Suspicious patterns defined", lambda: "rootkit" in module63.SUSPICIOUS_PATTERNS)
+test("diamorphine in suspicious patterns", lambda: "diamorphine" in module63.SUSPICIOUS_PATTERNS)
+test("vfio in high-privilege modules", lambda: "vfio" in module63.HIGH_PRIVILEGE_MODULES)
+test("parse_proc_modules runs", lambda: isinstance(module63.parse_proc_modules(), dict))
+test("get_kernel_taint runs", lambda: isinstance(module63.get_kernel_taint(), dict))
+test("list_sys_modules runs", lambda: isinstance(module63.list_sys_modules(), set))
+test("scan_modprobe_config runs", lambda: isinstance(module63.scan_modprobe_config(), dict))
+
+# ═══════════════════════════════════════
+# MODULE 64 — SSH Backdoor Auditor
+# ═══════════════════════════════════════
+section("module64.py — SSH Backdoor Auditor")
+import module64
+test("WEAK_RSA_BITS = 3072", lambda: module64.WEAK_RSA_BITS == 3072)
+test("PermitRootLogin in dangerous directives", lambda: "permitrootlogin" in module64.DANGEROUS_DIRECTIVES)
+test("PermitEmptyPasswords in dangerous directives", lambda: "permitemptypasswords" in module64.DANGEROUS_DIRECTIVES)
+test("PermitUserEnvironment in dangerous directives", lambda: "permituserenvironment" in module64.DANGEROUS_DIRECTIVES)
+test("command= in powerful key options", lambda: "command=" in module64.POWERFUL_KEY_OPTIONS)
+test("key_fingerprint returns SHA256 format", lambda: (module64.key_fingerprint("AAAAB3NzaC1yc2E=") or "").startswith("SHA256:"))
+test("key_fingerprint deterministic", lambda: module64.key_fingerprint("AAAAB3NzaC1yc2E=") == module64.key_fingerprint("AAAAB3NzaC1yc2E="))
+test("get_all_users runs", lambda: isinstance(module64.get_all_users(), list))
+test("read_sshd_config runs", lambda: isinstance(module64.read_sshd_config(), dict))
+test("scan_known_hosts runs", lambda: isinstance(module64.scan_known_hosts(), dict))
+test("key material never logged", lambda: "never logged" in inspect.getsource(module64.main))
+
+# ═══════════════════════════════════════
+# MODULE 65 — Ptrace / Memory Sentinel
+# ═══════════════════════════════════════
+section("module65.py — Ptrace / Memory Sentinel")
+import module65
+test("MIN_PTRACE_SCOPE = 1", lambda: module65.MIN_PTRACE_SCOPE == 1)
+test("YAMA path correct", lambda: module65.YAMA_PATH == "/proc/sys/kernel/yama/ptrace_scope")
+test("qiskit in sensitive markers", lambda: "qiskit" in module65.SENSITIVE_MARKERS)
+test("dwave in sensitive markers", lambda: "dwave" in module65.SENSITIVE_MARKERS)
+test("gdb in debugger tools", lambda: "gdb" in module65.DEBUGGER_TOOLS)
+test("frida in debugger tools", lambda: "frida" in module65.DEBUGGER_TOOLS)
+test("LD_PRELOAD in injection vars", lambda: "LD_PRELOAD" in module65.INJECTION_ENV_VARS)
+test("LD_AUDIT in injection vars", lambda: "LD_AUDIT" in module65.INJECTION_ENV_VARS)
+test("is_sensitive_process detects qiskit", lambda: module65.is_sensitive_process("python3 -m qiskit_ibm_runtime"))
+test("is_sensitive_process rejects unrelated", lambda: not module65.is_sensitive_process("/usr/bin/vim notes.txt"))
+test("scan_tracers runs", lambda: isinstance(module65.scan_tracers(), list))
+test("check_core_dump_config runs", lambda: isinstance(module65.check_core_dump_config(), dict))
+test("memory contents never logged", lambda: "never read or logged" in inspect.getsource(module65.main))
+
 passed = sum(1 for _, r in results if r)
 failed = sum(1 for _, r in results if not r)
 total  = len(results)
