@@ -627,6 +627,70 @@ test("in_window returns False for None", lambda: not module54.in_window(None, No
 test("reservation window read from env", lambda: "WD_RESERVATION_START" in inspect.getsource(module54.get_reservation_window))
 test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module54.main))
 
+
+# ═══════════════════════════════════════
+# MODULE 55 — Cryogenic Bus Integrity
+# ═══════════════════════════════════════
+section("module55.py — Cryogenic Bus Integrity")
+import module55
+test("MULTI_HOLDER_LIMIT = 1", lambda: module55.MULTI_HOLDER_LIMIT == 1)
+test("Serial device globs defined", lambda: len(module55.SERIAL_GLOBS) >= 3)
+test("GPIB device globs defined", lambda: len(module55.GPIB_GLOBS) >= 2)
+test("FTDI vendor ID known", lambda: "0403" in module55.INSTRUMENT_VENDORS)
+test("Silicon Labs CP210x known", lambda: "10c4" in module55.INSTRUMENT_VENDORS)
+test("enumerate_bus_devices runs without hardware", lambda: isinstance(module55.enumerate_bus_devices(), list))
+test("check_socat_shims runs", lambda: isinstance(module55.check_socat_shims(), list))
+test("No simulated sensor readings", lambda: "random." not in inspect.getsource(module55) and "import random" not in inspect.getsource(module55))
+
+# ═══════════════════════════════════════
+# MODULE 56 — FPGA Bitstream & JTAG
+# ═══════════════════════════════════════
+section("module56.py — FPGA Bitstream & JTAG")
+import module56
+test("Xilinx vendor ID 10ee known", lambda: "10ee" in module56.FPGA_VENDOR_IDS)
+test("Intel/Altera vendor ID 1172 known", lambda: "1172" in module56.FPGA_VENDOR_IDS)
+test("JTAG modules list defined", lambda: len(module56.JTAG_MODULES) >= 5)
+test("Programming tools list defined", lambda: "openocd" in module56.PROGRAMMING_TOOLS)
+test("vivado in programming tools", lambda: "vivado" in module56.PROGRAMMING_TOOLS)
+test("FPGA manager path correct", lambda: module56.FPGA_MANAGER_BASE == "/sys/class/fpga_manager")
+test("scan_fpga_pcie runs without hardware", lambda: isinstance(module56.scan_fpga_pcie(), list))
+test("SHA256 used for bitstream hashing", lambda: "sha256" in inspect.getsource(module56.sha256_file).lower())
+test("No simulated bitstream data", lambda: "random." not in inspect.getsource(module56) and "import random" not in inspect.getsource(module56))
+
+# ═══════════════════════════════════════
+# MODULE 57 — EM Side-Channel Guard
+# ═══════════════════════════════════════
+section("module57.py — EM Side-Channel Guard")
+import module57
+test("RTL-SDR device ID known", lambda: "0bda:2838" in module57.SDR_DEVICES)
+test("HackRF device ID known", lambda: "1d50:6089" in module57.SDR_DEVICES)
+test("USRP B210 device ID known", lambda: "2500:0021" in module57.SDR_DEVICES)
+test("SDR device count >= 15", lambda: len(module57.SDR_DEVICES) >= 15)
+test("RF capture tools list defined", lambda: "rtl_sdr" in module57.RF_CAPTURE_TOOLS)
+test("gnuradio in RF tools", lambda: any("gnuradio" in t for t in module57.RF_CAPTURE_TOOLS))
+test("Qubit drive band 4-8 GHz", lambda: module57.QUBIT_DRIVE_BAND_GHZ == (4.0, 8.0))
+test("enumerate_usb_devices runs", lambda: isinstance(module57.enumerate_usb_devices(), dict))
+test("check_rf_tools runs", lambda: isinstance(module57.check_rf_tools(), list))
+test("No simulated RF data", lambda: "random." not in inspect.getsource(module57) and "import random" not in inspect.getsource(module57))
+
+# ═══════════════════════════════════════
+# MODULE 58 — Control-Plane Zero Trust
+# ═══════════════════════════════════════
+section("module58.py — Control-Plane Zero Trust")
+import module58
+test("gRPC port 50051 monitored", lambda: 50051 in module58.CONTROL_PLANE_PORTS)
+test("Modbus TCP port 502 monitored", lambda: 502 in module58.CONTROL_PLANE_PORTS)
+test("SCPI port 5025 monitored", lambda: 5025 in module58.CONTROL_PLANE_PORTS)
+test("Quantum exporter port 9093 monitored", lambda: 9093 in module58.CONTROL_PLANE_PORTS)
+test("Plaintext-sensitive ports defined", lambda: 50051 in module58.PLAINTEXT_SENSITIVE)
+test("Proxy tools list defined", lambda: "socat" in module58.PROXY_TOOLS)
+test("mitmproxy in proxy tools", lambda: "mitmproxy" in module58.PROXY_TOOLS)
+test("enumerate_listeners runs", lambda: isinstance(module58.enumerate_listeners(), list))
+test("enumerate_unix_sockets runs", lambda: isinstance(module58.enumerate_unix_sockets(), list))
+test("parse_proc_net reads /proc/net", lambda: "/proc/net/" in inspect.getsource(module58.parse_proc_net))
+test("TLS probing is opt-in", lambda: "WD_PROBE_TLS" in inspect.getsource(module58.main))
+test("No simulated topology", lambda: "random." not in inspect.getsource(module58) and "import random" not in inspect.getsource(module58))
+
 passed = sum(1 for _, r in results if r)
 failed = sum(1 for _, r in results if not r)
 total  = len(results)
