@@ -810,6 +810,105 @@ test("scan_tracers runs", lambda: isinstance(module65.scan_tracers(), list))
 test("check_core_dump_config runs", lambda: isinstance(module65.check_core_dump_config(), dict))
 test("memory contents never logged", lambda: "never read or logged" in inspect.getsource(module65.main))
 
+
+# ═══════════════════════════════════════
+# MODULES 66-75 — Published Attack Research
+# ═══════════════════════════════════════
+section("module66.py — Crosstalk Co-Tenancy")
+import module66
+test("HIGH_DEGREE_THRESHOLD = 4", lambda: module66.HIGH_DEGREE_THRESHOLD == 4)
+test("STRONG_COUPLING_PCT = 0.25", lambda: module66.STRONG_COUPLING_PCT == 0.25)
+test("TWO_HOP_ALERT_COUNT = 8", lambda: module66.TWO_HOP_ALERT_COUNT == 8)
+test("BUFFER_MIN = 1", lambda: module66.BUFFER_MIN == 1)
+test("compute_exposure defined", lambda: callable(module66.compute_exposure))
+test("QubitHammer cited", lambda: "2504.07875" in inspect.getsource(module66))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module66.main))
+
+section("module67.py — Dynamical Decoupling")
+import module67
+test("module67 imports", lambda: module67 is not None)
+test("Mehra & Kalev cited", lambda: "095102" in inspect.getsource(module67) or "Kalev" in inspect.getsource(module67))
+test("graceful fallback present", lambda: "NO_CREDENTIALS" in inspect.getsource(module67.main))
+
+section("module68.py — Buffer Qubit Verifier")
+import module68
+test("GOOD_BUFFER_HOPS = 2", lambda: module68.GOOD_BUFFER_HOPS == 2)
+test("PERIMETER_RATIO_WARN = 2.0", lambda: module68.PERIMETER_RATIO_WARN == 2.0)
+test("build_adjacency runs", lambda: len(module68.build_adjacency([[0,1],[1,2]])) == 3)
+test("compute_perimeter counts edges", lambda: module68.compute_perimeter({0}, module68.build_adjacency([[0,1]]))["boundary_edges"] == 1)
+test("Physica Scripta cited", lambda: "095102" in inspect.getsource(module68))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module68.main))
+
+section("module69.py — Readout Crosstalk Leak")
+import module69
+test("CORRELATION_THRESHOLD = 0.05", lambda: module69.CORRELATION_THRESHOLD == 0.05)
+test("PROBE_SHOTS = 2048", lambda: module69.PROBE_SHOTS == 2048)
+test("ACM QSPW DOI cited", lambda: "3733825" in inspect.getsource(module69))
+test("neighbour_error_rate handles empty", lambda: module69.neighbour_error_rate({}, 0, 2, 100) is None)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module69.main))
+
+section("module70.py — Non-Local Attack Paths")
+import module70
+test("MAX_PATH_HOPS = 3", lambda: module70.MAX_PATH_HOPS == 3)
+test("RELAY_QUALITY_HIGH = 0.70", lambda: module70.RELAY_QUALITY_HIGH == 0.70)
+test("attack-through-a-neighbor cited", lambda: "2509.11407" in inspect.getsource(module70))
+test("enumerate_attack_paths runs", lambda: isinstance(module70.enumerate_attack_paths({2}, module70.build_adjacency([[0,1],[1,2]])), list))
+test("finds 2-hop path", lambda: len(module70.enumerate_attack_paths({2}, module70.build_adjacency([[0,1],[1,2]]))) >= 1)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module70.main))
+
+section("module71.py — QKD Detector Blinding")
+import module71
+test("QBER_INTERCEPT_RESEND = 0.25", lambda: module71.QBER_INTERCEPT_RESEND == 0.25)
+test("AFTERPULSE_FLOOR defined", lambda: module71.AFTERPULSE_FLOOR == 0.001)
+test("Lydersen Nature Photonics cited", lambda: "Lydersen" in inspect.getsource(module71))
+test("Huang IEEE JQE cited", lambda: "Huang" in inspect.getsource(module71))
+test("check_afterpulsing flags zero", lambda: len(module71.check_afterpulsing({"afterpulse_rate": 0.0})) == 1)
+test("check_afterpulsing clean on normal", lambda: len(module71.check_afterpulsing({"afterpulse_rate": 0.02})) == 0)
+test("decoy ordering violation detected", lambda: any(a["event"] == "QKD_DECOY_ORDERING_VIOLATION" for a in module71.check_decoy_states({"decoy_yield_signal": 0.1, "decoy_yield_decoy": 0.01, "decoy_yield_vacuum": 0.5, "mu_signal": 0.5, "mu_decoy": 0.1})))
+test("no simulated optical data", lambda: "NO_QKD_SESSION_LOGS" in inspect.getsource(module71.main))
+
+section("module72.py — Annealer Ground-State Trapping")
+import module72
+test("GROUND_STATE_FLOOR = 0.50", lambda: module72.GROUND_STATE_FLOOR == 0.50)
+test("CHAIN_BREAK_CEILING = 0.10", lambda: module72.CHAIN_BREAK_CEILING == 0.10)
+test("known-answer chain built correctly", lambda: module72.build_known_answer_problem(4)["ground_energy"] == -3.0)
+test("chain has n-1 couplings", lambda: len(module72.build_known_answer_problem(8)["J"]) == 7)
+test("all couplings ferromagnetic", lambda: all(v == -1.0 for v in module72.build_known_answer_problem(5)["J"].values()))
+test("Ayanzadeh Sci Rep cited", lambda: "s41598-021-95482-w" in inspect.getsource(module72))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module72.main))
+
+section("module73.py — QEC Decoder Timing")
+import module73
+test("DEADLINE_VIOLATION_RATE = 0.01", lambda: module73.DEADLINE_VIOLATION_RATE == 0.01)
+test("VARIANCE_COLLAPSE_RATIO = 0.30", lambda: module73.VARIANCE_COLLAPSE_RATIO == 0.30)
+test("pymatching in decoder markers", lambda: "pymatching" in module73.DECODER_PROCESS_MARKERS)
+test("percentile computes correctly", lambda: module73.percentile([1,2,3,4,5], 0.5) == 3)
+test("mean_std of constant has zero std", lambda: module73.mean_std([5,5,5])[1] == 0.0)
+test("find_decoder_processes runs", lambda: isinstance(module73.find_decoder_processes(), list))
+test("no simulated syndrome data", lambda: "NO_QEC_DECODER_PRESENT" in inspect.getsource(module73.main))
+
+section("module74.py — Resonator Frequency Collision")
+import module74
+test("COLLISION_MHZ = 20.0", lambda: module74.COLLISION_MHZ == 20.0)
+test("NEAR_COLLISION_MHZ = 50.0", lambda: module74.NEAR_COLLISION_MHZ == 50.0)
+test("find_collisions detects close pair", lambda: len(module74.find_collisions({"0": {"f": 5000.0}, "1": {"f": 5010.0}}, "f", 20.0, 50.0)) == 1)
+test("find_collisions ignores far pair", lambda: len(module74.find_collisions({"0": {"f": 5000.0}, "1": {"f": 6000.0}}, "f", 20.0, 50.0)) == 0)
+test("zero QPU cost documented", lambda: "Zero QPU time" in inspect.getsource(module74.main))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module74.main))
+
+section("module75.py — XMSS/LMS Reuse Sentinel")
+import module75
+test("EXHAUSTION_CRIT_PCT = 0.98", lambda: module75.EXHAUSTION_CRIT_PCT == 0.98)
+test("NIST SP 800-208 cited", lambda: "800-208" in inspect.getsource(module75))
+test("RFC 8391 XMSS cited", lambda: "8391" in inspect.getsource(module75))
+test("RFC 8554 LMS cited", lambda: "8554" in inspect.getsource(module75))
+test("extend_chain is deterministic", lambda: module75.extend_chain("0"*64, {"a":1}) == module75.extend_chain("0"*64, {"a":1}))
+test("extend_chain differs on input", lambda: module75.extend_chain("0"*64, {"a":1}) != module75.extend_chain("0"*64, {"a":2}))
+test("index fields include leaf_index", lambda: "leaf_index" in module75.INDEX_FIELDS)
+test("rsync in backup tools", lambda: "rsync" in module75.BACKUP_TOOLS)
+test("rollback detected", lambda: any(a["event"] == "HBS_INDEX_ROLLBACK" for a in module75.analyse([{"path": "/t", "index": 5}], {"keys": {"/t": {"index": 100}}})[0]))
+test("no key material logged", lambda: "never read or logged" in inspect.getsource(module75.main).lower() or "No key material read or logged" in inspect.getsource(module75.main))
+
 passed = sum(1 for _, r in results if r)
 failed = sum(1 for _, r in results if not r)
 total  = len(results)
