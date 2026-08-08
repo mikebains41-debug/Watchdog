@@ -985,6 +985,73 @@ test("resolve_credential_paths runs", lambda: isinstance(module80.resolve_creden
 test("list_network_interfaces runs", lambda: isinstance(module80.list_network_interfaces(), list))
 test("credential values never logged", lambda: "never read into the log" in inspect.getsource(module80.main))
 
+
+# ═══════════════════════════════════════
+# MODULES 81-85 — ML Infra & Mesh Security
+# ═══════════════════════════════════════
+section("module81.py — ML Deserialization & Template Injection")
+import module81
+test("Pickle extensions defined", lambda: ".pt" in module81.PICKLE_EXTENSIONS)
+test("Safetensors in safe extensions", lambda: ".safetensors" in module81.SAFE_EXTENSIONS)
+test("os in forbidden imports", lambda: any(b"os" in f for f in module81.FORBIDDEN_IMPORTS))
+test("subprocess in forbidden imports", lambda: any(b"subprocess" in f for f in module81.FORBIDDEN_IMPORTS))
+test("SSTI patterns include __subclasses__", lambda: any("__subclasses__" in p[0] for p in module81.SSTI_PATTERNS))
+test("SSTI patterns include __mro__", lambda: any("__mro__" in p[0] for p in module81.SSTI_PATTERNS))
+test("trust_remote_code pattern defined", lambda: any("trust_remote_code" in p[0] for p in module81.TRUST_REMOTE_PATTERNS))
+test("torch.load unsafe pattern defined", lambda: any("torch" in p[0] for p in module81.UNSAFE_LOAD_PATTERNS))
+test("scan_pickle_opcodes never executes", lambda: "exec" not in inspect.getsource(module81.scan_pickle_opcodes) and "eval(" not in inspect.getsource(module81.scan_pickle_opcodes))
+test("read-only documented", lambda: "never unpickles" in inspect.getsource(module81.main) or "never executes" in inspect.getsource(module81.main))
+test("find_model_files runs", lambda: isinstance(module81.find_model_files(), list))
+
+section("module82.py — Container Runtime Isolation")
+import module82
+test("runsc in hardened runtimes", lambda: "runsc" in module82.HARDENED_RUNTIMES)
+test("kata in hardened runtimes", lambda: any("kata" in k for k in module82.HARDENED_RUNTIMES))
+test("runc in weak runtimes", lambda: "runc" in module82.WEAK_RUNTIMES)
+test("cap_sys_admin in dangerous caps", lambda: "cap_sys_admin" in module82.DANGEROUS_CAPS)
+test("cap_sys_ptrace in dangerous caps", lambda: "cap_sys_ptrace" in module82.DANGEROUS_CAPS)
+test("decode_capabilities parses bitmask", lambda: "cap_chown" in module82.decode_capabilities("1"))
+test("decode_capabilities empty for zero", lambda: module82.decode_capabilities("0") == [])
+test("seccomp modes defined", lambda: "0" in module82.SECCOMP_MODES)
+test("detect_installed_runtimes runs", lambda: isinstance(module82.detect_installed_runtimes(), dict))
+test("RuntimeClass problem documented", lambda: "worse than none" in inspect.getsource(module82.main))
+
+section("module83.py — Anti-Forensic Artifacts")
+import module83
+test("shred in antiforensic commands", lambda: any("shred" in c[0] for c in module83.ANTIFORENSIC_COMMANDS))
+test("history -c in antiforensic commands", lambda: any("history -c" in c[0] for c in module83.ANTIFORENSIC_COMMANDS))
+test("auditctl -D in antiforensic commands", lambda: any("auditctl -D" in c[0] for c in module83.ANTIFORENSIC_COMMANDS))
+test("auditd in audit daemons", lambda: "auditd" in module83.AUDIT_DAEMONS)
+test("count_lines_and_shapes runs on missing file", lambda: module83.count_lines_and_shapes("/nonexistent/path") is None)
+test("detect_timestamp_anomalies runs", lambda: isinstance(module83.detect_timestamp_anomalies([]), list))
+test("17000 events referenced", lambda: "17,000" in inspect.getsource(module83.main))
+test("read-only documented", lambda: "never modifies logs" in inspect.getsource(module83.main))
+
+section("module84.py — Ephemeral C2 Migration")
+import module84
+test("modal.com in relay providers", lambda: "modal.com" in module84.RELAY_PROVIDERS)
+test("huggingface Spaces in relay providers", lambda: any("hf.space" in k or "huggingface" in k for k in module84.RELAY_PROVIDERS))
+test("ngrok in tunnel services", lambda: any("ngrok" in k for k in module84.TUNNEL_SERVICES))
+test("BEACON_CV_MAX = 0.20", lambda: module84.BEACON_CV_MAX == 0.20)
+test("CHURN_THRESHOLD = 8", lambda: module84.CHURN_THRESHOLD == 8)
+test("mean_std of constant has zero std", lambda: module84.mean_std([5,5,5])[1] == 0.0)
+test("is_private detects 10.x", lambda: module84.is_private("10.0.0.1"))
+test("classify_host detects relay provider", lambda: module84.classify_host("1.2.3.4", "foo.modal.com")[0] == "RELAY_PROVIDER")
+test("classify_host detects tunnel", lambda: module84.classify_host("1.2.3.4", "abc.ngrok.io")[0] == "TUNNEL")
+test("self-migrating C2 referenced", lambda: "self-migrating" in inspect.getsource(module84.main))
+
+section("module85.py — Mesh mTLS Enforcement")
+import module85
+test("envoy in sidecar processes", lambda: "envoy" in module85.SIDECAR_PROCESSES)
+test("linkerd2-proxy in sidecar processes", lambda: "linkerd2-proxy" in module85.SIDECAR_PROCESSES)
+test("istiod in control plane", lambda: "istiod" in module85.CONTROL_PLANE)
+test("CERT_EXPIRY_WARN = 14 days", lambda: module85.CERT_EXPIRY_WARN == 14 * 86400)
+test("find_mesh_processes runs", lambda: len(module85.find_mesh_processes()) == 2)
+test("is_private detects 192.168", lambda: module85.is_private("192.168.1.1"))
+test("PERMISSIVE mode problem documented", lambda: "PERMISSIVE" in inspect.getsource(module85.main))
+test("same category as module82 noted", lambda: "module82" in inspect.getsource(module85.main))
+test("detection only documented", lambda: "detection only" in inspect.getsource(module85.main))
+
 passed = sum(1 for _, r in results if r)
 failed = sum(1 for _, r in results if not r)
 total  = len(results)

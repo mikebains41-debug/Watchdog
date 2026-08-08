@@ -21,3 +21,4 @@ cpu_results/*.tar.gz
 b200_watchdog/B200_SUMMARY_*.txt
 collect_*.sh
 main
+main
