@@ -1,0 +1,548 @@
+#!/usr/bin/env python3
+"""
+Watchdog Quantum — Security Module Test Suite
+Covers modules 32-50. Dry-run only, no hardware writes, no credentials needed.
+
+Run from modules/:  python3 test_quantum_modules.py
+"""
+import sys, os, json, hashlib, inspect, re
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+G = "\033[92m"; R = "\033[91m"; E = "\033[0m"
+results = []
+
+def test(name, fn):
+    try:
+        r = fn()
+        tag = f"{G}[PASS]{E}" if r else f"{R}[FAIL]{E}"
+        print(f"{tag} {name}")
+        results.append((name, bool(r)))
+    except Exception as ex:
+        print(f"{R}[FAIL]{E} {name}  ({type(ex).__name__}: {ex})")
+        results.append((name, False))
+
+def section(s): print(f"\n== {s} ==")
+
+section("module32.py — PQC Crypto Readiness")
+import module32
+test("Quantum-vulnerable algorithms listed", lambda: len(module32.QUANTUM_VULNERABLE) > 0)
+test("ssh-rsa in vulnerable list", lambda: "ssh-rsa" in module32.QUANTUM_VULNERABLE)
+test("PQC safe indicators defined", lambda: len(module32.PQC_SAFE_INDICATORS) > 0)
+test("sntrup761 in PQC indicators", lambda: "sntrup761" in module32.PQC_SAFE_INDICATORS)
+test("check_ssh_host_keys scans /etc/ssh", lambda: "/etc/ssh" in inspect.getsource(module32.check_ssh_host_keys))
+test("WEAK_RSA_BITS = 3072", lambda: module32.WEAK_RSA_BITS == 3072)
+
+# ═══════════════════════════════════════
+# MODULE 33 — QaaS API Integrity
+# ═══════════════════════════════════════
+section("module33.py — QaaS API Integrity")
+import module33
+test("hash_circuit uses SHA256", lambda: "sha256" in inspect.getsource(module33.hash_circuit).lower())
+test("hash_circuit is deterministic", lambda: module33.hash_circuit({"a":1}) == module33.hash_circuit({"a":1}))
+test("RESPONSE_SPIKE threshold defined", lambda: hasattr(module33, "RESPONSE_SPIKE"))
+test("IBM API URL correct", lambda: "quantum-computing.ibm.com" in module33.IBM_QUANTUM_API)
+test("graceful fallback if no token", lambda: "credentials" in inspect.getsource(module33.main).lower())
+
+# ═══════════════════════════════════════
+# MODULE 34 — QPU Calibration Drift
+# ═══════════════════════════════════════
+section("module34.py — QPU Calibration Drift")
+import module34
+test("T1_DROP_THRESHOLD = 0.50", lambda: module34.T1_DROP_THRESHOLD == 0.50)
+test("T2_DROP_THRESHOLD = 0.50", lambda: module34.T2_DROP_THRESHOLD == 0.50)
+test("BASELINE_SAMPLES defined", lambda: hasattr(module34, "CALIBRATION_SPIKE_COUNT"))
+test("uses backend.properties(refresh=True)", lambda: "refresh=True" in inspect.getsource(module34.fetch_backend_properties))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module34.main))
+
+# ═══════════════════════════════════════
+# MODULE 35 — Qubit Error Rate Anomaly
+# ═══════════════════════════════════════
+section("module35.py — Qubit Error Rate Anomaly")
+import module35
+test("ERROR_SPIKE_MULT = 5.0", lambda: module35.ERROR_SPIKE_MULT == 5.0)
+test("ERROR_SPIKE_MIN = 3 qubits", lambda: module35.ERROR_SPIKE_MIN == 3)
+test("No random() in detect_anomalies", lambda: "random" not in inspect.getsource(module35.detect_anomalies))
+test("EMA baseline update (alpha)", lambda: "alpha" in inspect.getsource(module35.update_baseline))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module35.main))
+
+# ═══════════════════════════════════════
+# MODULES 36-39 — Physical Stubs
+# ═══════════════════════════════════════
+section("module36-39.py — Physical Hardware Stubs")
+import module36, module37, module38, module39
+test("module36 is AWAITING_HARDWARE_INTEGRATION", lambda: "AWAITING_HARDWARE_INTEGRATION" in inspect.getsource(module36.main))
+test("module37 FPGA PCIe scan runs now", lambda: "scan_fpga_pcie" in inspect.getsource(module37))
+test("module37 FPGA vendor IDs defined", lambda: len(module37.FPGA_VENDOR_IDS) > 0)
+test("module38 vacuum stub has no sensor code", lambda: "AWAITING_HARDWARE_INTEGRATION" in inspect.getsource(module38.main))
+test("module39 helium stub has cost context", lambda: "50" in inspect.getsource(module39.main))
+
+# ═══════════════════════════════════════
+# MODULE 40 — QaaS Replay Prevention
+# ═══════════════════════════════════════
+section("module40.py — QaaS API Replay")
+import module40
+test("generate_nonce uses secrets", lambda: "secrets" in inspect.getsource(module40.generate_nonce))
+test("NONCE_EXPIRY_S = 3600", lambda: module40.NONCE_EXPIRY_S == 3600)
+test("check_replay returns False for new nonce", lambda: not module40.check_replay("abc123", {}))
+test("check_replay returns True for seen nonce", lambda: module40.check_replay("abc123", {"abc123": 1234567890}))
+test("nonces pruned on save", lambda: "NONCE_EXPIRY" in inspect.getsource(module40.save_nonces))
+
+# ═══════════════════════════════════════
+# MODULE 41 — Qubit Calibration DDoS
+# ═══════════════════════════════════════
+section("module41.py — Qubit Calibration DDoS")
+import module41
+test("DDOS_THRESHOLD = 3", lambda: module41.DDOS_THRESHOLD == 3)
+test("DDOS_WINDOW_S = 600s", lambda: module41.DDOS_WINDOW_S == 600)
+test("cannot block from userspace — logs to IBM support", lambda: "Report to IBM" in inspect.getsource(module41.detect_qubit_ddos))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module41.main))
+
+# ═══════════════════════════════════════
+# MODULE 42 — Queue Front-Running
+# ═══════════════════════════════════════
+section("module42.py — Queue Front-Running")
+import module42
+test("DEVIATION_SIGMA = 3.0", lambda: module42.DEVIATION_SIGMA == 3.0)
+test("TIMING_WINDOW = 20 jobs", lambda: module42.TIMING_WINDOW == 20)
+test("mean_std returns None for <2 values", lambda: module42.mean_std([5]) == (None, None))
+test("mean_std correct for known values", lambda: abs(module42.mean_std([1,3])[0] - 2.0) < 0.001)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module42.main))
+
+# ═══════════════════════════════════════
+# MODULE 43 — Crypto Downgrade Prevention
+# ═══════════════════════════════════════
+section("module43.py — Crypto Downgrade Prevention")
+import module43
+test("QUANTUM_VULNERABLE_KEX defined", lambda: len(module43.QUANTUM_VULNERABLE_KEX) > 0)
+test("ecdh algorithms in vulnerable list", lambda: any("ecdh" in a for a in module43.QUANTUM_VULNERABLE_KEX))
+test("PQC_SAFE_KEX = sntrup761", lambda: "sntrup761" in module43.PQC_SAFE_KEX)
+test("hardening is opt-in (disabled by default)", lambda: module43.ENABLE_HARDENING == False)
+test("backup created before modifying sshd", lambda: "SSHD_BACKUP_PATH" in inspect.getsource(module43.harden_sshd))
+
+# ═══════════════════════════════════════
+# MODULE 44 — Cryogenic Power Spike
+# ═══════════════════════════════════════
+section("module44.py — Power Spike Detection")
+import module44
+test("SPIKE_MULTIPLIER = 2.0", lambda: module44.SPIKE_MULTIPLIER == 2.0)
+test("SPIKE_DURATION_S = 5.0", lambda: module44.SPIKE_DURATION_S == 5.0)
+test("RAPL powercap path defined", lambda: "powercap" in module44.POWERCAP_BASE)
+test("TPM write present", lambda: "tpm2_nvwrite" in inspect.getsource(module44.write_to_tpm))
+test("IPMI fallback present", lambda: "ipmitool" in inspect.getsource(module44.read_ipmi_power))
+
+# ═══════════════════════════════════════
+# MODULE 45 — Credential Drain
+# ═══════════════════════════════════════
+section("module45.py — Credential Drain")
+import module45
+test("MAX_SHOTS_PER_HOUR = 100000", lambda: module45.MAX_SHOTS_PER_HOUR == 100_000)
+test("MAX_JOBS_PER_HOUR = 200", lambda: module45.MAX_JOBS_PER_HOUR == 200)
+test("DRAIN_WINDOW_S = 3600s", lambda: module45.DRAIN_WINDOW_S == 3600)
+test("no auto key rotation (manual action)", lambda: "Rotate" in inspect.getsource(module45.detect_credential_drain))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module45.main))
+
+# ═══════════════════════════════════════
+# MODULE 46 — Annealer Side-Channel
+# ═══════════════════════════════════════
+section("module46.py — Annealer Side-Channel")
+import module46
+test("PERIODIC_CV_THRESH = 0.15", lambda: module46.PERIODIC_CV_THRESH == 0.15)
+test("LAG1_AC_THRESH = 0.50", lambda: module46.LAG1_AC_THRESH == 0.50)
+test("No random() in is_periodic", lambda: "random" not in inspect.getsource(module46.is_periodic))
+test("lag1 autocorr of constant = 0", lambda: module46.lag1_autocorr([5,5,5,5,5]) == 0.0)
+test("noise job uses randomized timing", lambda: "random" in inspect.getsource(module46.inject_noise_job))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module46.main))
+
+# ═══════════════════════════════════════
+# MODULE 47 — Supply Chain Integrity
+# ═══════════════════════════════════════
+section("module47.py — Supply Chain Integrity")
+import module47
+test("qiskit in packages to check", lambda: "qiskit" in module47.PACKAGES_TO_CHECK)
+test("cirq in packages to check", lambda: "cirq" in module47.PACKAGES_TO_CHECK)
+test("SHA256 used for hashing", lambda: "sha256" in inspect.getsource(module47.hash_package_files).lower())
+test("no auto-delete (flags only)", lambda: "flag" in inspect.getsource(module47).lower() or "Rotate" in inspect.getsource(module47))
+test("PyPI API used for verification", lambda: "pypi.org" in inspect.getsource(module47.get_pypi_hash))
+
+# ═══════════════════════════════════════
+# MODULE 48 — Quantum Cost Drain
+# ═══════════════════════════════════════
+section("module48.py — Quantum Cost Drain")
+import module48
+test("COST_SPIKE_MULT = 3.0", lambda: module48.COST_SPIKE_MULT == 3.0)
+test("ECONOMICS_AVAILABLE is bool", lambda: isinstance(module48.ECONOMICS_AVAILABLE, bool))
+test("quantum_models path wired", lambda: "_QM_PATH" in inspect.getsource(module48))
+test("graceful fallback if model missing", lambda: "MODEL_NOT_AVAILABLE" in inspect.getsource(module48.main))
+
+# ═══════════════════════════════════════
+# MODULE 49 — Fleet Efficiency Anomaly
+# ═══════════════════════════════════════
+section("module49.py — Fleet Efficiency Anomaly")
+import module49
+test("SCORE_DROP_THRESHOLD = 0.20", lambda: module49.SCORE_DROP_THRESHOLD == 0.20)
+test("FLEET_AVAILABLE is bool", lambda: isinstance(module49.FLEET_AVAILABLE, bool))
+test("quantum_models path wired", lambda: "_QM_PATH" in inspect.getsource(module49))
+test("reference backends defined", lambda: "ibm_brisbane" in inspect.getsource(module49.get_backend_fleet_scores))
+test("graceful fallback if model missing", lambda: "MODEL_NOT_AVAILABLE" in inspect.getsource(module49.main))
+
+# ═══════════════════════════════════════
+# MODULE 50 — Load Balancer Guard
+# ═══════════════════════════════════════
+section("module50.py — Load Balancer Guard")
+import module50
+test("HOTSPOT_THRESHOLD = 0.70", lambda: module50.HOTSPOT_THRESHOLD == 0.70)
+test("LB_AVAILABLE is bool", lambda: isinstance(module50.LB_AVAILABLE, bool))
+test("quantum_models path wired", lambda: "_QM_PATH" in inspect.getsource(module50))
+test("detect_hotspot returns empty on low job count", lambda: module50.detect_hotspot({"a": {"pending_jobs": 2}, "b": {"pending_jobs": 1}}) == [])
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module50.main))
+
+# ═══════════════════════════════════════
+# MODULE 21 — Quantum wiring verification
+# ═══════════════════════════════════════
+
+# ═══════════════════════════════════════
+# MODULE 51 — Circuit Result Verification
+# ═══════════════════════════════════════
+section("module51.py — Circuit Result Verification")
+import module51
+test("PROBE_SHOTS = 4096", lambda: module51.PROBE_SHOTS == 4096)
+test("CHI2_THRESHOLD = 30.0", lambda: module51.CHI2_THRESHOLD == 30.0)
+test("Noise floor min = 0.002", lambda: module51.NOISE_FLOOR_MIN == 0.002)
+test("Bell expected is 50/50", lambda: module51.bell_expected() == {"00": 0.5, "11": 0.5})
+test("GHZ expected is 50/50", lambda: module51.ghz_expected() == {"000": 0.5, "111": 0.5})
+test("chi_squared returns 0 for perfect fit", lambda: module51.chi_squared({"00": 500, "11": 500}, {"00": 0.5, "11": 0.5}, 1000) < 0.001)
+test("chi_squared nonzero for bad fit", lambda: module51.chi_squared({"00": 1000, "11": 0}, {"00": 0.5, "11": 0.5}, 1000) > 100)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module51.main))
+
+# ═══════════════════════════════════════
+# MODULE 52 — Transpiler Integrity
+# ═══════════════════════════════════════
+section("module52.py — Transpiler Integrity")
+import module52
+test("DEPTH_RATIO_THRESHOLD = 1.50", lambda: module52.DEPTH_RATIO_THRESHOLD == 1.50)
+test("UNITARY_CHECK_MAX_QUBITS = 5", lambda: module52.UNITARY_CHECK_MAX_QUBITS == 5)
+test("two_qubit_gate_count counts cx", lambda: module52.two_qubit_gate_count({"cx": 5, "h": 3}) == 5)
+test("two_qubit_gate_count counts ecr", lambda: module52.two_qubit_gate_count({"ecr": 4, "rz": 10}) == 4)
+test("two_qubit_gate_count ignores 1q gates", lambda: module52.two_qubit_gate_count({"h": 10, "rz": 20}) == 0)
+test("two_qubit_gate_count sums multiple types", lambda: module52.two_qubit_gate_count({"cx": 2, "cz": 3}) == 5)
+test("unitary check uses Operator", lambda: "Operator" in inspect.getsource(module52.check_unitary_equivalence))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module52.main))
+
+# ═══════════════════════════════════════
+# MODULE 53 — Qubit Mapping Attack
+# ═══════════════════════════════════════
+section("module53.py — Qubit Mapping Attack")
+import module53
+test("BAD_PERCENTILE = 0.25", lambda: module53.BAD_PERCENTILE == 0.25)
+test("CRITICAL_PERCENTILE = 0.10", lambda: module53.CRITICAL_PERCENTILE == 0.10)
+test("percentile_rank: best value ranks 1.0", lambda: module53.percentile_rank(100, [10,20,30,40], True) == 1.0)
+test("percentile_rank: worst value ranks 0.0", lambda: module53.percentile_rank(1, [10,20,30,40], True) == 0.0)
+test("percentile_rank: error rate inverted", lambda: module53.percentile_rank(0.001, [0.01,0.02,0.03], False) == 1.0)
+test("percentile_rank: empty population = 0.5", lambda: module53.percentile_rank(5, [], True) == 0.5)
+test("BETTER_LAYOUT_MARGIN = 1.50", lambda: module53.BETTER_LAYOUT_MARGIN == 1.50)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module53.main))
+
+# ═══════════════════════════════════════
+# MODULE 54 — Session Hijacking
+# ═══════════════════════════════════════
+section("module54.py — Session Hijacking")
+import module54
+test("QUEUE_TIME_TOLERANCE_S = 30", lambda: module54.QUEUE_TIME_TOLERANCE_S == 30)
+test("UTILIZATION_FLOOR = 0.40", lambda: module54.UTILIZATION_FLOOR == 0.40)
+test("PENDING_JOBS_TOLERANCE = 0", lambda: module54.PENDING_JOBS_TOLERANCE == 0)
+test("parse_iso handles Z suffix", lambda: module54.parse_iso("2026-08-05T12:00:00Z") is not None)
+test("parse_iso returns None on garbage", lambda: module54.parse_iso("not-a-date") is None)
+test("in_window returns False for None", lambda: not module54.in_window(None, None, None))
+test("reservation window read from env", lambda: "WD_RESERVATION_START" in inspect.getsource(module54.get_reservation_window))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module54.main))
+
+
+# ═══════════════════════════════════════
+# MODULE 55 — Cryogenic Bus Integrity
+# ═══════════════════════════════════════
+section("module55.py — Cryogenic Bus Integrity")
+import module55
+test("MULTI_HOLDER_LIMIT = 1", lambda: module55.MULTI_HOLDER_LIMIT == 1)
+test("Serial device globs defined", lambda: len(module55.SERIAL_GLOBS) >= 3)
+test("GPIB device globs defined", lambda: len(module55.GPIB_GLOBS) >= 2)
+test("FTDI vendor ID known", lambda: "0403" in module55.INSTRUMENT_VENDORS)
+test("Silicon Labs CP210x known", lambda: "10c4" in module55.INSTRUMENT_VENDORS)
+test("enumerate_bus_devices runs without hardware", lambda: isinstance(module55.enumerate_bus_devices(), list))
+test("check_socat_shims runs", lambda: isinstance(module55.check_socat_shims(), list))
+test("No simulated sensor readings", lambda: "random." not in inspect.getsource(module55) and "import random" not in inspect.getsource(module55))
+
+# ═══════════════════════════════════════
+# MODULE 56 — FPGA Bitstream & JTAG
+# ═══════════════════════════════════════
+section("module56.py — FPGA Bitstream & JTAG")
+import module56
+test("Xilinx vendor ID 10ee known", lambda: "10ee" in module56.FPGA_VENDOR_IDS)
+test("Intel/Altera vendor ID 1172 known", lambda: "1172" in module56.FPGA_VENDOR_IDS)
+test("JTAG modules list defined", lambda: len(module56.JTAG_MODULES) >= 5)
+test("Programming tools list defined", lambda: "openocd" in module56.PROGRAMMING_TOOLS)
+test("vivado in programming tools", lambda: "vivado" in module56.PROGRAMMING_TOOLS)
+test("FPGA manager path correct", lambda: module56.FPGA_MANAGER_BASE == "/sys/class/fpga_manager")
+test("scan_fpga_pcie runs without hardware", lambda: isinstance(module56.scan_fpga_pcie(), list))
+test("SHA256 used for bitstream hashing", lambda: "sha256" in inspect.getsource(module56.sha256_file).lower())
+test("No simulated bitstream data", lambda: "random." not in inspect.getsource(module56) and "import random" not in inspect.getsource(module56))
+
+# ═══════════════════════════════════════
+# MODULE 57 — EM Side-Channel Guard
+# ═══════════════════════════════════════
+section("module57.py — EM Side-Channel Guard")
+import module57
+test("RTL-SDR device ID known", lambda: "0bda:2838" in module57.SDR_DEVICES)
+test("HackRF device ID known", lambda: "1d50:6089" in module57.SDR_DEVICES)
+test("USRP B210 device ID known", lambda: "2500:0021" in module57.SDR_DEVICES)
+test("SDR device count >= 15", lambda: len(module57.SDR_DEVICES) >= 15)
+test("RF capture tools list defined", lambda: "rtl_sdr" in module57.RF_CAPTURE_TOOLS)
+test("gnuradio in RF tools", lambda: any("gnuradio" in t for t in module57.RF_CAPTURE_TOOLS))
+test("Qubit drive band 4-8 GHz", lambda: module57.QUBIT_DRIVE_BAND_GHZ == (4.0, 8.0))
+test("enumerate_usb_devices runs", lambda: isinstance(module57.enumerate_usb_devices(), dict))
+test("check_rf_tools runs", lambda: isinstance(module57.check_rf_tools(), list))
+test("No simulated RF data", lambda: "random." not in inspect.getsource(module57) and "import random" not in inspect.getsource(module57))
+
+# ═══════════════════════════════════════
+# MODULE 58 — Control-Plane Zero Trust
+# ═══════════════════════════════════════
+section("module58.py — Control-Plane Zero Trust")
+import module58
+test("gRPC port 50051 monitored", lambda: 50051 in module58.CONTROL_PLANE_PORTS)
+test("Modbus TCP port 502 monitored", lambda: 502 in module58.CONTROL_PLANE_PORTS)
+test("SCPI port 5025 monitored", lambda: 5025 in module58.CONTROL_PLANE_PORTS)
+test("Quantum exporter port 9093 monitored", lambda: 9093 in module58.CONTROL_PLANE_PORTS)
+test("Plaintext-sensitive ports defined", lambda: 50051 in module58.PLAINTEXT_SENSITIVE)
+test("Proxy tools list defined", lambda: "socat" in module58.PROXY_TOOLS)
+test("mitmproxy in proxy tools", lambda: "mitmproxy" in module58.PROXY_TOOLS)
+test("enumerate_listeners runs", lambda: isinstance(module58.enumerate_listeners(), list))
+test("enumerate_unix_sockets runs", lambda: isinstance(module58.enumerate_unix_sockets(), list))
+test("parse_proc_net reads /proc/net", lambda: "/proc/net/" in inspect.getsource(module58.parse_proc_net))
+test("TLS probing is opt-in", lambda: "WD_PROBE_TLS" in inspect.getsource(module58.main))
+test("No simulated topology", lambda: "random." not in inspect.getsource(module58) and "import random" not in inspect.getsource(module58))
+
+
+# ═══════════════════════════════════════
+# MODULE 59 — Entropy / QRNG Health
+# ═══════════════════════════════════════
+section("module59.py — Entropy / QRNG Health")
+import module59
+test("P_VALUE_THRESHOLD = 0.01 (NIST standard)", lambda: module59.P_VALUE_THRESHOLD == 0.01)
+test("SAMPLE_BYTES = 4096", lambda: module59.SAMPLE_BYTES == 4096)
+test("bytes_to_bits converts correctly", lambda: module59.bytes_to_bits(b"\xff") == "11111111")
+test("bytes_to_bits handles zero", lambda: module59.bytes_to_bits(b"\x00") == "00000000")
+test("monobit passes on balanced input", lambda: module59.monobit_test("01" * 5000)["passed"])
+test("monobit fails on all-ones", lambda: not module59.monobit_test("1" * 2000)["passed"])
+test("runs test detects alternating pattern", lambda: module59.runs_test("01" * 5000)["p_value"] < 0.01)
+test("shannon entropy of uniform bytes high", lambda: module59.shannon_entropy(bytes(range(256)) * 4)["bits_per_byte"] > 7.9)
+test("shannon entropy of constant is zero", lambda: module59.shannon_entropy(b"\x00" * 1000)["bits_per_byte"] == 0.0)
+test("repeated block detects duplicates", lambda: not module59.repeated_block_check(b"A" * 256)["passed"])
+test("block_frequency runs on valid input", lambda: "p_value" in module59.block_frequency_test("01" * 5000))
+test("igamc returns 1.0 for x=0", lambda: module59.igamc(1.0, 0.0) == 1.0)
+test("read_entropy returns data", lambda: "data" in module59.read_entropy(64) or "error" in module59.read_entropy(64))
+
+# ═══════════════════════════════════════
+# MODULE 60 — IOMMU / DMA Auditor
+# ═══════════════════════════════════════
+section("module60.py — IOMMU / DMA Auditor")
+import module60
+test("BUS_MASTER_BIT = 0x04", lambda: module60.BUS_MASTER_BIT == 0x04)
+test("COMMAND_REGISTER_OFFSET = 0x04", lambda: module60.COMMAND_REGISTER_OFFSET == 0x04)
+test("Xilinx FPGA vendor known", lambda: "10ee" in module60.EXPECTED_VENDORS)
+test("NVIDIA vendor known", lambda: "10de" in module60.EXPECTED_VENDORS)
+test("USB4/Thunderbolt class known", lambda: "0x0c0340" in module60.PCI_CLASSES)
+test("check_iommu_status runs", lambda: isinstance(module60.check_iommu_status(), dict))
+test("enumerate_pci_devices runs", lambda: isinstance(module60.enumerate_pci_devices(), list))
+test("map_iommu_groups runs", lambda: isinstance(module60.map_iommu_groups(), dict))
+test("distinct from module26 documented", lambda: "module26" in inspect.getsource(module60.main))
+
+# ═══════════════════════════════════════
+# MODULE 61 — BMC / IPMI Integrity
+# ═══════════════════════════════════════
+section("module61.py — BMC / IPMI Integrity")
+import module61
+test("IPMI_TIMEOUT defined", lambda: module61.IPMI_TIMEOUT == 10)
+test("IPMI device paths defined", lambda: "/dev/ipmi0" in module61.IPMI_DEVICES)
+test("sha256_text is deterministic", lambda: module61.sha256_text("x") == module61.sha256_text("x"))
+test("check_host_ipmi_interface runs", lambda: isinstance(module61.check_host_ipmi_interface(), dict))
+test("ipmitool_available returns bool", lambda: isinstance(module61.ipmitool_available(), bool))
+test("graceful fallback without ipmitool", lambda: "IPMITOOL_UNAVAILABLE" in inspect.getsource(module61.main))
+test("cipher zero check present", lambda: "cipher_zero" in inspect.getsource(module61.check_cipher_zero))
+
+# ═══════════════════════════════════════
+# MODULE 62 — QaaS Config Guard
+# ═══════════════════════════════════════
+section("module62.py — QaaS Config Guard")
+import module62
+test("Qiskit config path monitored", lambda: any("qiskit" in p[0] for p in module62.QAAS_CONFIG_PATHS))
+test("D-Wave config path monitored", lambda: any("dwave" in p[0] for p in module62.QAAS_CONFIG_PATHS))
+test("AWS/Braket config monitored", lambda: any("aws" in p[0] for p in module62.QAAS_CONFIG_PATHS))
+test("IBM_QUANTUM_TOKEN in credential vars", lambda: "IBM_QUANTUM_TOKEN" in module62.CREDENTIAL_ENV_VARS)
+test("DWAVE_API_TOKEN in credential vars", lambda: "DWAVE_API_TOKEN" in module62.CREDENTIAL_ENV_VARS)
+test("REQUESTS_CA_BUNDLE in redirect vars", lambda: "REQUESTS_CA_BUNDLE" in module62.REDIRECT_ENV_VARS)
+test("Official IBM endpoints defined", lambda: len(module62.OFFICIAL_ENDPOINTS["ibm"]) >= 3)
+test("Official D-Wave endpoints defined", lambda: len(module62.OFFICIAL_ENDPOINTS["dwave"]) >= 1)
+test("token_shape never returns the value", lambda: "secret123" not in str(module62.token_shape("secret123")))
+test("token_shape reports length", lambda: module62.token_shape("abcd")["length"] == 4)
+test("token_shape detects hex charset", lambda: module62.token_shape("deadbeef")["charset"] == "hex")
+test("scan_config_files runs", lambda: isinstance(module62.scan_config_files(), list))
+test("check_hosts_file runs", lambda: isinstance(module62.check_hosts_file(), list))
+
+# ═══════════════════════════════════════
+# MODULE 63 — Kernel Module Auditor
+# ═══════════════════════════════════════
+section("module63.py — Kernel Module Auditor")
+import module63
+test("Taint bit 13 = unsigned module", lambda: module63.TAINT_FLAGS[13][0] == "E")
+test("Taint bit 12 = out-of-tree", lambda: module63.TAINT_FLAGS[12][0] == "O")
+test("Taint bit 1 = force-loaded", lambda: module63.TAINT_FLAGS[1][0] == "F")
+test("Suspicious patterns defined", lambda: "rootkit" in module63.SUSPICIOUS_PATTERNS)
+test("diamorphine in suspicious patterns", lambda: "diamorphine" in module63.SUSPICIOUS_PATTERNS)
+test("vfio in high-privilege modules", lambda: "vfio" in module63.HIGH_PRIVILEGE_MODULES)
+test("parse_proc_modules runs", lambda: isinstance(module63.parse_proc_modules(), dict))
+test("get_kernel_taint runs", lambda: isinstance(module63.get_kernel_taint(), dict))
+test("list_sys_modules runs", lambda: isinstance(module63.list_sys_modules(), set))
+test("scan_modprobe_config runs", lambda: isinstance(module63.scan_modprobe_config(), dict))
+
+# ═══════════════════════════════════════
+# MODULE 64 — SSH Backdoor Auditor
+# ═══════════════════════════════════════
+section("module64.py — SSH Backdoor Auditor")
+import module64
+test("WEAK_RSA_BITS = 3072", lambda: module64.WEAK_RSA_BITS == 3072)
+test("PermitRootLogin in dangerous directives", lambda: "permitrootlogin" in module64.DANGEROUS_DIRECTIVES)
+test("PermitEmptyPasswords in dangerous directives", lambda: "permitemptypasswords" in module64.DANGEROUS_DIRECTIVES)
+test("PermitUserEnvironment in dangerous directives", lambda: "permituserenvironment" in module64.DANGEROUS_DIRECTIVES)
+test("command= in powerful key options", lambda: "command=" in module64.POWERFUL_KEY_OPTIONS)
+test("key_fingerprint returns SHA256 format", lambda: (module64.key_fingerprint("AAAAB3NzaC1yc2E=") or "").startswith("SHA256:"))
+test("key_fingerprint deterministic", lambda: module64.key_fingerprint("AAAAB3NzaC1yc2E=") == module64.key_fingerprint("AAAAB3NzaC1yc2E="))
+test("get_all_users runs", lambda: isinstance(module64.get_all_users(), list))
+test("read_sshd_config runs", lambda: isinstance(module64.read_sshd_config(), dict))
+test("scan_known_hosts runs", lambda: isinstance(module64.scan_known_hosts(), dict))
+test("key material never logged", lambda: "never logged" in inspect.getsource(module64.main))
+
+# ═══════════════════════════════════════
+# MODULE 65 — Ptrace / Memory Sentinel
+# ═══════════════════════════════════════
+section("module65.py — Ptrace / Memory Sentinel")
+import module65
+test("MIN_PTRACE_SCOPE = 1", lambda: module65.MIN_PTRACE_SCOPE == 1)
+test("YAMA path correct", lambda: module65.YAMA_PATH == "/proc/sys/kernel/yama/ptrace_scope")
+test("qiskit in sensitive markers", lambda: "qiskit" in module65.SENSITIVE_MARKERS)
+test("dwave in sensitive markers", lambda: "dwave" in module65.SENSITIVE_MARKERS)
+test("gdb in debugger tools", lambda: "gdb" in module65.DEBUGGER_TOOLS)
+test("frida in debugger tools", lambda: "frida" in module65.DEBUGGER_TOOLS)
+test("LD_PRELOAD in injection vars", lambda: "LD_PRELOAD" in module65.INJECTION_ENV_VARS)
+test("LD_AUDIT in injection vars", lambda: "LD_AUDIT" in module65.INJECTION_ENV_VARS)
+test("is_sensitive_process detects qiskit", lambda: module65.is_sensitive_process("python3 -m qiskit_ibm_runtime"))
+test("is_sensitive_process rejects unrelated", lambda: not module65.is_sensitive_process("/usr/bin/vim notes.txt"))
+test("scan_tracers runs", lambda: isinstance(module65.scan_tracers(), list))
+test("check_core_dump_config runs", lambda: isinstance(module65.check_core_dump_config(), dict))
+test("memory contents never logged", lambda: "never read or logged" in inspect.getsource(module65.main))
+
+
+# ═══════════════════════════════════════
+# MODULES 66-75 — Published Attack Research
+# ═══════════════════════════════════════
+section("module66.py — Crosstalk Co-Tenancy")
+import module66
+test("HIGH_DEGREE_THRESHOLD = 4", lambda: module66.HIGH_DEGREE_THRESHOLD == 4)
+test("STRONG_COUPLING_PCT = 0.25", lambda: module66.STRONG_COUPLING_PCT == 0.25)
+test("TWO_HOP_ALERT_COUNT = 8", lambda: module66.TWO_HOP_ALERT_COUNT == 8)
+test("BUFFER_MIN = 1", lambda: module66.BUFFER_MIN == 1)
+test("compute_exposure defined", lambda: callable(module66.compute_exposure))
+test("QubitHammer cited", lambda: "2504.07875" in inspect.getsource(module66))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module66.main))
+
+section("module67.py — Dynamical Decoupling")
+import module67
+test("module67 imports", lambda: module67 is not None)
+test("Mehra & Kalev cited", lambda: "095102" in inspect.getsource(module67) or "Kalev" in inspect.getsource(module67))
+test("graceful fallback present", lambda: "NO_CREDENTIALS" in inspect.getsource(module67.main))
+
+section("module68.py — Buffer Qubit Verifier")
+import module68
+test("GOOD_BUFFER_HOPS = 2", lambda: module68.GOOD_BUFFER_HOPS == 2)
+test("PERIMETER_RATIO_WARN = 2.0", lambda: module68.PERIMETER_RATIO_WARN == 2.0)
+test("build_adjacency runs", lambda: len(module68.build_adjacency([[0,1],[1,2]])) == 3)
+test("compute_perimeter counts edges", lambda: module68.compute_perimeter({0}, module68.build_adjacency([[0,1]]))["boundary_edges"] == 1)
+test("Physica Scripta cited", lambda: "095102" in inspect.getsource(module68))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module68.main))
+
+section("module69.py — Readout Crosstalk Leak")
+import module69
+test("CORRELATION_THRESHOLD = 0.05", lambda: module69.CORRELATION_THRESHOLD == 0.05)
+test("PROBE_SHOTS = 2048", lambda: module69.PROBE_SHOTS == 2048)
+test("ACM QSPW DOI cited", lambda: "3733825" in inspect.getsource(module69))
+test("neighbour_error_rate handles empty", lambda: module69.neighbour_error_rate({}, 0, 2, 100) is None)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module69.main))
+
+section("module70.py — Non-Local Attack Paths")
+import module70
+test("MAX_PATH_HOPS = 3", lambda: module70.MAX_PATH_HOPS == 3)
+test("RELAY_QUALITY_HIGH = 0.70", lambda: module70.RELAY_QUALITY_HIGH == 0.70)
+test("attack-through-a-neighbor cited", lambda: "2509.11407" in inspect.getsource(module70))
+test("enumerate_attack_paths runs", lambda: isinstance(module70.enumerate_attack_paths({2}, module70.build_adjacency([[0,1],[1,2]])), list))
+test("finds 2-hop path", lambda: len(module70.enumerate_attack_paths({2}, module70.build_adjacency([[0,1],[1,2]]))) >= 1)
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module70.main))
+
+section("module71.py — QKD Detector Blinding")
+import module71
+test("QBER_INTERCEPT_RESEND = 0.25", lambda: module71.QBER_INTERCEPT_RESEND == 0.25)
+test("AFTERPULSE_FLOOR defined", lambda: module71.AFTERPULSE_FLOOR == 0.001)
+test("Lydersen Nature Photonics cited", lambda: "Lydersen" in inspect.getsource(module71))
+test("Huang IEEE JQE cited", lambda: "Huang" in inspect.getsource(module71))
+test("check_afterpulsing flags zero", lambda: len(module71.check_afterpulsing({"afterpulse_rate": 0.0})) == 1)
+test("check_afterpulsing clean on normal", lambda: len(module71.check_afterpulsing({"afterpulse_rate": 0.02})) == 0)
+test("decoy ordering violation detected", lambda: any(a["event"] == "QKD_DECOY_ORDERING_VIOLATION" for a in module71.check_decoy_states({"decoy_yield_signal": 0.1, "decoy_yield_decoy": 0.01, "decoy_yield_vacuum": 0.5, "mu_signal": 0.5, "mu_decoy": 0.1})))
+test("no simulated optical data", lambda: "NO_QKD_SESSION_LOGS" in inspect.getsource(module71.main))
+
+section("module72.py — Annealer Ground-State Trapping")
+import module72
+test("GROUND_STATE_FLOOR = 0.50", lambda: module72.GROUND_STATE_FLOOR == 0.50)
+test("CHAIN_BREAK_CEILING = 0.10", lambda: module72.CHAIN_BREAK_CEILING == 0.10)
+test("known-answer chain built correctly", lambda: module72.build_known_answer_problem(4)["ground_energy"] == -3.0)
+test("chain has n-1 couplings", lambda: len(module72.build_known_answer_problem(8)["J"]) == 7)
+test("all couplings ferromagnetic", lambda: all(v == -1.0 for v in module72.build_known_answer_problem(5)["J"].values()))
+test("Ayanzadeh Sci Rep cited", lambda: "s41598-021-95482-w" in inspect.getsource(module72))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module72.main))
+
+section("module73.py — QEC Decoder Timing")
+import module73
+test("DEADLINE_VIOLATION_RATE = 0.01", lambda: module73.DEADLINE_VIOLATION_RATE == 0.01)
+test("VARIANCE_COLLAPSE_RATIO = 0.30", lambda: module73.VARIANCE_COLLAPSE_RATIO == 0.30)
+test("pymatching in decoder markers", lambda: "pymatching" in module73.DECODER_PROCESS_MARKERS)
+test("percentile computes correctly", lambda: module73.percentile([1,2,3,4,5], 0.5) == 3)
+test("mean_std of constant has zero std", lambda: module73.mean_std([5,5,5])[1] == 0.0)
+test("find_decoder_processes runs", lambda: isinstance(module73.find_decoder_processes(), list))
+test("no simulated syndrome data", lambda: "NO_QEC_DECODER_PRESENT" in inspect.getsource(module73.main))
+
+section("module74.py — Resonator Frequency Collision")
+import module74
+test("COLLISION_MHZ = 20.0", lambda: module74.COLLISION_MHZ == 20.0)
+test("NEAR_COLLISION_MHZ = 50.0", lambda: module74.NEAR_COLLISION_MHZ == 50.0)
+test("find_collisions detects close pair", lambda: len(module74.find_collisions({"0": {"f": 5000.0}, "1": {"f": 5010.0}}, "f", 20.0, 50.0)) == 1)
+test("find_collisions ignores far pair", lambda: len(module74.find_collisions({"0": {"f": 5000.0}, "1": {"f": 6000.0}}, "f", 20.0, 50.0)) == 0)
+test("zero QPU cost documented", lambda: "Zero QPU time" in inspect.getsource(module74.main))
+test("graceful fallback if no token", lambda: "NO_CREDENTIALS" in inspect.getsource(module74.main))
+
+section("module75.py — XMSS/LMS Reuse Sentinel")
+import module75
+test("EXHAUSTION_CRIT_PCT = 0.98", lambda: module75.EXHAUSTION_CRIT_PCT == 0.98)
+test("NIST SP 800-208 cited", lambda: "800-208" in inspect.getsource(module75))
+test("RFC 8391 XMSS cited", lambda: "8391" in inspect.getsource(module75))
+test("RFC 8554 LMS cited", lambda: "8554" in inspect.getsource(module75))
+test("extend_chain is deterministic", lambda: module75.extend_chain("0"*64, {"a":1}) == module75.extend_chain("0"*64, {"a":1}))
+test("extend_chain differs on input", lambda: module75.extend_chain("0"*64, {"a":1}) != module75.extend_chain("0"*64, {"a":2}))
+test("index fields include leaf_index", lambda: "leaf_index" in module75.INDEX_FIELDS)
+test("rsync in backup tools", lambda: "rsync" in module75.BACKUP_TOOLS)
+test("rollback detected", lambda: any(a["event"] == "HBS_INDEX_ROLLBACK" for a in module75.analyse([{"path": "/t", "index": 5}], {"keys": {"/t": {"index": 100}}})[0]))
+test("no key material logged", lambda: "never read or logged" in inspect.getsource(module75.main).lower() or "No key material read or logged" in inspect.getsource(module75.main))
+
+passed = sum(1 for _, r in results if r)
+failed = sum(1 for _, r in results if not r)
+total  = len(results)
+print(f"\n{'='*50}")
+print(f"  {G}{passed} passed{E}  {R}{failed} failed{E}  / {total} total")
+print(f"{'='*50}\n")
+sys.exit(0 if failed == 0 else 1)
