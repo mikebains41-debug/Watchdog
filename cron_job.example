@@ -1,0 +1,11 @@
+# Example crontab entries for Watchdog Quantum
+# Add to crontab with: crontab -e
+
+# Run health check every 30 minutes (optional)
+*/30 * * * * cd /home/user/Watchdog-quantum-collab && ./health_check.sh >> /tmp/health_cron.log 2>&1
+
+# Rotate logs weekly (Sunday at 3am)
+0 3 * * 0 cd /home/user/Watchdog-quantum-collab && ./scripts/rotate_logs.sh
+
+# Stop/start monitor daily to refresh (optional)
+0 4 * * * cd /home/user/Watchdog-quantum-collab && ./scripts/stop_monitor.sh && sleep 5 && ./scripts/start_monitor.sh
