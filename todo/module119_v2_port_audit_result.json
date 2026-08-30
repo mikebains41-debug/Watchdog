@@ -1,0 +1,8 @@
+{
+  "tool_ready": true,
+  "install_message": "iproute2 installed successfully",
+  "raw_output": "Netid State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n",
+  "listening_count": 0,
+  "finding_summary": "v1 could not scan at all (no tool available). v2 installed the missing tool (iproute2 installed successfully) and successfully scanned \u2014 found 0 listening socket(s), each a real currently-reachable network service worth verifying is intentional.",
+  "timestamp": "2026-08-09T07:28:35.825567+00:00"
+}

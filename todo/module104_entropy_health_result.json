@@ -1,0 +1,15 @@
+{
+  "entropy_avail_current_reading": 256,
+  "hwrng_device_findings": {
+    "/dev/hwrng": false,
+    "/sys/devices/virtual/misc/hw_random/rng_available": true
+  },
+  "hwrng_available": true,
+  "entropy_daemon_findings": {
+    "rngd_running": false,
+    "haveged_running": false
+  },
+  "entropy_daemon_running": false,
+  "finding": "Current entropy pool reading: 256. Hardware RNG device present: True. Entropy-gathering daemon active: False. This directly follows up on module92's WARN about near-boot key generation risk \u2014 a hardware RNG and/or active daemon reduces that specific risk.",
+  "timestamp": "2026-08-09T03:38:38.079733+00:00"
+}

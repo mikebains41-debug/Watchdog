@@ -1,0 +1,40 @@
+=== T-28 TIMING ATTACK SUMMARY ===
+Date: 2026-06-10
+Author: Manmohan Mike Bains, GPU Optimizer Inc, Duncan BC Canada
+CVE: 2048350
+Hardware: NVIDIA H200 NVL 141GB
+Platform: Phala Cloud TDX CVM (Intel TDX attested)
+Sampling: 100Hz / 10ms intervals
+Duration: 20 minutes
+Total samples: 215,232
+
+BASELINE
+Power: 77.25-77.49W
+VRAM: 0MB
+GPU Util: 0%
+SM Clock: 345MHz
+
+WORKLOAD 1 - SMALL
+VRAM loaded: 721MB
+Peak power: 124.82W
+GPU util: 0% (NVML blind)
+VRAM residual: 625MB LOCKED
+
+WORKLOAD 2 - MEDIUM
+VRAM loaded: 1009MB
+Power spike: 182.29W (1 second burst)
+Settle power: 120-124W at 0% util
+VRAM residual: 1009MB LOCKED
+
+WORKLOAD 3 - LARGE
+VRAM loaded: 2161MB
+Power spike: 524.96W at 100% util (1 second)
+Settle power: 120-124W at 0% util
+VRAM residual: 2161MB LOCKED
+
+KEY FINDING
+Ghost power delta: +47W permanently above baseline
+NVML reports 0% util throughout all phases
+Each workload size produces unique VRAM residual fingerprint
+Attacker can identify previous tenant workload size from VRAM residual alone
+No special access required - standard NVML query sufficient

@@ -1,140 +1,176 @@
 #!/usr/bin/env python3
 """
-Watchdog — Module 42: Job Queue Front-Running Detection
-Finds: An attacker monitoring the public job queue to time a high-value job
-       and infer its result from execution duration.
-
-Refactored to use quantum_providers abstraction layer.
+Watchdog — Module 42: Quantum Job Queue Front-Running Detection
+Monitors job submission and completion timing via IBM Quantum job history.
+If completion time deviates significantly from expected gate-time baseline,
+flags QUEUE_SIDE_CHANNEL_ACTIVE — attacker may be timing high-value jobs.
+Requires: qiskit-ibm-runtime
+Credentials: IBM_QUANTUM_TOKEN env var
 """
-import json, os, sys, statistics
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any
+import json, datetime, os, time, math
+from collections import deque
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from quantum_providers import get_provider, JobRecord
+JOB_TIMING_FILE  = "/tmp/watchdog_qc_job_timing.json"
+TIMING_WINDOW    = 20       # jobs in rolling baseline
+DEVIATION_SIGMA  = 3.0      # flag if completion time > 3σ from baseline
+POLL_INTERVAL    = 180      # seconds between job history checks
+MAX_JOBS_FETCH   = 100      # jobs to pull per poll
 
-# ------------------------------------------------------------------ thresholds
-DEVIATION_SIGMA = 1.5
-BASELINE_MIN_JOBS = 5
-ROLLING_WINDOW_JOBS = 20
-STATE_PATH = os.path.expanduser("~/watchdog_qc_timing_state.json")
-MAX_STATE_JOBS = 5000
+def now_iso():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
+def stamp():
+    return datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-def load_state() -> Dict[str, Any]:
-    if not os.path.exists(STATE_PATH):
-        return {"seen_ids": [], "baselines": {}}
+def load_timing_log() -> dict:
     try:
-        with open(STATE_PATH, "r") as f:
+        with open(JOB_TIMING_FILE) as f:
             return json.load(f)
-    except Exception:
-        return {"seen_ids": [], "baselines": {}}
+    except:
+        return {"completion_times": [], "seen_jobs": []}
 
+def save_timing_log(log: dict):
+    try:
+        with open(JOB_TIMING_FILE, "w") as f:
+            json.dump(log, f)
+    except:
+        pass
 
-def save_state(state: Dict[str, Any]) -> None:
-    # Cap seen_ids to prevent unbounded growth
-    if len(state.get("seen_ids", [])) > MAX_STATE_JOBS:
-        state["seen_ids"] = state["seen_ids"][-MAX_STATE_JOBS:]
-    with open(STATE_PATH, "w") as f:
-        json.dump(state, f, default=str)
+def fetch_recent_jobs(token: str) -> list:
+    """Fetch recent job history with timing data from IBM Quantum."""
+    try:
+        from qiskit_ibm_runtime import QiskitRuntimeService
+        svc  = QiskitRuntimeService(token=token)
+        jobs = svc.jobs(limit=MAX_JOBS_FETCH)
 
+        job_data = []
+        for job in jobs:
+            try:
+                created   = job.creation_date
+                status    = job.status()
+                metrics   = getattr(job, 'metrics', lambda: {})()
 
-def emit(event_type: str, details: Dict[str, Any]) -> None:
-    print(json.dumps({
-        "event": event_type,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        **details
-    }))
+                # Queue time = time from submission to execution start
+                # Execution time = actual QPU time
+                queue_s    = metrics.get("bss", {}).get("seconds", None)
+                exec_s     = metrics.get("usage", {}).get("quantum_seconds", None)
 
+                job_data.append({
+                    "job_id":      job.job_id(),
+                    "created_iso": created.isoformat() if created else None,
+                    "status":      str(status),
+                    "queue_s":     queue_s,
+                    "exec_s":      exec_s,
+                    "backend":     job.backend().name if job.backend() else None,
+                })
+            except:
+                pass
 
-def compute_baseline(exec_times: List[float]) -> Optional[Dict[str, float]]:
-    if len(exec_times) < BASELINE_MIN_JOBS:
-        return None
-    return {
-        "mean": statistics.mean(exec_times),
-        "std": statistics.pstdev(exec_times),  # population stddev
-        "n": len(exec_times),
-    }
+        return job_data
+    except ImportError:
+        return []
+    except Exception as e:
+        return [{"error": str(e)}]
 
+def mean_std(values: list) -> tuple:
+    if len(values) < 2:
+        return None, None
+    n    = len(values)
+    mean = sum(values) / n
+    std  = math.sqrt(sum((x - mean)**2 for x in values) / n)
+    return mean, std
 
-def check_timing(job: JobRecord, baseline: Dict[str, float]) -> Optional[Dict[str, Any]]:
-    if job.exec_seconds is None or baseline["std"] == 0:
-        return None
-    z_score = (job.exec_seconds - baseline["mean"]) / baseline["std"]
-    if abs(z_score) > DEVIATION_SIGMA:
-        return {
-            "job_id": job.job_id,
-            "device_id": job.device_id,
-            "z_score": round(z_score, 4),
-            "exec_seconds": job.exec_seconds,
-            "baseline_mean": round(baseline["mean"], 4),
-            "baseline_std": round(baseline["std"], 4),
-        }
-    return None
+def detect_frontrunning(timing_log: dict, jobs: list) -> list:
+    """
+    Detect timing anomalies consistent with queue side-channel attacks.
+    An attacker probing queue timing would produce jobs with completion
+    times that cluster unnaturally around high-value job completions.
+    """
+    alerts      = []
+    seen        = set(timing_log.get("seen_jobs", []))
+    exec_times  = timing_log.get("completion_times", [])
 
+    new_exec_times = []
+    for job in jobs:
+        jid    = job.get("job_id")
+        exec_s = job.get("exec_s")
+
+        if jid in seen or exec_s is None:
+            continue
+
+        seen.add(jid)
+        new_exec_times.append(exec_s)
+
+    if not new_exec_times:
+        return alerts, timing_log
+
+    # Update rolling baseline
+    exec_times.extend(new_exec_times)
+    exec_times = exec_times[-TIMING_WINDOW * 5:]   # Keep last 100
+
+    if len(exec_times) >= TIMING_WINDOW:
+        baseline_vals = exec_times[-TIMING_WINDOW:]
+        mean, std     = mean_std(baseline_vals)
+
+        if mean and std and std > 0:
+            for exec_s in new_exec_times:
+                z_score = abs(exec_s - mean) / std
+                if z_score > DEVIATION_SIGMA:
+                    alerts.append({
+                        "event":    "QUEUE_SIDE_CHANNEL_ACTIVE",
+                        "severity": "WARN",
+                        "exec_s":   round(exec_s, 3),
+                        "baseline_mean_s": round(mean, 3),
+                        "baseline_std_s":  round(std, 3),
+                        "z_score":  round(z_score, 2),
+                        "confidence": 0.65,
+                        "note":     (f"Job execution time {round(exec_s,3)}s deviates "
+                                     f"{round(z_score,1)}σ from baseline — "
+                                     f"consistent with queue timing side-channel probe")
+                    })
+
+    timing_log["completion_times"] = exec_times
+    timing_log["seen_jobs"]        = list(seen)[-5000:]   # Bound size
+
+    return alerts, timing_log
 
 def main():
-    provider = get_provider()
-    print(f"[module42] Using provider: {provider.provider_name}", file=sys.stderr)
+    token = os.environ.get("IBM_QUANTUM_TOKEN")
+    log   = open(f"module42_{stamp()}.jsonl", "a")
 
-    try:
-        jobs = provider.get_job_history(limit=100)
-    except Exception as e:
-        emit("TIMING_DATA_FETCH_FAILED", {"error": str(e)})
-        sys.exit(0)
+    def emit(event):
+        event.setdefault("ts", now_iso())
+        log.write(json.dumps(event) + "\n")
+        log.flush()
 
-    state = load_state()
-    seen_ids = set(state.get("seen_ids", []))
-    baselines = state.get("baselines", {})
+    emit({"event": "RUN_START", "module": "42_queue_frontrun",
+          "sigma_threshold": DEVIATION_SIGMA,
+          "credentials": "present" if token else "absent"})
 
-    # Filter to new jobs only
-    new_jobs = [j for j in jobs if j.job_id not in seen_ids]
-    if not new_jobs:
-        emit("TIMING_CHECK_CLEAN", {"message": "No new jobs since last check"})
-        save_state(state)
+    if not token:
+        emit({"event": "STATUS", "status": "NO_CREDENTIALS",
+              "note": "Set IBM_QUANTUM_TOKEN to enable queue monitoring"})
+        emit({"event": "RUN_END", "alerts": 0})
+        log.close()
         return
 
-    # Group by device for per-device baselines
-    by_device: Dict[str, List[JobRecord]] = {}
-    for job in jobs:  # Use full history for baseline, not just new
-        by_device.setdefault(job.device_id, []).append(job)
+    timing_log = load_timing_log()
+    alerts     = 0
 
-    alerts = []
-    for device_id, device_jobs in by_device.items():
-        # Build exec time list (skip None)
-        exec_times = [j.exec_seconds for j in device_jobs if j.exec_seconds is not None]
-        baseline = compute_baseline(exec_times[-ROLLING_WINDOW_JOBS:])
-        
-        if baseline:
-            baselines[device_id] = baseline
-            # Check new jobs against this baseline
-            for job in new_jobs:
-                if job.device_id != device_id:
-                    continue
-                anomaly = check_timing(job, baseline)
-                if anomaly:
-                    alerts.append(anomaly)
+    while True:
+        jobs = fetch_recent_jobs(token)
 
-    if alerts:
-        emit("QUEUE_SIDE_CHANNEL_ACTIVE", {
-            "severity": "WARN",
-            "confidence": 0.65,
-            "alerts": alerts,
-            "threshold_sigma": DEVIATION_SIGMA,
-        })
-    else:
-        emit("TIMING_BASELINE_NORMAL", {
-            "devices_tracked": len(baselines),
-            "new_jobs_checked": len(new_jobs),
-        })
+        if jobs and "error" not in jobs[0]:
+            emit({"event": "JOB_HISTORY_FETCH", "count": len(jobs)})
+            new_alerts, timing_log = detect_frontrunning(timing_log, jobs)
+            for alert in new_alerts:
+                alerts += 1
+                emit(alert)
+            save_timing_log(timing_log)
+        elif jobs and "error" in jobs[0]:
+            emit({"event": "FETCH_ERROR", "detail": jobs[0]["error"]})
 
-    # Update state
-    for job in new_jobs:
-        seen_ids.add(job.job_id)
-    state["seen_ids"] = list(seen_ids)
-    state["baselines"] = baselines
-    save_state(state)
-
+        time.sleep(POLL_INTERVAL)
 
 if __name__ == "__main__":
     main()

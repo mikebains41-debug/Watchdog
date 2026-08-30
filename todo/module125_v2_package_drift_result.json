@@ -1,0 +1,10 @@
+{
+  "debsums_installed": true,
+  "debsums_install_message": "installed successfully",
+  "debsums_failed_files": [],
+  "debsums_error": null,
+  "dpkg_content_mismatches": [],
+  "dpkg_metadata_only_count": 9110,
+  "finding_summary": "v1 reported 9,095 undifferentiated 'drift' entries \u2014 that number alone was noise, not signal. v2 breaks it down: dpkg -V shows 9110 metadata-only changes (permissions/ownership \u2014 expected and common in a proot/Termux environment, NOT a real concern) versus 0 genuine MD5 content hash mismatches (0 of those in binary/executable paths, the highest-priority category). debsums (a stronger, independent tool) confirms 0 file(s) with real content drift.",
+  "timestamp": "2026-08-09T07:22:02.077402+00:00"
+}

@@ -1,0 +1,5 @@
+{
+  "findings": [],
+  "finding_summary": "Scanned sudoers config for NOPASSWD entries. Found 0 such entries \u2014 each represents an account where privilege escalation to root requires no password, a real risk if that account is ever compromised via any other vector (weak SSH key, leaked credential, etc.).",
+  "timestamp": "2026-08-09T07:17:15.093584+00:00"
+}

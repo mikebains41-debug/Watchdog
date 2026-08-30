@@ -1,0 +1,27 @@
+baseline_power_min_w: 77.25
+baseline_power_max_w: 77.49
+baseline_vram_mb: 0
+baseline_sm_clock_mhz: 345
+workload1_vram_mb: 721
+workload1_power_w: 124.82
+workload1_residual_mb: 625
+workload2_vram_mb: 1009
+workload2_spike_w: 182.29
+workload2_settle_w: 120.61
+workload2_residual_mb: 1009
+workload3_vram_mb: 2161
+workload3_spike_w: 524.96
+workload3_settle_w: 120.70
+workload3_residual_mb: 2161
+ghost_power_delta_w: 47
+gpu_util_reported: 0
+nvml_blind: true
+sm_clock_post_workload_mhz: 1980
+mem_clock_mhz: 3201
+pstate: P0
+sampling_hz: 100
+total_samples: 215232
+platform: Phala Cloud TDX CVM
+hardware: H200-NVL-141GB
+date: 2026-06-10
+cve: 2048350

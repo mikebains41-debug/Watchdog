@@ -1,0 +1,5 @@
+{
+  "keys_found": [],
+  "finding_summary": "Scanned authorized_keys files. Found 0 key(s), 0 flagged as weak or aging (DSA, or RSA at the minimum-acceptable 2048-bit size rather than a modern default like ed25519).",
+  "timestamp": "2026-08-09T07:17:15.558377+00:00"
+}

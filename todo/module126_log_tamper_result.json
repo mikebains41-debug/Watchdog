@@ -1,0 +1,26 @@
+{
+  "log_files_checked": [
+    {
+      "file": "/var/log/alternatives.log",
+      "size_bytes": 10626,
+      "last_modified": "2026-08-08T18:19:31.588868+00:00"
+    },
+    {
+      "file": "/var/log/bootstrap.log",
+      "size_bytes": 87181,
+      "last_modified": "2026-04-21T02:07:04.206098+00:00"
+    },
+    {
+      "file": "/var/log/dpkg.log",
+      "size_bytes": 364490,
+      "last_modified": "2026-08-08T18:19:33.888868+00:00"
+    },
+    {
+      "file": "/var/log/fontconfig.log",
+      "size_bytes": 605,
+      "last_modified": "2026-06-12T19:18:25.119908+00:00"
+    }
+  ],
+  "finding_summary": "Checked 4 log file(s) for zero-size anomalies. Found 0 flagged. This is a lightweight check \u2014 zero-size logs are consistent with either normal rotation or deliberate clearing to hide activity; this alone cannot distinguish the two, only flag it for review.",
+  "timestamp": "2026-08-09T07:17:39.788130+00:00"
+}

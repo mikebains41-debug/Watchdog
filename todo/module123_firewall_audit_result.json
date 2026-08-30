@@ -1,0 +1,6 @@
+{
+  "iptables_output": null,
+  "ufw_output": null,
+  "finding_summary": "Checked iptables and ufw status. iptables output captured for review. ufw is not installed. Note: this environment (proot/Termux) may not have real kernel-level netfilter access even if commands run \u2014 treat 'not accessible' results as inconclusive, not as 'firewall confirmed absent'.",
+  "timestamp": "2026-08-09T07:17:19.262097+00:00"
+}

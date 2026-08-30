@@ -1,0 +1,82 @@
+{
+  "purpose": "Local exact-physics simulation verifying the test logic used in modules 95/96/97 against known-correct quantum mechanics. NOT a substitute for real hardware validation.",
+  "module95_verification": {
+    "exact_control_probabilities": {
+      "00": 0.4999999999999999,
+      "01": 0.0,
+      "10": 0.0,
+      "11": 0.4999999999999999
+    },
+    "exact_injected_probabilities": {
+      "00": 0.0,
+      "01": 0.4999999999999999,
+      "10": 0.4999999999999999,
+      "11": 0.0
+    },
+    "simulated_control_counts": {
+      "00": 2074,
+      "01": 0,
+      "10": 0,
+      "11": 2022
+    },
+    "simulated_injected_counts": {
+      "00": 0,
+      "01": 2056,
+      "10": 2040,
+      "11": 0
+    },
+    "control_classification": {
+      "dominant_states": [
+        "00",
+        "11"
+      ],
+      "dominant_fraction": 1.0,
+      "matches_prediction": true
+    },
+    "injected_classification": {
+      "dominant_states": [
+        "01",
+        "10"
+      ],
+      "dominant_fraction": 1.0,
+      "matches_prediction": true
+    },
+    "test_logic_verified_correct": true,
+    "shots": 4096
+  },
+  "module96_verification": {
+    "num_qubits": 8,
+    "exact_theoretical_entropy_bits": 8.0,
+    "simulated_measured_entropy_bits": 7.9536,
+    "entropy_ratio": 0.9942,
+    "test_logic_verified_correct": true,
+    "shots": 4096
+  },
+  "module97_verification": {
+    "ideal_case": {
+      "exact_zz_probabilities": {
+        "00": 0.4999999999999999,
+        "01": 0.0,
+        "10": 0.0,
+        "11": 0.4999999999999999
+      },
+      "exact_xx_probabilities": {
+        "00": 0.4999999999999998,
+        "01": 0.0,
+        "10": 0.0,
+        "11": 0.4999999999999998
+      },
+      "simulated_fidelity_lower_bound": 1.0,
+      "witness_passed": true
+    },
+    "degraded_case": {
+      "degrade_fraction_random_noise": 0.7,
+      "simulated_fidelity_lower_bound": 0.3252,
+      "witness_correctly_flagged_as_not_entangled": true
+    },
+    "test_logic_verified_correct": true,
+    "shots": 2048
+  },
+  "all_logic_verified_correct": true,
+  "timestamp": "2026-08-09T03:23:55.665965+00:00"
+}

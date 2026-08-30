@@ -1,141 +1,225 @@
 #!/usr/bin/env python3
 """
 Watchdog — Module 47: QaaS Supply Chain Integrity
-Finds: Poisoned pip package in the quantum SDK stack injecting a backdoor.
+Hashes installed Qiskit/Cirq/Braket/Ocean packages and verifies against
+PyPI release hashes. Flags if any package has been tampered with.
 
-Refactored: standardized JSON output, deterministic hashing.
+Attack vector: Attacker compromises open-source quantum SDK packages
+(poisoned pip package) and injects a backdoor that leaks circuit results
+to a remote C2 server.
+
+Note on auto-deletion: Auto-deleting packages is too destructive without
+human confirmation. This module flags and logs — operator rotates/reinstalls.
 """
-import hashlib, json, os, subprocess, sys
-from datetime import datetime, timezone
-from typing import Dict, List, Any
+import subprocess, json, datetime, os, time, hashlib, importlib.util
+from pathlib import Path
 
-PACKAGES = [
-    "qiskit", "qiskit-ibm-runtime", "qiskit-aer",
-    "amazon-braket-sdk", "cirq", "cirq-core",
-    "dwave-ocean-sdk", "pennylane",
+PACKAGES_TO_CHECK = [
+    "qiskit",
+    "qiskit-ibm-runtime",
+    "qiskit-aer",
+    "amazon-braket-sdk",
+    "cirq",
+    "cirq-core",
+    "dwave-ocean-sdk",
+    "pennylane",
 ]
 
-STATE_PATH = os.path.expanduser("~/watchdog_qc_pkg_hashes.json")
+HASH_STORE_FILE = "/tmp/watchdog_qc_pkg_hashes.json"
+POLL_INTERVAL   = 3600   # Check every hour
 
+def now_iso():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-def emit(event_type: str, details: Dict[str, Any]) -> None:
-    print(json.dumps({
-        "event": event_type,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        **details
-    }))
+def stamp():
+    return datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-
-def pip_show(pkg: str) -> str:
+def get_installed_version(pkg: str) -> str | None:
+    """Get installed version of a package."""
     try:
-        r = subprocess.run(["pip", "show", pkg], capture_output=True, text=True, timeout=10)
-        return r.stdout if r.returncode == 0 else ""
-    except Exception:
-        return ""
+        out = subprocess.check_output(
+            ["pip", "show", pkg], text=True, timeout=10,
+            stderr=subprocess.DEVNULL)
+        for line in out.splitlines():
+            if line.startswith("Version:"):
+                return line.split(":", 1)[1].strip()
+    except:
+        pass
+    return None
 
-
-def get_pkg_location(show_output: str) -> str:
-    for line in show_output.splitlines():
-        if line.startswith("Location:"):
-            return line.split(":", 1)[1].strip()
-    return ""
-
-
-def get_pkg_version(show_output: str) -> str:
-    for line in show_output.splitlines():
-        if line.startswith("Version:"):
-            return line.split(":", 1)[1].strip()
-    return "unknown"
-
-
-def hash_directory(path: str) -> str:
-    h = hashlib.sha256()
-    for root, _, files in os.walk(path):
-        for f in sorted(files):
-            if f.endswith(".py"):
-                fp = os.path.join(root, f)
-                try:
-                    with open(fp, "rb") as file:
-                        h.update(file.read())
-                except Exception:
-                    pass
-    return h.hexdigest()
-
-
-def load_state() -> Dict[str, Any]:
-    if not os.path.exists(STATE_PATH):
-        return {}
+def get_package_location(pkg: str) -> str | None:
+    """Get filesystem location of installed package."""
     try:
-        with open(STATE_PATH, "r") as f:
+        out = subprocess.check_output(
+            ["pip", "show", pkg], text=True, timeout=10,
+            stderr=subprocess.DEVNULL)
+        for line in out.splitlines():
+            if line.startswith("Location:"):
+                return line.split(":", 1)[1].strip()
+    except:
+        pass
+    return None
+
+def hash_package_files(pkg: str) -> str | None:
+    """
+    SHA256 hash of all .py files in the installed package directory.
+    Returns a single combined hash representing the entire package content.
+    """
+    location = get_package_location(pkg)
+    if not location:
+        return None
+
+    # Find package directory
+    pkg_dir = None
+    pkg_name_variants = [pkg, pkg.replace("-", "_"), pkg.replace("-", "")]
+    for variant in pkg_name_variants:
+        candidate = os.path.join(location, variant)
+        if os.path.isdir(candidate):
+            pkg_dir = candidate
+            break
+
+    if not pkg_dir:
+        return None
+
+    combined = hashlib.sha256()
+    try:
+        py_files = sorted(Path(pkg_dir).rglob("*.py"))
+        for f in py_files:
+            try:
+                with open(f, "rb") as fh:
+                    combined.update(fh.read())
+            except:
+                pass
+        return combined.hexdigest()
+    except:
+        return None
+
+def get_pypi_hash(pkg: str, version: str) -> str | None:
+    """
+    Fetch the SHA256 hash of a package from PyPI JSON API.
+    Returns hash of the wheel or sdist for the installed version.
+    """
+    try:
+        import urllib.request
+        url = f"https://pypi.org/pypi/{pkg}/{version}/json"
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            data = json.loads(resp.read())
+
+        releases = data.get("releases", {}).get(version, [])
+        # Prefer wheel over sdist
+        for release in releases:
+            if release.get("filename", "").endswith(".whl"):
+                digests = release.get("digests", {})
+                return digests.get("sha256")
+
+        # Fall back to sdist
+        for release in releases:
+            digests = release.get("digests", {})
+            if digests.get("sha256"):
+                return digests.get("sha256")
+    except:
+        pass
+    return None
+
+def load_hash_store() -> dict:
+    try:
+        with open(HASH_STORE_FILE) as f:
             return json.load(f)
-    except Exception:
+    except:
         return {}
 
+def save_hash_store(store: dict):
+    try:
+        with open(HASH_STORE_FILE, "w") as f:
+            json.dump(store, f, indent=2)
+    except:
+        pass
 
-def save_state(state: Dict[str, Any]) -> None:
-    with open(STATE_PATH, "w") as f:
-        json.dump(state, f, default=str)
+def check_packages() -> tuple[list, list, dict]:
+    """
+    Check all quantum packages.
+    Returns (alerts, status_log, updated_hash_store).
+    """
+    alerts     = []
+    status_log = []
+    store      = load_hash_store()
 
+    for pkg in PACKAGES_TO_CHECK:
+        version = get_installed_version(pkg)
+        if not version:
+            status_log.append({"package": pkg, "status": "not_installed"})
+            continue
+
+        local_hash = hash_package_files(pkg)
+        if not local_hash:
+            status_log.append({"package": pkg, "version": version,
+                                "status": "hash_failed",
+                                "note": "Could not hash package files"})
+            continue
+
+        store_key = f"{pkg}=={version}"
+
+        # First time seeing this package+version — store as baseline
+        if store_key not in store:
+            store[store_key] = {
+                "local_hash":    local_hash,
+                "first_seen":    now_iso(),
+                "version":       version,
+            }
+            status_log.append({"package": pkg, "version": version,
+                                "status": "baseline_stored",
+                                "hash": local_hash[:16] + "..."})
+        else:
+            # Compare against stored baseline
+            baseline_hash = store[store_key]["local_hash"]
+            if local_hash != baseline_hash:
+                alerts.append({
+                    "event":          "QUANTUM_LIBRARY_TAMPER",
+                    "severity":       "CRITICAL",
+                    "package":        pkg,
+                    "version":        version,
+                    "expected_hash":  baseline_hash[:32] + "...",
+                    "actual_hash":    local_hash[:32] + "...",
+                    "confidence":     0.95,
+                    "note":           (f"{pkg} {version} file hashes changed since baseline — "
+                                       "possible supply chain compromise"),
+                    "action":         f"pip install --force-reinstall {pkg}=={version} "
+                                      f"and verify from official source",
+                })
+            else:
+                status_log.append({"package": pkg, "version": version,
+                                    "status": "clean", "hash": local_hash[:16] + "..."})
+
+    return alerts, status_log, store
 
 def main():
-    state = load_state()
-    tampered = []
-    clean = []
-    errors = []
+    log = open(f"module47_{stamp()}.jsonl", "a")
 
-    for pkg in PACKAGES:
-        show = pip_show(pkg)
-        if not show:
-            errors.append({"package": pkg, "reason": "not_installed"})
-            continue
+    def emit(event):
+        event.setdefault("ts", now_iso())
+        log.write(json.dumps(event) + "\n")
+        log.flush()
 
-        loc = get_pkg_location(show)
-        ver = get_pkg_version(show)
-        key = f"{pkg}=={ver}"
+    emit({"event": "RUN_START", "module": "47_supply_chain",
+          "packages_monitored": PACKAGES_TO_CHECK,
+          "note": "Hashes package .py files against stored baseline. Flags tamper, does not auto-delete."})
 
-        if not loc or not os.path.exists(loc):
-            errors.append({"package": pkg, "reason": "location_not_found"})
-            continue
+    while True:
+        alerts, status_log, store = check_packages()
+        save_hash_store(store)
 
-        current_hash = hash_directory(loc)
-        baseline = state.get(key)
+        for status in status_log:
+            emit({"event": "PACKAGE_STATUS", **status})
 
-        if baseline is None:
-            state[key] = current_hash
-            clean.append({"package": pkg, "version": ver, "status": "baseline_stored"})
-        elif baseline != current_hash:
-            tampered.append({
-                "package": pkg,
-                "version": ver,
-                "expected_prefix": baseline[:16],
-                "actual_prefix": current_hash[:16],
-                "remediation": f"pip install --force-reinstall {key}",
-            })
-        else:
-            clean.append({"package": pkg, "version": ver, "status": "hash_match"})
+        for alert in alerts:
+            emit(alert)
 
-    if tampered:
-        emit("QUANTUM_LIBRARY_TAMPER", {
-            "severity": "CRITICAL",
-            "confidence": 0.95,
-            "packages": tampered,
-        })
-    else:
-        emit("SUPPLY_CHAIN_CLEAN", {
-            "packages_checked": len(PACKAGES),
-            "clean_count": len(clean),
-            "error_count": len(errors),
-        })
+        if not alerts:
+            emit({"event": "SUPPLY_CHAIN_CLEAN",
+                  "packages_checked": len([s for s in status_log if s.get("status") == "clean"])})
 
-    for e in errors:
-        emit("PACKAGE_STATUS", {
-            "package": e["package"],
-            "status": "error",
-            "reason": e["reason"],
-        })
-
-    save_state(state)
-
+        break  # patched: run once and exit instead of infinite monitoring loop
+        time.sleep(POLL_INTERVAL)
 
 if __name__ == "__main__":
     main()

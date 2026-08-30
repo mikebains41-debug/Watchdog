@@ -1,0 +1,43 @@
+{
+  "ssh_version": "OpenSSH_10.2p1 Ubuntu-2ubuntu3.2, OpenSSL 3.5.5 27 Jan 2026",
+  "ssh_supports_pqc_hybrid_kex": true,
+  "supported_hybrid_algorithms": [
+    "sntrup761x25519-sha512",
+    "sntrup761x25519-sha512@openssh.com",
+    "mlkem768x25519-sha256"
+  ],
+  "all_supported_kex_algorithms": [
+    "diffie-hellman-group1-sha1",
+    "diffie-hellman-group14-sha1",
+    "diffie-hellman-group14-sha256",
+    "diffie-hellman-group16-sha512",
+    "diffie-hellman-group18-sha512",
+    "diffie-hellman-group-exchange-sha1",
+    "diffie-hellman-group-exchange-sha256",
+    "ecdh-sha2-nistp256",
+    "ecdh-sha2-nistp384",
+    "ecdh-sha2-nistp521",
+    "curve25519-sha256",
+    "curve25519-sha256@libssh.org",
+    "sntrup761x25519-sha512",
+    "sntrup761x25519-sha512@openssh.com",
+    "mlkem768x25519-sha256"
+  ],
+  "config_kex_directives": {
+    "/etc/ssh/sshd_config": "(file not present)",
+    "/etc/ssh/ssh_config": "(no explicit KexAlgorithms directive \u2014 uses compiled-in default order)"
+  },
+  "hosts_tested": [
+    {
+      "host": "github.com:22",
+      "negotiated_kex": "sntrup761x25519-sha512",
+      "is_hybrid_pqc": true,
+      "raw_tail": "ey: /root/.ssh/id_ed25519 \ndebug1: Will attempt key: /root/.ssh/id_ed25519_sk \ndebug2: pubkey_prepare: done\ndebug1: Trying private key: /root/.ssh/id_rsa\ndebug1: Trying private key: /root/.ssh/id_ecdsa\ndebug1: Trying private key: /root/.ssh/id_ecdsa_sk\ndebug1: Trying private key: /root/.ssh/id_ed25519\ndebug1: Trying private key: /root/.ssh/id_ed25519_sk\ndebug2: we did not send a packet, disable method\ndebug1: No more authentication methods to try.\nroot@github.com: Permission denied (publickey).\n"
+    }
+  ],
+  "hybrid_negotiated_count": 1,
+  "classical_fallback_count": 0,
+  "error_count": 0,
+  "finding": null,
+  "timestamp": "2026-08-09T01:01:39.331832+00:00"
+}

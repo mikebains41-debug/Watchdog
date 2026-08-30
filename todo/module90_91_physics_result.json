@@ -1,0 +1,27 @@
+{
+  "test_script": "test_physics_90_91.py",
+  "exit_code": 0,
+  "raw_stdout": "============================================================\nMODULE 90 \u2014 Two-Level-System (TLS) Defect Density Model\n============================================================\n\n--- TLS loss tangent at typical dilution-fridge base temp (20mK) ---\nLoss tangent material term: 9.532865e-07\nCitation: M\u00fcller, Cole & Lisenfeld, Rep. Prog. Phys. 82, 124501 (2019)\n\n--- T1 estimate for a real 5 GHz transmon, participation ratio 1e-6 ---\n(participation ratio is a real device-geometry parameter \u2014 using a\n typical published value for a well-designed transmon)\nPredicted T1: 33391200.391 us\nEffective loss tangent: 9.532748e-13\nThermal saturation factor: 1.0\nCalibration status: LITERATURE-CALIBRATED, unit-conversion bugs fixed in v2\n\n--- Sanity check against a real published T1 value ---\n(IBM/IQM devices commonly report T1 in the 50-150us range)\nPredicted: 33391200.391 us\nMeasured (example): 100.0 us\nRatio: 0.0\nInterpretation: Measured T1 far below TLS-only prediction \u2014 additional non-TLS loss mechanism likely present\n\n============================================================\nMODULE 91 \u2014 1/f Flux Noise Model\n============================================================\n\n--- Flux noise PSD at 1 Hz and 1 kHz ---\nPSD at 1 Hz: 9.000000e-12 Phi0^2/Hz\nPSD at 1 kHz: 9.000000e-15 Phi0^2/Hz\nCitation: Yan et al., Nature Communications 4, 2337 (2013)\n\n--- T2* estimate for a flux-tunable qubit AWAY from sweet spot ---\n(df/dPhi = 500 MHz/Phi0 is a typical published tunable-transmon value)\nPredicted T2*: 24.12 us\nCitation: Koch, DiVincenzo & Clarke, Phys. Rev. Lett. 98, 267003 (2007)\n\n--- T2* AT the flux-insensitive sweet spot ---\nPredicted T2*: inf\nNote: Qubit operating at flux-insensitive sweet spot (df/dPhi = 0). First-order 1/f flux noise dephasing vanishes here\n\n--- Anomaly classification: real-looking T2 drift series ---\nSeries: [45.2, 44.8, 45.5, 44.1, 45.9, 44.6, 45.3]\nConsistent with 1/f drift: True\nNote: Drift pattern consistent with expected 1/f flux noise character\n\nSeries with injected step: [45.2, 44.8, 45.5, 12.1, 45.9, 44.6, 45.3]\nConsistent with 1/f drift: False\nNote: A step change far larger than the typical (median) sample-to-sample drift is inconsistent with smooth 1/f flux noise, and warrants investigation as a discrete event rather than ordinary noise\n\n============================================================\nBoth physics models verified functional with real calculated output\n============================================================\n",
+  "raw_stderr": null,
+  "parsed_values": {
+    "module90": {
+      "loss_tangent_material_term": 9.532865e-07,
+      "predicted_t1_us": 33391200.391,
+      "effective_loss_tangent": 9.532748e-13,
+      "thermal_saturation_factor": 1.0,
+      "calibration_status": "LITERATURE-CALIBRATED, unit-conversion bugs fixed in v2",
+      "measured_t1_example_us": 100.0,
+      "ratio_predicted_to_measured": 0.0
+    },
+    "module91": {
+      "psd_at_1hz_phi0_sq_per_hz": 9e-12,
+      "psd_at_1khz_phi0_sq_per_hz": 9e-15,
+      "t2star_away_from_sweet_spot_us": 24.12,
+      "t2star_at_sweet_spot": "inf",
+      "anomaly_detection_normal_series_flagged_consistent": "True",
+      "anomaly_detection_injected_step_flagged_consistent": "False"
+    }
+  },
+  "note": "raw_stdout is the exact, unmodified terminal output of test_physics_90_91.py \u2014 this is the authoritative record. parsed_values is a best-effort regex extraction for convenience; if a value shows null there, check raw_stdout directly rather than trusting the parse.",
+  "timestamp": "2026-08-09T01:34:35.241483+00:00"
+}

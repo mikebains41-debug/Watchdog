@@ -1,0 +1,35 @@
+{
+  "openssl_supports_hybrid_pqc": true,
+  "openssl_kem_algorithms_raw": "{ 1.2.840.113549.1.1.1, 2.5.8.1.1, RSA, rsaEncryption } @ default\n  { 1.2.840.10045.2.1, EC, id-ecPublicKey } @ default\n  { 1.3.101.110, X25519 } @ default\n  { 1.3.101.111, X448 } @ default\n  { 2.16.840.1.101.3.4.4.1, id-alg-ml-kem-512, ML-KEM-512, MLKEM512 } @ default\n  { 2.16.840.1.101.3.4.4.2, id-alg-ml-kem-768, ML-KEM-768, MLKEM768 } @ default\n  { 2.16.840.1.101.3.4.4.3, id-alg-ml-kem-1024, ML-KEM-1024, MLKEM1024 } @ default\n  X25519MLKEM768 @ default\n  X448MLKEM1024 @ default\n  SecP256r1MLKEM768 @ default\n  SecP384r1MLKEM1024 @ default",
+  "endpoints_tested": [
+    "www.google.com:443",
+    "www.cloudflare.com:443",
+    "github.com:443"
+  ],
+  "results": [
+    {
+      "endpoint": "www.google.com:443",
+      "negotiated_group": "X25519MLKEM768",
+      "is_hybrid_pqc": true,
+      "raw_tail": "Connecting to 2001:4860:4829:7700::\nCONNECTION ESTABLISHED\nProtocol version: TLSv1.3\nCiphersuite: TLS_AES_256_GCM_SHA384\nPeer certificate: CN=www.google.com\nHash used: SHA256\nSignature type: ecdsa_secp256r1_sha256\nVerification: OK\nNegotiated TLS1.3 group: X25519MLKEM768\nDONE\n"
+    },
+    {
+      "endpoint": "www.cloudflare.com:443",
+      "negotiated_group": "X25519MLKEM768",
+      "is_hybrid_pqc": true,
+      "raw_tail": "Connecting to 2606:4700::6810:7b60\nCONNECTION ESTABLISHED\nProtocol version: TLSv1.3\nCiphersuite: TLS_AES_256_GCM_SHA384\nPeer certificate: CN=www.cloudflare.com\nHash used: SHA256\nSignature type: ecdsa_secp256r1_sha256\nVerification: OK\nNegotiated TLS1.3 group: X25519MLKEM768\nDONE\n"
+    },
+    {
+      "endpoint": "github.com:443",
+      "error": "connected but could not parse negotiated group from openssl output \u2014 see raw_tail",
+      "negotiated_group": null,
+      "is_hybrid_pqc": false,
+      "raw_tail": "Connecting to 140.82.113.3\nCONNECTION ESTABLISHED\nProtocol version: TLSv1.3\nCiphersuite: TLS_AES_128_GCM_SHA256\nPeer certificate: CN=github.com\nHash used: SHA256\nSignature type: ecdsa_secp256r1_sha256\nVerification: OK\nPeer Temp Key: X25519, 253 bits\nDONE\n"
+    }
+  ],
+  "hybrid_negotiated_count": 2,
+  "classical_fallback_count": 0,
+  "error_count": 1,
+  "finding": null,
+  "timestamp": "2026-08-09T01:03:35.397156+00:00"
+}

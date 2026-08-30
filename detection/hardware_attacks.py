@@ -507,3 +507,318 @@ class NVLinkContentionDetector:
                         f"which produces an identical signature and cannot "
                         f"be ruled out from this telemetry alone"),
         }
+
+
+class ECCUnavailable(RuntimeError):
+    """Raised when strict=True and the row carries no ECC fields.
+
+    Local rather than shared, matching VRAMResidualDetector: a detector
+    that silently reports clean on absent input is worse than one that
+    refuses to run.
+    """
+    pass
+
+
+class ECCAnomalyDetector:
+    """Detects abnormal ECC error rates -- the observable signature of
+    Rowhammer-style bit-flip induction on GPU memory.
+
+    Published research (GPUHammer, 2025) shows repeated row activation
+    can induce bit flips in GDDR-based GPU memory, degrading AI model
+    accuracy. The attack is invisible to standard tooling; what IS
+    visible is the ECC subsystem correcting an abnormal volume.
+
+    HONEST LIMITS, stated in the alert rather than hidden:
+      - Correctable ECC errors also arise from cosmic rays, aging
+        silicon, thermal stress, and marginal memory. Elevated rate is
+        NOT proof of attack.
+      - HBM parts (A100/H100/H200/B200) have stronger ECC than the GDDR
+        parts GPUHammer targeted. A negative here does not clear the
+        hardware.
+      - Detects the CONSEQUENCE, not the attack. Cannot attribute.
+
+    COUNTER SEMANTICS: nvidia-smi reports ECC as CUMULATIVE totals --
+    the same trap that produced a 61.5-billion 'KB/s' reading in
+    NVLinkContentionDetector before it was fixed. Computes a real
+    per-second rate from consecutive iso_timestamps and skips
+    evaluation entirely when the raw counter has not moved.
+    """
+
+    CORRECTED_FIELD = 'ecc.errors.corrected.volatile.total'
+    UNCORRECTED_FIELD = 'ecc.errors.uncorrected.volatile.total'
+
+    def __init__(self, corrected_rate_threshold=1.0,
+                 baseline_window=30, baseline_min_samples=10,
+                 require_consecutive=3, refire_after_s=300, strict=True):
+        self.corrected_rate_threshold = corrected_rate_threshold
+        self.baseline_window = baseline_window
+        self.baseline_min_samples = baseline_min_samples
+        self.strict = strict
+        self.idle_samples = collections.deque(maxlen=baseline_window)
+        self.baseline_rate = None
+        self._last_iso_ts = None
+        self._last_corrected = None
+        self._last_raw_corrected = None
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
+    def update(self, row):
+        # NOTE: _shared._f has default=0.0, so a missing key returns 0.0
+        # rather than None. Presence must be checked on the row itself.
+        has_corrected = self.CORRECTED_FIELD in row
+        has_uncorrected = self.UNCORRECTED_FIELD in row
+        corrected = _f(row, self.CORRECTED_FIELD) if has_corrected else None
+        uncorrected = _f(row, self.UNCORRECTED_FIELD) if has_uncorrected else None
+
+        if not has_corrected and not has_uncorrected:
+            if self.strict:
+                raise ECCUnavailable(
+                    "row has no ECC fields; refusing to report clean "
+                    "on absent data")
+            return None
+
+        if uncorrected is not None and uncorrected > 0:
+            return {
+                'type': 'ECC_UNCORRECTABLE',
+                'severity': 'CRITICAL',
+                'gpu': row.get('index'),
+                'uncorrected_total': uncorrected,
+                'timestamp': row.get('iso_timestamp'),
+                'message': (f"{uncorrected:.0f} uncorrectable ECC error(s) -- "
+                            f"data integrity not guaranteed on this device. "
+                            f"Cause unconfirmed: consistent with failing "
+                            f"memory, severe thermal stress, or deliberate "
+                            f"bit-flip induction (see GPUHammer). Detects the "
+                            f"consequence, not the cause."),
+            }
+
+        if corrected is None:
+            return None
+
+        iso_ts = row.get('iso_timestamp')
+        if not iso_ts:
+            return None
+        try:
+            now_dt = datetime.fromisoformat(iso_ts)
+        except (TypeError, ValueError):
+            return None
+
+        if self._last_iso_ts is None:
+            self._last_iso_ts = now_dt
+            self._last_corrected = corrected
+            self._last_raw_corrected = corrected
+            return None
+
+        if corrected == self._last_raw_corrected:
+            return None
+        self._last_raw_corrected = corrected
+
+        elapsed = (now_dt - self._last_iso_ts).total_seconds()
+        if elapsed <= 0:
+            return None
+
+        rate = max(0.0, corrected - self._last_corrected) / elapsed
+        self._last_iso_ts = now_dt
+        self._last_corrected = corrected
+
+        if self.baseline_rate is None:
+            self.idle_samples.append(rate)
+            if len(self.idle_samples) < self.baseline_min_samples:
+                return None
+            vals = sorted(self.idle_samples)
+            self.baseline_rate = vals[len(vals) // 2]
+            return None
+
+        delta = rate - self.baseline_rate
+        if not self.state.should_emit(delta > self.corrected_rate_threshold):
+            return None
+
+        return {
+            'type': 'ECC_CORRECTED_RATE_ANOMALY',
+            'severity': 'WARNING',
+            'gpu': row.get('index'),
+            'corrected_rate_per_s': round(rate, 3),
+            'baseline_rate_per_s': round(self.baseline_rate, 3),
+            'delta_per_s': round(delta, 3),
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"Correctable ECC error rate {delta:.2f}/s above this "
+                        f"GPU's own learned baseline -- cause unconfirmed. "
+                        f"Consistent with Rowhammer-style bit-flip induction "
+                        f"(see GPUHammer) OR with cosmic-ray upset, aging "
+                        f"silicon, thermal stress, or a marginal memory part, "
+                        f"which produce an identical signature and cannot be "
+                        f"ruled out from this telemetry alone."),
+        }
+
+
+class ThermalSideChannelDetector:
+    """Detects thermal-utilization decoupling: the die running hotter
+    than this GPU's own compute load accounts for.
+
+    Published research (Hot Pixels, USENIX Security 2023) shows
+    frequency, power and temperature are exploitable side channels on
+    GPUs. The defensive read is narrower and is all this claims: when
+    temperature is elevated while THIS GPU reports little compute, heat
+    is arriving from somewhere the local workload does not explain.
+
+    HONEST LIMITS:
+      - A neighbouring GPU, a cooling change, or an ambient shift
+        produces an identical signature.
+      - On shared hardware, co-tenant activity is the ordinary
+        explanation, not the alarming one.
+      - Recovers NO co-tenant data. Observes decoupling only.
+
+    Deliberately INFO severity. An INFO observation that a shared
+    thermal domain is active is honest; calling it an attack is not.
+    """
+
+    def __init__(self, util_ceiling=15.0, temp_delta_threshold=8.0,
+                 baseline_window=60, baseline_min_samples=20,
+                 require_consecutive=5, refire_after_s=600):
+        self.util_ceiling = util_ceiling
+        self.temp_delta_threshold = temp_delta_threshold
+        self.baseline_window = baseline_window
+        self.baseline_min_samples = baseline_min_samples
+        self.idle_temps = collections.deque(maxlen=baseline_window)
+        self.baseline_temp = None
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
+    def update(self, row):
+        temp = _f(row, 'temperature.gpu')
+        util = _f(row, 'utilization.gpu')
+        if temp is None or util is None:
+            return None
+
+        if util > self.util_ceiling:
+            return None
+
+        if self.baseline_temp is None:
+            self.idle_temps.append(temp)
+            if len(self.idle_temps) < self.baseline_min_samples:
+                return None
+            vals = sorted(self.idle_temps)
+            self.baseline_temp = vals[len(vals) // 2]
+            return None
+
+        delta = temp - self.baseline_temp
+        if not self.state.should_emit(delta > self.temp_delta_threshold):
+            return None
+
+        return {
+            'type': 'THERMAL_UTILIZATION_DECOUPLING',
+            'severity': 'INFO',
+            'gpu': row.get('index'),
+            'temperature_c': round(temp, 1),
+            'baseline_temp_c': round(self.baseline_temp, 1),
+            'delta_c': round(delta, 1),
+            'utilization': util,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"Die temperature {delta:.1f}C above this GPU's own "
+                        f"learned idle baseline at {util:.0f}% local compute "
+                        f"-- heat not accounted for by local workload. Cause "
+                        f"unconfirmed: consistent with co-tenant activity in a "
+                        f"shared thermal domain, a neighbouring device, or an "
+                        f"ambient/cooling change. Context only -- no data is "
+                        f"recovered or inferred from this signal."),
+        }
+
+
+class PCIeTelemetryUnavailable(RuntimeError):
+    """Raised when strict=True and no PCIe throughput fields exist."""
+    pass
+
+
+class PCIeAnomalyDetector:
+    """Detects sustained PCIe traffic while this GPU reports little
+    compute -- bulk data movement without local computation.
+
+    Published research (Invisible Probe, IEEE S&P 2021; LockedDown,
+    EuroS&P 2022) establishes host-GPU PCIe contention as a practical
+    side channel, and PCIe traffic is readable in the clear without bus
+    encryption.
+
+    HONEST LIMITS:
+      - Model loading, checkpoint writes, dataset streaming and
+        host-pinned transfers all produce this exact signature during
+        entirely legitimate use.
+      - Cannot distinguish exfiltration from an ordinary large read.
+      - PCIe fields are not present in every telemetry configuration;
+        strict=True raises rather than reporting clean.
+    """
+
+    RX_FIELDS = ('pcie_rx_mbs', 'pcie.rx.throughput', 'pcie_rx_mb_s')
+    TX_FIELDS = ('pcie_tx_mbs', 'pcie.tx.throughput', 'pcie_tx_mb_s')
+
+    def __init__(self, util_ceiling=10.0, throughput_threshold_mbs=100.0,
+                 baseline_window=30, baseline_min_samples=10,
+                 require_consecutive=4, refire_after_s=300, strict=True):
+        self.util_ceiling = util_ceiling
+        self.throughput_threshold_mbs = throughput_threshold_mbs
+        self.baseline_window = baseline_window
+        self.baseline_min_samples = baseline_min_samples
+        self.strict = strict
+        self.idle_samples = collections.deque(maxlen=baseline_window)
+        self.baseline_mbs = None
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
+    def _first_present(self, row, names):
+        # _shared._f has default=0.0, so check key presence on the row.
+        for n in names:
+            if n in row:
+                v = _f(row, n)
+                if v is not None:
+                    return v
+        return None
+
+    def update(self, row):
+        rx = self._first_present(row, self.RX_FIELDS)
+        tx = self._first_present(row, self.TX_FIELDS)
+        if rx is None and tx is None:
+            if self.strict:
+                raise PCIeTelemetryUnavailable(
+                    "row carries no PCIe throughput fields; refusing to "
+                    "report clean on absent data")
+            return None
+
+        total_mbs = (rx or 0.0) + (tx or 0.0)
+        util = _f(row, 'utilization.gpu')
+        if util is None:
+            return None
+
+        if util > self.util_ceiling:
+            return None
+
+        if self.baseline_mbs is None:
+            self.idle_samples.append(total_mbs)
+            if len(self.idle_samples) < self.baseline_min_samples:
+                return None
+            vals = sorted(self.idle_samples)
+            self.baseline_mbs = vals[len(vals) // 2]
+            return None
+
+        delta = total_mbs - self.baseline_mbs
+        if not self.state.should_emit(delta > self.throughput_threshold_mbs):
+            return None
+
+        return {
+            'type': 'PCIE_TRANSFER_AT_LOW_COMPUTE',
+            'severity': 'WARNING',
+            'gpu': row.get('index'),
+            'pcie_total_mbs': round(total_mbs, 1),
+            'pcie_rx_mbs': round(rx, 1) if rx is not None else None,
+            'pcie_tx_mbs': round(tx, 1) if tx is not None else None,
+            'baseline_mbs': round(self.baseline_mbs, 1),
+            'delta_mbs': round(delta, 1),
+            'utilization': util,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"PCIe throughput {delta:.0f}MB/s above this GPU's own "
+                        f"learned baseline at {util:.0f}% compute -- bulk "
+                        f"transfer without local computation. Cause "
+                        f"unconfirmed: consistent with a PCIe-bus side channel "
+                        f"(see Invisible Probe/LockedDown) OR with ordinary "
+                        f"model loading, checkpointing, or dataset streaming, "
+                        f"which produce an identical signature and cannot be "
+                        f"ruled out from this telemetry alone."),
+        }

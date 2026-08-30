@@ -1,0 +1,37 @@
+{
+  "gpu": "NVIDIA B200",
+  "rules": {
+    "ghost_power_boot": {
+      "threshold_w": 140.0,
+      "util_pct": 0,
+      "trigger": "cold_boot",
+      "severity": "CRITICAL",
+      "description": "B200 draws 143-145W from cold boot at 0% util"
+    },
+    "fp16_telemetry_blackout": {
+      "power_above_w": 180.0,
+      "reported_util_pct": 0,
+      "sm_clock_mhz": 1965,
+      "severity": "CRITICAL",
+      "description": "FP16 workload invisible to NVML \u2014 0% util during active compute"
+    },
+    "spontaneous_burst": {
+      "power_above_w": 180.0,
+      "util_pct": 0,
+      "no_workload": true,
+      "severity": "CRITICAL",
+      "description": "Autonomous GPU activity \u2014 195W burst with no workload"
+    },
+    "periodic_spike": {
+      "power_above_baseline_w": 2.0,
+      "interval_seconds": 30,
+      "severity": "MEDIUM",
+      "description": "30 second periodic spikes at 0% util"
+    },
+    "inter_gpu_differential": {
+      "gpu1_above_gpu0_w": 1.65,
+      "severity": "LOW",
+      "description": "GPU1 consistently draws 1-2W more than GPU0"
+    }
+  }
+}

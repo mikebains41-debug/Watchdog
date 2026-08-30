@@ -1,0 +1,9 @@
+{
+  "target_domain": "gpu-optimizer.com:443",
+  "result": {
+    "endpoint": "gpu-optimizer.com:443",
+    "error": "connection timeout",
+    "negotiated_group": null
+  },
+  "timestamp": "2026-08-09T04:59:58.193272+00:00"
+}

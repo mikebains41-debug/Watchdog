@@ -1,0 +1,8 @@
+{
+  "scripts_checked": 76,
+  "changed": [],
+  "new_files": [],
+  "missing": [],
+  "finding_summary": "No prior baseline existed. Established a new baseline hashing 76 core scripts. Re-run this module later to detect any unauthorized changes since this point.",
+  "timestamp": "2026-08-09T07:17:19.141209+00:00"
+}

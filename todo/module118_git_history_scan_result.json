@@ -1,0 +1,7 @@
+{
+  "repo_scanned": "/data/data/com.termux/files/home/Watchdog",
+  "error": null,
+  "findings": [],
+  "finding_summary": "Scanned full commit history (git log -p --all) of /data/data/com.termux/files/home/Watchdog, not just current files. Found 0 potential secret pattern(s) in historical diffs. Secrets removed from current files but present in past commits remain permanently recoverable by anyone with repo access \u2014 this is the gap module102's current-files-only scan cannot see.",
+  "timestamp": "2026-08-09T07:17:18.849967+00:00"
+}

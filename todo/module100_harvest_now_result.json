@@ -1,0 +1,1711 @@
+{
+  "cert_dir": "/etc/ssl/certs",
+  "crqc_threshold_year": 2036,
+  "crqc_threshold_is_illustrative_not_authoritative": true,
+  "total_certs_found": 144,
+  "certs_parsed": 144,
+  "certs_unparseable": 0,
+  "currently_valid_certs": 144,
+  "already_expired_certs": 0,
+  "certs_valid_past_threshold": 98,
+  "certs_valid_past_threshold_detail": [
+    {
+      "cert_file": "AC_RAIZ_FNMT-RCM_SERVIDORES_SEGUROS.pem",
+      "subject": "subject=C=ES, O=FNMT-RCM, OU=Ceres, organizationIdentifier=VATES-Q2826004J, CN=AC RAIZ FNMT-RCM SERVIDORES SEGUROS",
+      "expiry_date": "2043-12-20",
+      "days_until_expiry": 6342,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "ANF_Secure_Server_Root_CA.pem",
+      "subject": "subject=serialNumber=G63287510, C=ES, O=ANF Autoridad de Certificacion, OU=ANF CA Raiz, CN=ANF Secure Server Root CA",
+      "expiry_date": "2039-08-30",
+      "days_until_expiry": 4769,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "AffirmTrust_Premium.pem",
+      "subject": "subject=C=US, O=AffirmTrust, CN=AffirmTrust Premium",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "AffirmTrust_Premium_ECC.pem",
+      "subject": "subject=C=US, O=AffirmTrust, CN=AffirmTrust Premium ECC",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_1.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 1",
+      "expiry_date": "2038-01-17",
+      "days_until_expiry": 4179,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_2.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 2",
+      "expiry_date": "2040-05-26",
+      "days_until_expiry": 5039,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_3.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 3",
+      "expiry_date": "2040-05-26",
+      "days_until_expiry": 5039,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_4.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 4",
+      "expiry_date": "2040-05-26",
+      "days_until_expiry": 5039,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Atos_TrustedRoot_Root_CA_ECC_TLS_2021.pem",
+      "subject": "subject=CN=Atos TrustedRoot Root CA ECC TLS 2021, O=Atos, C=DE",
+      "expiry_date": "2041-04-17",
+      "days_until_expiry": 5365,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Atos_TrustedRoot_Root_CA_RSA_TLS_2021.pem",
+      "subject": "subject=CN=Atos TrustedRoot Root CA RSA TLS 2021, O=Atos, C=DE",
+      "expiry_date": "2041-04-17",
+      "days_until_expiry": 5365,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "BJCA_Global_Root_CA1.pem",
+      "subject": "subject=C=CN, O=BEIJING CERTIFICATE AUTHORITY, CN=BJCA Global Root CA1",
+      "expiry_date": "2044-12-12",
+      "days_until_expiry": 6700,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "BJCA_Global_Root_CA2.pem",
+      "subject": "subject=C=CN, O=BEIJING CERTIFICATE AUTHORITY, CN=BJCA Global Root CA2",
+      "expiry_date": "2044-12-12",
+      "days_until_expiry": 6700,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Buypass_Class_2_Root_CA.pem",
+      "subject": "subject=C=NO, O=Buypass AS-983163327, CN=Buypass Class 2 Root CA",
+      "expiry_date": "2040-10-26",
+      "days_until_expiry": 5192,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Buypass_Class_3_Root_CA.pem",
+      "subject": "subject=C=NO, O=Buypass AS-983163327, CN=Buypass Class 3 Root CA",
+      "expiry_date": "2040-10-26",
+      "days_until_expiry": 5192,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "CA_Disig_Root_R2.pem",
+      "subject": "subject=C=SK, L=Bratislava, O=Disig a.s., CN=CA Disig Root R2",
+      "expiry_date": "2042-07-19",
+      "days_until_expiry": 5823,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "COMODO_ECC_Certification_Authority.pem",
+      "subject": "subject=C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO ECC Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "COMODO_RSA_Certification_Authority.pem",
+      "subject": "subject=C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO RSA Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certainly_Root_E1.pem",
+      "subject": "subject=C=US, O=Certainly, CN=Certainly Root E1",
+      "expiry_date": "2046-04-01",
+      "days_until_expiry": 7175,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certainly_Root_R1.pem",
+      "subject": "subject=C=US, O=Certainly, CN=Certainly Root R1",
+      "expiry_date": "2046-04-01",
+      "days_until_expiry": 7175,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certum_EC-384_CA.pem",
+      "subject": "subject=C=PL, O=Asseco Data Systems S.A., OU=Certum Certification Authority, CN=Certum EC-384 CA",
+      "expiry_date": "2043-03-26",
+      "days_until_expiry": 6073,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certum_Trusted_Network_CA_2.pem",
+      "subject": "subject=C=PL, O=Unizeto Technologies S.A., OU=Certum Certification Authority, CN=Certum Trusted Network CA 2",
+      "expiry_date": "2046-10-06",
+      "days_until_expiry": 7363,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certum_Trusted_Root_CA.pem",
+      "subject": "subject=C=PL, O=Asseco Data Systems S.A., OU=Certum Certification Authority, CN=Certum Trusted Root CA",
+      "expiry_date": "2043-03-16",
+      "days_until_expiry": 6063,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "D-TRUST_BR_Root_CA_2_2023.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST BR Root CA 2 2023",
+      "expiry_date": "2038-05-09",
+      "days_until_expiry": 4291,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "D-TRUST_EV_Root_CA_2_2023.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST EV Root CA 2 2023",
+      "expiry_date": "2038-05-09",
+      "days_until_expiry": 4291,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Assured_ID_Root_G2.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G2",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Assured_ID_Root_G3.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G3",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Global_Root_G2.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Global_Root_G3.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G3",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_TLS_ECC_P384_Root_G5.pem",
+      "subject": "subject=C=US, O=DigiCert, Inc., CN=DigiCert TLS ECC P384 Root G5",
+      "expiry_date": "2046-01-14",
+      "days_until_expiry": 7099,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_TLS_RSA4096_Root_G5.pem",
+      "subject": "subject=C=US, O=DigiCert, Inc., CN=DigiCert TLS RSA4096 Root G5",
+      "expiry_date": "2046-01-14",
+      "days_until_expiry": 7099,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Trusted_Root_G4.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Trusted Root G4",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Entrust_Root_Certification_Authority_-_EC1.pem",
+      "subject": "subject=C=US, O=Entrust, Inc., OU=See www.entrust.net/legal-terms, OU=(c) 2012 Entrust, Inc. - for authorized use only, CN=Entrust Root Certification Authority - EC1",
+      "expiry_date": "2037-12-18",
+      "days_until_expiry": 4149,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "FIRMAPROFESIONAL_CA_ROOT-A_WEB.pem",
+      "subject": "subject=C=ES, O=Firmaprofesional SA, organizationIdentifier=VATES-A62634068, CN=FIRMAPROFESIONAL CA ROOT-A WEB",
+      "expiry_date": "2047-03-31",
+      "days_until_expiry": 7539,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GDCA_TrustAUTH_R5_ROOT.pem",
+      "subject": "subject=C=CN, O=GUANG DONG CERTIFICATE AUTHORITY CO.,LTD., CN=GDCA TrustAUTH R5 ROOT",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GLOBALTRUST_2020.pem",
+      "subject": "subject=C=AT, O=e-commerce monitoring GmbH, CN=GLOBALTRUST 2020",
+      "expiry_date": "2040-06-10",
+      "days_until_expiry": 5054,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GlobalSign_ECC_Root_CA_-_R4.pem",
+      "subject": "subject=OU=GlobalSign ECC Root CA - R4, O=GlobalSign, CN=GlobalSign",
+      "expiry_date": "2038-01-19",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GlobalSign_ECC_Root_CA_-_R5.pem",
+      "subject": "subject=OU=GlobalSign ECC Root CA - R5, O=GlobalSign, CN=GlobalSign",
+      "expiry_date": "2038-01-19",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GlobalSign_Root_E46.pem",
+      "subject": "subject=C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root E46",
+      "expiry_date": "2046-03-20",
+      "days_until_expiry": 7163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GlobalSign_Root_R46.pem",
+      "subject": "subject=C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root R46",
+      "expiry_date": "2046-03-20",
+      "days_until_expiry": 7163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Go_Daddy_Root_Certificate_Authority_-_G2.pem",
+      "subject": "subject=C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., CN=Go Daddy Root Certificate Authority - G2",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "HARICA_TLS_ECC_Root_CA_2021.pem",
+      "subject": "subject=C=GR, O=Hellenic Academic and Research Institutions CA, CN=HARICA TLS ECC Root CA 2021",
+      "expiry_date": "2045-02-13",
+      "days_until_expiry": 6763,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "HARICA_TLS_RSA_Root_CA_2021.pem",
+      "subject": "subject=C=GR, O=Hellenic Academic and Research Institutions CA, CN=HARICA TLS RSA Root CA 2021",
+      "expiry_date": "2045-02-13",
+      "days_until_expiry": 6763,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Hellenic_Academic_and_Research_Institutions_ECC_RootCA_2015.pem",
+      "subject": "subject=C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions ECC RootCA 2015",
+      "expiry_date": "2040-06-30",
+      "days_until_expiry": 5074,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Hellenic_Academic_and_Research_Institutions_RootCA_2015.pem",
+      "subject": "subject=C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions RootCA 2015",
+      "expiry_date": "2040-06-30",
+      "days_until_expiry": 5074,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "HiPKI_Root_CA_-_G1.pem",
+      "subject": "subject=C=TW, O=Chunghwa Telecom Co., Ltd., CN=HiPKI Root CA - G1",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4162,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Hongkong_Post_Root_CA_3.pem",
+      "subject": "subject=C=HK, ST=Hong Kong, L=Hong Kong, O=Hongkong Post, CN=Hongkong Post Root CA 3",
+      "expiry_date": "2042-06-03",
+      "days_until_expiry": 5777,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "ISRG_Root_X2.pem",
+      "subject": "subject=C=US, O=Internet Security Research Group, CN=ISRG Root X2",
+      "expiry_date": "2040-09-17",
+      "days_until_expiry": 5153,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Izenpe.com.pem",
+      "subject": "subject=C=ES, O=IZENPE S.A., CN=Izenpe.com",
+      "expiry_date": "2037-12-13",
+      "days_until_expiry": 4144,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Microsoft_ECC_Root_Certificate_Authority_2017.pem",
+      "subject": "subject=C=US, O=Microsoft Corporation, CN=Microsoft ECC Root Certificate Authority 2017",
+      "expiry_date": "2042-07-18",
+      "days_until_expiry": 5823,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Microsoft_RSA_Root_Certificate_Authority_2017.pem",
+      "subject": "subject=C=US, O=Microsoft Corporation, CN=Microsoft RSA Root Certificate Authority 2017",
+      "expiry_date": "2042-07-18",
+      "days_until_expiry": 5823,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "NAVER_Global_Root_Certification_Authority.pem",
+      "subject": "subject=C=KR, O=NAVER BUSINESS PLATFORM Corp., CN=NAVER Global Root Certification Authority",
+      "expiry_date": "2037-08-18",
+      "days_until_expiry": 4028,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "OISTE_Server_Root_ECC_G1.pem",
+      "subject": "subject=C=CH, O=OISTE Foundation, CN=OISTE Server Root ECC G1",
+      "expiry_date": "2048-05-24",
+      "days_until_expiry": 7959,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "OISTE_WISeKey_Global_Root_GB_CA.pem",
+      "subject": "subject=C=CH, O=WISeKey, OU=OISTE Foundation Endorsed, CN=OISTE WISeKey Global Root GB CA",
+      "expiry_date": "2039-12-01",
+      "days_until_expiry": 4862,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "OISTE_WISeKey_Global_Root_GC_CA.pem",
+      "subject": "subject=C=CH, O=WISeKey, OU=OISTE Foundation Endorsed, CN=OISTE WISeKey Global Root GC CA",
+      "expiry_date": "2042-05-09",
+      "days_until_expiry": 5752,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_1_G3.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 1 G3",
+      "expiry_date": "2042-01-12",
+      "days_until_expiry": 5635,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_2_G3.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2 G3",
+      "expiry_date": "2042-01-12",
+      "days_until_expiry": 5635,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_3_G3.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 3 G3",
+      "expiry_date": "2042-01-12",
+      "days_until_expiry": 5636,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_EV_Root_Certification_Authority_ECC.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com EV Root Certification Authority ECC",
+      "expiry_date": "2041-02-12",
+      "days_until_expiry": 5301,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_EV_Root_Certification_Authority_RSA_R2.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com EV Root Certification Authority RSA R2",
+      "expiry_date": "2042-05-30",
+      "days_until_expiry": 5773,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_Root_Certification_Authority_ECC.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority ECC",
+      "expiry_date": "2041-02-12",
+      "days_until_expiry": 5301,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_Root_Certification_Authority_RSA.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority RSA",
+      "expiry_date": "2041-02-12",
+      "days_until_expiry": 5301,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_TLS_ECC_Root_CA_2022.pem",
+      "subject": "subject=C=US, O=SSL Corporation, CN=SSL.com TLS ECC Root CA 2022",
+      "expiry_date": "2046-08-19",
+      "days_until_expiry": 7315,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_TLS_RSA_Root_CA_2022.pem",
+      "subject": "subject=C=US, O=SSL Corporation, CN=SSL.com TLS RSA Root CA 2022",
+      "expiry_date": "2046-08-19",
+      "days_until_expiry": 7315,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Sectigo_Public_Server_Authentication_Root_E46.pem",
+      "subject": "subject=C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root E46",
+      "expiry_date": "2046-03-21",
+      "days_until_expiry": 7165,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Sectigo_Public_Server_Authentication_Root_R46.pem",
+      "subject": "subject=C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root R46",
+      "expiry_date": "2046-03-21",
+      "days_until_expiry": 7165,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SecureSign_Root_CA12.pem",
+      "subject": "subject=C=JP, O=Cybertrust Japan Co., Ltd., CN=SecureSign Root CA12",
+      "expiry_date": "2040-04-08",
+      "days_until_expiry": 4991,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SecureSign_Root_CA14.pem",
+      "subject": "subject=C=JP, O=Cybertrust Japan Co., Ltd., CN=SecureSign Root CA14",
+      "expiry_date": "2045-04-08",
+      "days_until_expiry": 6817,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SecureSign_Root_CA15.pem",
+      "subject": "subject=C=JP, O=Cybertrust Japan Co., Ltd., CN=SecureSign Root CA15",
+      "expiry_date": "2045-04-08",
+      "days_until_expiry": 6817,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Security_Communication_ECC_RootCA1.pem",
+      "subject": "subject=C=JP, O=SECOM Trust Systems CO.,LTD., CN=Security Communication ECC RootCA1",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4180,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Starfield_Root_Certificate_Authority_-_G2.pem",
+      "subject": "subject=C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Root Certificate Authority - G2",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Starfield_Services_Root_Certificate_Authority_-_G2.pem",
+      "subject": "subject=C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Services Root Certificate Authority - G2",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SwissSign_RSA_TLS_Root_CA_2022_-_1.pem",
+      "subject": "subject=C=CH, O=SwissSign AG, CN=SwissSign RSA TLS Root CA 2022 - 1",
+      "expiry_date": "2047-06-08",
+      "days_until_expiry": 7608,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TUBITAK_Kamu_SM_SSL_Kok_Sertifikasi_-_Surum_1.pem",
+      "subject": "subject=C=TR, L=Gebze - Kocaeli, O=Turkiye Bilimsel ve Teknolojik Arastirma Kurumu - TUBITAK, OU=Kamu Sertifikasyon Merkezi - Kamu SM, CN=TUBITAK Kamu SM SSL Kok Sertifikasi - Surum 1",
+      "expiry_date": "2043-10-25",
+      "days_until_expiry": 6286,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TWCA_CYBER_Root_CA.pem",
+      "subject": "subject=C=TW, O=TAIWAN-CA, OU=Root CA, CN=TWCA CYBER Root CA",
+      "expiry_date": "2047-11-22",
+      "days_until_expiry": 7775,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Telekom_Security_TLS_ECC_Root_2020.pem",
+      "subject": "subject=C=DE, O=Deutsche Telekom Security GmbH, CN=Telekom Security TLS ECC Root 2020",
+      "expiry_date": "2045-08-25",
+      "days_until_expiry": 6957,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Telekom_Security_TLS_RSA_Root_2023.pem",
+      "subject": "subject=C=DE, O=Deutsche Telekom Security GmbH, CN=Telekom Security TLS RSA Root 2023",
+      "expiry_date": "2048-03-27",
+      "days_until_expiry": 7902,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Telia_Root_CA_v2.pem",
+      "subject": "subject=C=FI, O=Telia Finland Oyj, CN=Telia Root CA v2",
+      "expiry_date": "2043-11-29",
+      "days_until_expiry": 6321,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_Global_Root_CA_G3.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia Global Root CA G3",
+      "expiry_date": "2046-05-19",
+      "days_until_expiry": 7223,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_Global_Root_CA_G4.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia Global Root CA G4",
+      "expiry_date": "2046-05-19",
+      "days_until_expiry": 7223,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_TLS_ECC_Root_CA.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia TLS ECC Root CA",
+      "expiry_date": "2044-05-15",
+      "days_until_expiry": 6489,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_TLS_RSA_Root_CA.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia TLS RSA Root CA",
+      "expiry_date": "2044-05-15",
+      "days_until_expiry": 6489,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Trustwave_Global_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=Illinois, L=Chicago, O=Trustwave Holdings, Inc., CN=Trustwave Global Certification Authority",
+      "expiry_date": "2042-08-23",
+      "days_until_expiry": 5858,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Trustwave_Global_ECC_P256_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=Illinois, L=Chicago, O=Trustwave Holdings, Inc., CN=Trustwave Global ECC P256 Certification Authority",
+      "expiry_date": "2042-08-23",
+      "days_until_expiry": 5858,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Trustwave_Global_ECC_P384_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=Illinois, L=Chicago, O=Trustwave Holdings, Inc., CN=Trustwave Global ECC P384 Certification Authority",
+      "expiry_date": "2042-08-23",
+      "days_until_expiry": 5858,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TunTrust_Root_CA.pem",
+      "subject": "subject=C=TN, O=Agence Nationale de Certification Electronique, CN=TunTrust Root CA",
+      "expiry_date": "2044-04-26",
+      "days_until_expiry": 6470,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "UCA_Extended_Validation_Root.pem",
+      "subject": "subject=C=CN, O=UniTrust, CN=UCA Extended Validation Root",
+      "expiry_date": "2038-12-31",
+      "days_until_expiry": 4527,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "UCA_Global_G2_Root.pem",
+      "subject": "subject=C=CN, O=UniTrust, CN=UCA Global G2 Root",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "USERTrust_ECC_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust ECC Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "USERTrust_RSA_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "_OISTE_Server_Root_RSA_G1.pem",
+      "subject": "subject=C=CH, O=OISTE Foundation, CN=OISTE Server Root RSA G1",
+      "expiry_date": "2048-05-24",
+      "days_until_expiry": 7959,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "certSIGN_Root_CA_G2.pem",
+      "subject": "subject=C=RO, O=CERTSIGN SA, OU=certSIGN ROOT CA G2",
+      "expiry_date": "2042-02-06",
+      "days_until_expiry": 5660,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "e-Szigno_Root_CA_2017.pem",
+      "subject": "subject=C=HU, L=Budapest, O=Microsec Ltd., organizationIdentifier=VATHU-23584497, CN=e-Szigno Root CA 2017",
+      "expiry_date": "2042-08-22",
+      "days_until_expiry": 5857,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "emSign_ECC_Root_CA_-_C3.pem",
+      "subject": "subject=C=US, OU=emSign PKI, O=eMudhra Inc, CN=emSign ECC Root CA - C3",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "emSign_ECC_Root_CA_-_G3.pem",
+      "subject": "subject=C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign ECC Root CA - G3",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "emSign_Root_CA_-_C1.pem",
+      "subject": "subject=C=US, OU=emSign PKI, O=eMudhra Inc, CN=emSign Root CA - C1",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "emSign_Root_CA_-_G1.pem",
+      "subject": "subject=C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign Root CA - G1",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "vTrus_ECC_Root_CA.pem",
+      "subject": "subject=C=CN, O=iTrusChina Co.,Ltd., CN=vTrus ECC Root CA",
+      "expiry_date": "2043-07-31",
+      "days_until_expiry": 6200,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "vTrus_Root_CA.pem",
+      "subject": "subject=C=CN, O=iTrusChina Co.,Ltd., CN=vTrus Root CA",
+      "expiry_date": "2043-07-31",
+      "days_until_expiry": 6200,
+      "still_valid_past_crqc_threshold": true
+    }
+  ],
+  "all_results": [
+    {
+      "cert_file": "ACCVRAIZ1.pem",
+      "subject": "subject=CN=ACCVRAIZ1, OU=PKIACCV, O=ACCV, C=ES",
+      "expiry_date": "2030-12-31",
+      "days_until_expiry": 1605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "AC_RAIZ_FNMT-RCM.pem",
+      "subject": "subject=C=ES, O=FNMT-RCM, OU=AC RAIZ FNMT-RCM",
+      "expiry_date": "2030-01-01",
+      "days_until_expiry": 1241,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "AC_RAIZ_FNMT-RCM_SERVIDORES_SEGUROS.pem",
+      "subject": "subject=C=ES, O=FNMT-RCM, OU=Ceres, organizationIdentifier=VATES-Q2826004J, CN=AC RAIZ FNMT-RCM SERVIDORES SEGUROS",
+      "expiry_date": "2043-12-20",
+      "days_until_expiry": 6342,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "ANF_Secure_Server_Root_CA.pem",
+      "subject": "subject=serialNumber=G63287510, C=ES, O=ANF Autoridad de Certificacion, OU=ANF CA Raiz, CN=ANF Secure Server Root CA",
+      "expiry_date": "2039-08-30",
+      "days_until_expiry": 4769,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Actalis_Authentication_Root_CA.pem",
+      "subject": "subject=C=IT, L=Milan, O=Actalis S.p.A./03358520967, CN=Actalis Authentication Root CA",
+      "expiry_date": "2030-09-22",
+      "days_until_expiry": 1505,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "AffirmTrust_Commercial.pem",
+      "subject": "subject=C=US, O=AffirmTrust, CN=AffirmTrust Commercial",
+      "expiry_date": "2030-12-31",
+      "days_until_expiry": 1605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "AffirmTrust_Networking.pem",
+      "subject": "subject=C=US, O=AffirmTrust, CN=AffirmTrust Networking",
+      "expiry_date": "2030-12-31",
+      "days_until_expiry": 1605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "AffirmTrust_Premium.pem",
+      "subject": "subject=C=US, O=AffirmTrust, CN=AffirmTrust Premium",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "AffirmTrust_Premium_ECC.pem",
+      "subject": "subject=C=US, O=AffirmTrust, CN=AffirmTrust Premium ECC",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_1.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 1",
+      "expiry_date": "2038-01-17",
+      "days_until_expiry": 4179,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_2.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 2",
+      "expiry_date": "2040-05-26",
+      "days_until_expiry": 5039,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_3.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 3",
+      "expiry_date": "2040-05-26",
+      "days_until_expiry": 5039,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Amazon_Root_CA_4.pem",
+      "subject": "subject=C=US, O=Amazon, CN=Amazon Root CA 4",
+      "expiry_date": "2040-05-26",
+      "days_until_expiry": 5039,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Atos_TrustedRoot_2011.pem",
+      "subject": "subject=CN=Atos TrustedRoot 2011, O=Atos, C=DE",
+      "expiry_date": "2030-12-31",
+      "days_until_expiry": 1606,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Atos_TrustedRoot_Root_CA_ECC_TLS_2021.pem",
+      "subject": "subject=CN=Atos TrustedRoot Root CA ECC TLS 2021, O=Atos, C=DE",
+      "expiry_date": "2041-04-17",
+      "days_until_expiry": 5365,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Atos_TrustedRoot_Root_CA_RSA_TLS_2021.pem",
+      "subject": "subject=CN=Atos TrustedRoot Root CA RSA TLS 2021, O=Atos, C=DE",
+      "expiry_date": "2041-04-17",
+      "days_until_expiry": 5365,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.pem",
+      "subject": "subject=C=ES, CN=Autoridad de Certificacion Firmaprofesional CIF A62634068",
+      "expiry_date": "2036-05-05",
+      "days_until_expiry": 3557,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "BJCA_Global_Root_CA1.pem",
+      "subject": "subject=C=CN, O=BEIJING CERTIFICATE AUTHORITY, CN=BJCA Global Root CA1",
+      "expiry_date": "2044-12-12",
+      "days_until_expiry": 6700,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "BJCA_Global_Root_CA2.pem",
+      "subject": "subject=C=CN, O=BEIJING CERTIFICATE AUTHORITY, CN=BJCA Global Root CA2",
+      "expiry_date": "2044-12-12",
+      "days_until_expiry": 6700,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Buypass_Class_2_Root_CA.pem",
+      "subject": "subject=C=NO, O=Buypass AS-983163327, CN=Buypass Class 2 Root CA",
+      "expiry_date": "2040-10-26",
+      "days_until_expiry": 5192,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Buypass_Class_3_Root_CA.pem",
+      "subject": "subject=C=NO, O=Buypass AS-983163327, CN=Buypass Class 3 Root CA",
+      "expiry_date": "2040-10-26",
+      "days_until_expiry": 5192,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "CA_Disig_Root_R2.pem",
+      "subject": "subject=C=SK, L=Bratislava, O=Disig a.s., CN=CA Disig Root R2",
+      "expiry_date": "2042-07-19",
+      "days_until_expiry": 5823,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "CFCA_EV_ROOT.pem",
+      "subject": "subject=C=CN, O=China Financial Certification Authority, CN=CFCA EV ROOT",
+      "expiry_date": "2029-12-31",
+      "days_until_expiry": 1240,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "COMODO_Certification_Authority.pem",
+      "subject": "subject=C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO Certification Authority",
+      "expiry_date": "2029-12-31",
+      "days_until_expiry": 1241,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "COMODO_ECC_Certification_Authority.pem",
+      "subject": "subject=C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO ECC Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "COMODO_RSA_Certification_Authority.pem",
+      "subject": "subject=C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO RSA Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certainly_Root_E1.pem",
+      "subject": "subject=C=US, O=Certainly, CN=Certainly Root E1",
+      "expiry_date": "2046-04-01",
+      "days_until_expiry": 7175,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certainly_Root_R1.pem",
+      "subject": "subject=C=US, O=Certainly, CN=Certainly Root R1",
+      "expiry_date": "2046-04-01",
+      "days_until_expiry": 7175,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certigna.pem",
+      "subject": "subject=C=FR, O=Dhimyotis, CN=Certigna",
+      "expiry_date": "2027-06-29",
+      "days_until_expiry": 324,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Certigna_Root_CA.pem",
+      "subject": "subject=C=FR, O=Dhimyotis, OU=0002 48146308100036, CN=Certigna Root CA",
+      "expiry_date": "2033-10-01",
+      "days_until_expiry": 2610,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Certum_EC-384_CA.pem",
+      "subject": "subject=C=PL, O=Asseco Data Systems S.A., OU=Certum Certification Authority, CN=Certum EC-384 CA",
+      "expiry_date": "2043-03-26",
+      "days_until_expiry": 6073,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certum_Trusted_Network_CA.pem",
+      "subject": "subject=C=PL, O=Unizeto Technologies S.A., OU=Certum Certification Authority, CN=Certum Trusted Network CA",
+      "expiry_date": "2029-12-31",
+      "days_until_expiry": 1240,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Certum_Trusted_Network_CA_2.pem",
+      "subject": "subject=C=PL, O=Unizeto Technologies S.A., OU=Certum Certification Authority, CN=Certum Trusted Network CA 2",
+      "expiry_date": "2046-10-06",
+      "days_until_expiry": 7363,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Certum_Trusted_Root_CA.pem",
+      "subject": "subject=C=PL, O=Asseco Data Systems S.A., OU=Certum Certification Authority, CN=Certum Trusted Root CA",
+      "expiry_date": "2043-03-16",
+      "days_until_expiry": 6063,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "D-TRUST_BR_Root_CA_1_2020.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST BR Root CA 1 2020",
+      "expiry_date": "2035-02-11",
+      "days_until_expiry": 3108,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "D-TRUST_BR_Root_CA_2_2023.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST BR Root CA 2 2023",
+      "expiry_date": "2038-05-09",
+      "days_until_expiry": 4291,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "D-TRUST_EV_Root_CA_1_2020.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST EV Root CA 1 2020",
+      "expiry_date": "2035-02-11",
+      "days_until_expiry": 3108,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "D-TRUST_EV_Root_CA_2_2023.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST EV Root CA 2 2023",
+      "expiry_date": "2038-05-09",
+      "days_until_expiry": 4291,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "D-TRUST_Root_Class_3_CA_2_2009.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST Root Class 3 CA 2 2009",
+      "expiry_date": "2029-11-05",
+      "days_until_expiry": 1184,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "D-TRUST_Root_Class_3_CA_2_EV_2009.pem",
+      "subject": "subject=C=DE, O=D-Trust GmbH, CN=D-TRUST Root Class 3 CA 2 EV 2009",
+      "expiry_date": "2029-11-05",
+      "days_until_expiry": 1184,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "DigiCert_Assured_ID_Root_CA.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root CA",
+      "expiry_date": "2031-11-10",
+      "days_until_expiry": 1919,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "DigiCert_Assured_ID_Root_G2.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G2",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Assured_ID_Root_G3.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G3",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Global_Root_CA.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root CA",
+      "expiry_date": "2031-11-10",
+      "days_until_expiry": 1919,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "DigiCert_Global_Root_G2.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Global_Root_G3.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G3",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_High_Assurance_EV_Root_CA.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert High Assurance EV Root CA",
+      "expiry_date": "2031-11-10",
+      "days_until_expiry": 1919,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "DigiCert_TLS_ECC_P384_Root_G5.pem",
+      "subject": "subject=C=US, O=DigiCert, Inc., CN=DigiCert TLS ECC P384 Root G5",
+      "expiry_date": "2046-01-14",
+      "days_until_expiry": 7099,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_TLS_RSA4096_Root_G5.pem",
+      "subject": "subject=C=US, O=DigiCert, Inc., CN=DigiCert TLS RSA4096 Root G5",
+      "expiry_date": "2046-01-14",
+      "days_until_expiry": 7099,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "DigiCert_Trusted_Root_G4.pem",
+      "subject": "subject=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Trusted Root G4",
+      "expiry_date": "2038-01-15",
+      "days_until_expiry": 4177,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Entrust_Root_Certification_Authority.pem",
+      "subject": "subject=C=US, O=Entrust, Inc., OU=www.entrust.net/CPS is incorporated by reference, OU=(c) 2006 Entrust, Inc., CN=Entrust Root Certification Authority",
+      "expiry_date": "2026-11-27",
+      "days_until_expiry": 111,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Entrust_Root_Certification_Authority_-_EC1.pem",
+      "subject": "subject=C=US, O=Entrust, Inc., OU=See www.entrust.net/legal-terms, OU=(c) 2012 Entrust, Inc. - for authorized use only, CN=Entrust Root Certification Authority - EC1",
+      "expiry_date": "2037-12-18",
+      "days_until_expiry": 4149,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Entrust_Root_Certification_Authority_-_G2.pem",
+      "subject": "subject=C=US, O=Entrust, Inc., OU=See www.entrust.net/legal-terms, OU=(c) 2009 Entrust, Inc. - for authorized use only, CN=Entrust Root Certification Authority - G2",
+      "expiry_date": "2030-12-07",
+      "days_until_expiry": 1581,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "FIRMAPROFESIONAL_CA_ROOT-A_WEB.pem",
+      "subject": "subject=C=ES, O=Firmaprofesional SA, organizationIdentifier=VATES-A62634068, CN=FIRMAPROFESIONAL CA ROOT-A WEB",
+      "expiry_date": "2047-03-31",
+      "days_until_expiry": 7539,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GDCA_TrustAUTH_R5_ROOT.pem",
+      "subject": "subject=C=CN, O=GUANG DONG CERTIFICATE AUTHORITY CO.,LTD., CN=GDCA TrustAUTH R5 ROOT",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GLOBALTRUST_2020.pem",
+      "subject": "subject=C=AT, O=e-commerce monitoring GmbH, CN=GLOBALTRUST 2020",
+      "expiry_date": "2040-06-10",
+      "days_until_expiry": 5054,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GTS_Root_R1.pem",
+      "subject": "subject=C=US, O=Google Trust Services LLC, CN=GTS Root R1",
+      "expiry_date": "2036-06-22",
+      "days_until_expiry": 3605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "GTS_Root_R2.pem",
+      "subject": "subject=C=US, O=Google Trust Services LLC, CN=GTS Root R2",
+      "expiry_date": "2036-06-22",
+      "days_until_expiry": 3605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "GTS_Root_R3.pem",
+      "subject": "subject=C=US, O=Google Trust Services LLC, CN=GTS Root R3",
+      "expiry_date": "2036-06-22",
+      "days_until_expiry": 3605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "GTS_Root_R4.pem",
+      "subject": "subject=C=US, O=Google Trust Services LLC, CN=GTS Root R4",
+      "expiry_date": "2036-06-22",
+      "days_until_expiry": 3605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "GlobalSign_ECC_Root_CA_-_R4.pem",
+      "subject": "subject=OU=GlobalSign ECC Root CA - R4, O=GlobalSign, CN=GlobalSign",
+      "expiry_date": "2038-01-19",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GlobalSign_ECC_Root_CA_-_R5.pem",
+      "subject": "subject=OU=GlobalSign ECC Root CA - R5, O=GlobalSign, CN=GlobalSign",
+      "expiry_date": "2038-01-19",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GlobalSign_Root_CA_-_R3.pem",
+      "subject": "subject=OU=GlobalSign Root CA - R3, O=GlobalSign, CN=GlobalSign",
+      "expiry_date": "2029-03-18",
+      "days_until_expiry": 952,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "GlobalSign_Root_CA_-_R6.pem",
+      "subject": "subject=OU=GlobalSign Root CA - R6, O=GlobalSign, CN=GlobalSign",
+      "expiry_date": "2034-12-10",
+      "days_until_expiry": 3045,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "GlobalSign_Root_E46.pem",
+      "subject": "subject=C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root E46",
+      "expiry_date": "2046-03-20",
+      "days_until_expiry": 7163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "GlobalSign_Root_R46.pem",
+      "subject": "subject=C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root R46",
+      "expiry_date": "2046-03-20",
+      "days_until_expiry": 7163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Go_Daddy_Root_Certificate_Authority_-_G2.pem",
+      "subject": "subject=C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., CN=Go Daddy Root Certificate Authority - G2",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "HARICA_TLS_ECC_Root_CA_2021.pem",
+      "subject": "subject=C=GR, O=Hellenic Academic and Research Institutions CA, CN=HARICA TLS ECC Root CA 2021",
+      "expiry_date": "2045-02-13",
+      "days_until_expiry": 6763,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "HARICA_TLS_RSA_Root_CA_2021.pem",
+      "subject": "subject=C=GR, O=Hellenic Academic and Research Institutions CA, CN=HARICA TLS RSA Root CA 2021",
+      "expiry_date": "2045-02-13",
+      "days_until_expiry": 6763,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Hellenic_Academic_and_Research_Institutions_ECC_RootCA_2015.pem",
+      "subject": "subject=C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions ECC RootCA 2015",
+      "expiry_date": "2040-06-30",
+      "days_until_expiry": 5074,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Hellenic_Academic_and_Research_Institutions_RootCA_2015.pem",
+      "subject": "subject=C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions RootCA 2015",
+      "expiry_date": "2040-06-30",
+      "days_until_expiry": 5074,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "HiPKI_Root_CA_-_G1.pem",
+      "subject": "subject=C=TW, O=Chunghwa Telecom Co., Ltd., CN=HiPKI Root CA - G1",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4162,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Hongkong_Post_Root_CA_3.pem",
+      "subject": "subject=C=HK, ST=Hong Kong, L=Hong Kong, O=Hongkong Post, CN=Hongkong Post Root CA 3",
+      "expiry_date": "2042-06-03",
+      "days_until_expiry": 5777,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "ISRG_Root_X1.pem",
+      "subject": "subject=C=US, O=Internet Security Research Group, CN=ISRG Root X1",
+      "expiry_date": "2035-06-04",
+      "days_until_expiry": 3221,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "ISRG_Root_X2.pem",
+      "subject": "subject=C=US, O=Internet Security Research Group, CN=ISRG Root X2",
+      "expiry_date": "2040-09-17",
+      "days_until_expiry": 5153,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "IdenTrust_Commercial_Root_CA_1.pem",
+      "subject": "subject=C=US, O=IdenTrust, CN=IdenTrust Commercial Root CA 1",
+      "expiry_date": "2034-01-16",
+      "days_until_expiry": 2717,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "IdenTrust_Public_Sector_Root_CA_1.pem",
+      "subject": "subject=C=US, O=IdenTrust, CN=IdenTrust Public Sector Root CA 1",
+      "expiry_date": "2034-01-16",
+      "days_until_expiry": 2717,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Izenpe.com.pem",
+      "subject": "subject=C=ES, O=IZENPE S.A., CN=Izenpe.com",
+      "expiry_date": "2037-12-13",
+      "days_until_expiry": 4144,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Microsec_e-Szigno_Root_CA_2009.pem",
+      "subject": "subject=C=HU, L=Budapest, O=Microsec Ltd., CN=Microsec e-Szigno Root CA 2009, emailAddress=info@e-szigno.hu",
+      "expiry_date": "2029-12-30",
+      "days_until_expiry": 1239,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Microsoft_ECC_Root_Certificate_Authority_2017.pem",
+      "subject": "subject=C=US, O=Microsoft Corporation, CN=Microsoft ECC Root Certificate Authority 2017",
+      "expiry_date": "2042-07-18",
+      "days_until_expiry": 5823,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Microsoft_RSA_Root_Certificate_Authority_2017.pem",
+      "subject": "subject=C=US, O=Microsoft Corporation, CN=Microsoft RSA Root Certificate Authority 2017",
+      "expiry_date": "2042-07-18",
+      "days_until_expiry": 5823,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "NAVER_Global_Root_Certification_Authority.pem",
+      "subject": "subject=C=KR, O=NAVER BUSINESS PLATFORM Corp., CN=NAVER Global Root Certification Authority",
+      "expiry_date": "2037-08-18",
+      "days_until_expiry": 4028,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "NetLock_Arany_=Class_Gold=_F\u0151tan\u00fas\u00edtv\u00e1ny.pem",
+      "subject": "subject=C=HU, L=Budapest, O=NetLock Kft., OU=Tan\u00fas\u00edtv\u00e1nykiad\u00f3k (Certification Services), CN=NetLock Arany (Class Gold) F\u0151tan\u00fas\u00edtv\u00e1ny",
+      "expiry_date": "2028-12-06",
+      "days_until_expiry": 850,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "OISTE_Server_Root_ECC_G1.pem",
+      "subject": "subject=C=CH, O=OISTE Foundation, CN=OISTE Server Root ECC G1",
+      "expiry_date": "2048-05-24",
+      "days_until_expiry": 7959,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "OISTE_WISeKey_Global_Root_GB_CA.pem",
+      "subject": "subject=C=CH, O=WISeKey, OU=OISTE Foundation Endorsed, CN=OISTE WISeKey Global Root GB CA",
+      "expiry_date": "2039-12-01",
+      "days_until_expiry": 4862,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "OISTE_WISeKey_Global_Root_GC_CA.pem",
+      "subject": "subject=C=CH, O=WISeKey, OU=OISTE Foundation Endorsed, CN=OISTE WISeKey Global Root GC CA",
+      "expiry_date": "2042-05-09",
+      "days_until_expiry": 5752,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_1_G3.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 1 G3",
+      "expiry_date": "2042-01-12",
+      "days_until_expiry": 5635,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_2.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2",
+      "expiry_date": "2031-11-24",
+      "days_until_expiry": 1933,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_2_G3.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2 G3",
+      "expiry_date": "2042-01-12",
+      "days_until_expiry": 5635,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_3.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 3",
+      "expiry_date": "2031-11-24",
+      "days_until_expiry": 1933,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "QuoVadis_Root_CA_3_G3.pem",
+      "subject": "subject=C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 3 G3",
+      "expiry_date": "2042-01-12",
+      "days_until_expiry": 5636,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_EV_Root_Certification_Authority_ECC.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com EV Root Certification Authority ECC",
+      "expiry_date": "2041-02-12",
+      "days_until_expiry": 5301,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_EV_Root_Certification_Authority_RSA_R2.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com EV Root Certification Authority RSA R2",
+      "expiry_date": "2042-05-30",
+      "days_until_expiry": 5773,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_Root_Certification_Authority_ECC.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority ECC",
+      "expiry_date": "2041-02-12",
+      "days_until_expiry": 5301,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_Root_Certification_Authority_RSA.pem",
+      "subject": "subject=C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority RSA",
+      "expiry_date": "2041-02-12",
+      "days_until_expiry": 5301,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_TLS_ECC_Root_CA_2022.pem",
+      "subject": "subject=C=US, O=SSL Corporation, CN=SSL.com TLS ECC Root CA 2022",
+      "expiry_date": "2046-08-19",
+      "days_until_expiry": 7315,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SSL.com_TLS_RSA_Root_CA_2022.pem",
+      "subject": "subject=C=US, O=SSL Corporation, CN=SSL.com TLS RSA Root CA 2022",
+      "expiry_date": "2046-08-19",
+      "days_until_expiry": 7315,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SZAFIR_ROOT_CA2.pem",
+      "subject": "subject=C=PL, O=Krajowa Izba Rozliczeniowa S.A., CN=SZAFIR ROOT CA2",
+      "expiry_date": "2035-10-19",
+      "days_until_expiry": 3358,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Sectigo_Public_Server_Authentication_Root_E46.pem",
+      "subject": "subject=C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root E46",
+      "expiry_date": "2046-03-21",
+      "days_until_expiry": 7165,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Sectigo_Public_Server_Authentication_Root_R46.pem",
+      "subject": "subject=C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root R46",
+      "expiry_date": "2046-03-21",
+      "days_until_expiry": 7165,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SecureSign_Root_CA12.pem",
+      "subject": "subject=C=JP, O=Cybertrust Japan Co., Ltd., CN=SecureSign Root CA12",
+      "expiry_date": "2040-04-08",
+      "days_until_expiry": 4991,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SecureSign_Root_CA14.pem",
+      "subject": "subject=C=JP, O=Cybertrust Japan Co., Ltd., CN=SecureSign Root CA14",
+      "expiry_date": "2045-04-08",
+      "days_until_expiry": 6817,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SecureSign_Root_CA15.pem",
+      "subject": "subject=C=JP, O=Cybertrust Japan Co., Ltd., CN=SecureSign Root CA15",
+      "expiry_date": "2045-04-08",
+      "days_until_expiry": 6817,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SecureTrust_CA.pem",
+      "subject": "subject=C=US, O=SecureTrust Corporation, CN=SecureTrust CA",
+      "expiry_date": "2029-12-31",
+      "days_until_expiry": 1240,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Secure_Global_CA.pem",
+      "subject": "subject=C=US, O=SecureTrust Corporation, CN=Secure Global CA",
+      "expiry_date": "2029-12-31",
+      "days_until_expiry": 1240,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Security_Communication_ECC_RootCA1.pem",
+      "subject": "subject=C=JP, O=SECOM Trust Systems CO.,LTD., CN=Security Communication ECC RootCA1",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4180,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Security_Communication_RootCA2.pem",
+      "subject": "subject=C=JP, O=SECOM Trust Systems CO.,LTD., OU=Security Communication RootCA2",
+      "expiry_date": "2029-05-29",
+      "days_until_expiry": 1024,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Starfield_Root_Certificate_Authority_-_G2.pem",
+      "subject": "subject=C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Root Certificate Authority - G2",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Starfield_Services_Root_Certificate_Authority_-_G2.pem",
+      "subject": "subject=C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Services Root Certificate Authority - G2",
+      "expiry_date": "2037-12-31",
+      "days_until_expiry": 4163,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "SwissSign_Gold_CA_-_G2.pem",
+      "subject": "subject=C=CH, O=SwissSign AG, CN=SwissSign Gold CA - G2",
+      "expiry_date": "2036-10-25",
+      "days_until_expiry": 3730,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "SwissSign_RSA_TLS_Root_CA_2022_-_1.pem",
+      "subject": "subject=C=CH, O=SwissSign AG, CN=SwissSign RSA TLS Root CA 2022 - 1",
+      "expiry_date": "2047-06-08",
+      "days_until_expiry": 7608,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "T-TeleSec_GlobalRoot_Class_2.pem",
+      "subject": "subject=C=DE, O=T-Systems Enterprise Services GmbH, OU=T-Systems Trust Center, CN=T-TeleSec GlobalRoot Class 2",
+      "expiry_date": "2033-10-01",
+      "days_until_expiry": 2611,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "T-TeleSec_GlobalRoot_Class_3.pem",
+      "subject": "subject=C=DE, O=T-Systems Enterprise Services GmbH, OU=T-Systems Trust Center, CN=T-TeleSec GlobalRoot Class 3",
+      "expiry_date": "2033-10-01",
+      "days_until_expiry": 2611,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "TUBITAK_Kamu_SM_SSL_Kok_Sertifikasi_-_Surum_1.pem",
+      "subject": "subject=C=TR, L=Gebze - Kocaeli, O=Turkiye Bilimsel ve Teknolojik Arastirma Kurumu - TUBITAK, OU=Kamu Sertifikasyon Merkezi - Kamu SM, CN=TUBITAK Kamu SM SSL Kok Sertifikasi - Surum 1",
+      "expiry_date": "2043-10-25",
+      "days_until_expiry": 6286,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TWCA_CYBER_Root_CA.pem",
+      "subject": "subject=C=TW, O=TAIWAN-CA, OU=Root CA, CN=TWCA CYBER Root CA",
+      "expiry_date": "2047-11-22",
+      "days_until_expiry": 7775,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TWCA_Global_Root_CA.pem",
+      "subject": "subject=C=TW, O=TAIWAN-CA, OU=Root CA, CN=TWCA Global Root CA",
+      "expiry_date": "2030-12-31",
+      "days_until_expiry": 1605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "TWCA_Root_Certification_Authority.pem",
+      "subject": "subject=C=TW, O=TAIWAN-CA, OU=Root CA, CN=TWCA Root Certification Authority",
+      "expiry_date": "2030-12-31",
+      "days_until_expiry": 1605,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Telekom_Security_TLS_ECC_Root_2020.pem",
+      "subject": "subject=C=DE, O=Deutsche Telekom Security GmbH, CN=Telekom Security TLS ECC Root 2020",
+      "expiry_date": "2045-08-25",
+      "days_until_expiry": 6957,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Telekom_Security_TLS_RSA_Root_2023.pem",
+      "subject": "subject=C=DE, O=Deutsche Telekom Security GmbH, CN=Telekom Security TLS RSA Root 2023",
+      "expiry_date": "2048-03-27",
+      "days_until_expiry": 7902,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TeliaSonera_Root_CA_v1.pem",
+      "subject": "subject=O=TeliaSonera, CN=TeliaSonera Root CA v1",
+      "expiry_date": "2032-10-18",
+      "days_until_expiry": 2262,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "Telia_Root_CA_v2.pem",
+      "subject": "subject=C=FI, O=Telia Finland Oyj, CN=Telia Root CA v2",
+      "expiry_date": "2043-11-29",
+      "days_until_expiry": 6321,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_Global_Root_CA_G3.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia Global Root CA G3",
+      "expiry_date": "2046-05-19",
+      "days_until_expiry": 7223,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_Global_Root_CA_G4.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia Global Root CA G4",
+      "expiry_date": "2046-05-19",
+      "days_until_expiry": 7223,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_TLS_ECC_Root_CA.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia TLS ECC Root CA",
+      "expiry_date": "2044-05-15",
+      "days_until_expiry": 6489,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TrustAsia_TLS_RSA_Root_CA.pem",
+      "subject": "subject=C=CN, O=TrustAsia Technologies, Inc., CN=TrustAsia TLS RSA Root CA",
+      "expiry_date": "2044-05-15",
+      "days_until_expiry": 6489,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Trustwave_Global_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=Illinois, L=Chicago, O=Trustwave Holdings, Inc., CN=Trustwave Global Certification Authority",
+      "expiry_date": "2042-08-23",
+      "days_until_expiry": 5858,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Trustwave_Global_ECC_P256_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=Illinois, L=Chicago, O=Trustwave Holdings, Inc., CN=Trustwave Global ECC P256 Certification Authority",
+      "expiry_date": "2042-08-23",
+      "days_until_expiry": 5858,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "Trustwave_Global_ECC_P384_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=Illinois, L=Chicago, O=Trustwave Holdings, Inc., CN=Trustwave Global ECC P384 Certification Authority",
+      "expiry_date": "2042-08-23",
+      "days_until_expiry": 5858,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "TunTrust_Root_CA.pem",
+      "subject": "subject=C=TN, O=Agence Nationale de Certification Electronique, CN=TunTrust Root CA",
+      "expiry_date": "2044-04-26",
+      "days_until_expiry": 6470,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "UCA_Extended_Validation_Root.pem",
+      "subject": "subject=C=CN, O=UniTrust, CN=UCA Extended Validation Root",
+      "expiry_date": "2038-12-31",
+      "days_until_expiry": 4527,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "UCA_Global_G2_Root.pem",
+      "subject": "subject=C=CN, O=UniTrust, CN=UCA Global G2 Root",
+      "expiry_date": "2040-12-31",
+      "days_until_expiry": 5258,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "USERTrust_ECC_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust ECC Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "USERTrust_RSA_Certification_Authority.pem",
+      "subject": "subject=C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority",
+      "expiry_date": "2038-01-18",
+      "days_until_expiry": 4181,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "_OISTE_Server_Root_RSA_G1.pem",
+      "subject": "subject=C=CH, O=OISTE Foundation, CN=OISTE Server Root RSA G1",
+      "expiry_date": "2048-05-24",
+      "days_until_expiry": 7959,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "certSIGN_ROOT_CA.pem",
+      "subject": "subject=C=RO, O=certSIGN, OU=certSIGN ROOT CA",
+      "expiry_date": "2031-07-04",
+      "days_until_expiry": 1790,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "certSIGN_Root_CA_G2.pem",
+      "subject": "subject=C=RO, O=CERTSIGN SA, OU=certSIGN ROOT CA G2",
+      "expiry_date": "2042-02-06",
+      "days_until_expiry": 5660,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "e-Szigno_Root_CA_2017.pem",
+      "subject": "subject=C=HU, L=Budapest, O=Microsec Ltd., organizationIdentifier=VATHU-23584497, CN=e-Szigno Root CA 2017",
+      "expiry_date": "2042-08-22",
+      "days_until_expiry": 5857,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "ePKI_Root_Certification_Authority.pem",
+      "subject": "subject=C=TW, O=Chunghwa Telecom Co., Ltd., OU=ePKI Root Certification Authority",
+      "expiry_date": "2034-12-20",
+      "days_until_expiry": 3055,
+      "still_valid_past_crqc_threshold": false
+    },
+    {
+      "cert_file": "emSign_ECC_Root_CA_-_C3.pem",
+      "subject": "subject=C=US, OU=emSign PKI, O=eMudhra Inc, CN=emSign ECC Root CA - C3",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "emSign_ECC_Root_CA_-_G3.pem",
+      "subject": "subject=C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign ECC Root CA - G3",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "emSign_Root_CA_-_C1.pem",
+      "subject": "subject=C=US, OU=emSign PKI, O=eMudhra Inc, CN=emSign Root CA - C1",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "emSign_Root_CA_-_G1.pem",
+      "subject": "subject=C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign Root CA - G1",
+      "expiry_date": "2043-02-18",
+      "days_until_expiry": 6037,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "vTrus_ECC_Root_CA.pem",
+      "subject": "subject=C=CN, O=iTrusChina Co.,Ltd., CN=vTrus ECC Root CA",
+      "expiry_date": "2043-07-31",
+      "days_until_expiry": 6200,
+      "still_valid_past_crqc_threshold": true
+    },
+    {
+      "cert_file": "vTrus_Root_CA.pem",
+      "subject": "subject=C=CN, O=iTrusChina Co.,Ltd., CN=vTrus Root CA",
+      "expiry_date": "2043-07-31",
+      "days_until_expiry": 6200,
+      "still_valid_past_crqc_threshold": true
+    }
+  ],
+  "finding": "All 144 currently-valid, non-PQC certs on this system are harvest-now-decrypt-later exposed starting today \u2014 any traffic they protect can be captured now and decrypted whenever a CRQC exists, independent of cert expiry. 98 of those certs remain in active service past the illustrative 2036 threshold used here, meaning they will keep generating NEW harvestable traffic for years into the window during which a CRQC is plausibly expected by at least some public estimates. This turns WD-089-001's static count into a time-bounded risk rather than a single snapshot.",
+  "timestamp": "2026-08-09T02:58:44.531377+00:00"
+}

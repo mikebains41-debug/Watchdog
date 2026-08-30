@@ -1,0 +1,10 @@
+{
+  "findings": [
+    {
+      "cron_file": "/etc/cron.d/e2scrub_all",
+      "world_writable": false
+    }
+  ],
+  "finding_summary": "Checked 1 cron file(s)/invoked script(s). Found 0 world-writable \u2014 a real risk since anything scheduled runs automatically, often as a privileged user, and a world-writable script or crontab means any local user could inject commands into that schedule.",
+  "timestamp": "2026-08-09T07:17:19.044810+00:00"
+}

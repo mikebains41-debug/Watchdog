@@ -1,0 +1,11 @@
+{
+  "scanned_dirs": [
+    "/etc",
+    "/usr/bin",
+    "/usr/sbin",
+    "/usr/local/bin"
+  ],
+  "world_writable_files": [],
+  "finding_summary": "Scanned ['/etc', '/usr/bin', '/usr/sbin', '/usr/local/bin'] for world-writable files. Found 0. Any file here can be modified by ANY user on the system \u2014 if a privileged process later reads or executes one of these, that's a real tampering vector.",
+  "timestamp": "2026-08-09T07:17:15.460942+00:00"
+}

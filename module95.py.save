@@ -1,0 +1,15 @@
+cdmeme⅘5GVVq+;/ ls -la /sdcard/Download/check_status.pycannot stat '/sdcard/Download/module95.py': No such file or directory
+(qiskit-env) root@localhost:/data/data/com.termux/files/home/Watchdog# python3 module95.py
+python3: can't open file '/data/data/com.termux/files/home/Watchdog/module95.py': [Errno 2] No such file or directory
+(qiskit-env) root@localhost:/data/data/com.termux/files/home/Watchdog#
+(qiskit-env) root@localhost:/data/data/com.termux/files/home/Watchdog# ls -la /sdcard/Download/module95.py
+ls: cannot access '/sdcard/Download/module95.py': No such file or directory
+(qiskit-env) root@localhost:/data/data/com.termux/files/home/Watchdog# head -3 /sdcard/Download/module95.py
+head: cannot open '/sdcard/Download/module95.py' for reading: No such file or directory
+(qiskit-env) root@localhost:/data/data/com.termux/files/home/Watchdog# cp /sdcard/Download/module95.py .
+cp: cannot stat '/sdcard/Download/module95.py': No such file or directory
+(qiskit-env) root@localhost:/dpkill nano
+
+ /data/data/com.termux/files/home/Watchdog
+nano module95.py
+ a

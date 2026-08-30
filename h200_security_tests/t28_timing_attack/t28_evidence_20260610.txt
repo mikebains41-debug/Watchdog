@@ -1,0 +1,39 @@
+=== T-28 EVIDENCE FILE ===
+CVE: 2048350
+Date: 2026-06-10
+Hardware: NVIDIA H200 NVL 141GB
+Platform: Phala Cloud Intel TDX CVM
+
+FINDING 1 - WORKLOAD SIZE FINGERPRINTING
+Small workload (721MB) leaves 625MB residual
+Medium workload (1009MB) leaves 1009MB residual
+Large workload (2161MB) leaves 2161MB residual
+Residual is proportional to workload size
+Attacker can build lookup table from residual alone
+
+FINDING 2 - GHOST POWER PERMANENT ELEVATION
+Baseline: 77W
+Post-workload: 124W locked
+Delta: +47W permanent
+Power never returns to 77W baseline
+NVML reports 0% utilization throughout
+
+FINDING 3 - NVML COMPLETE BLINDNESS
+GPU util: 0% reported across all phases
+Memory util: 0% reported across all phases
+Standard monitoring tools see nothing
+DCGM, Prometheus, Datadog all blind
+
+FINDING 4 - POWER SPIKE FINGERPRINTING
+Small workload: no detectable spike
+Medium workload: 182W spike (1 second)
+Large workload: 524W spike at 100% util (1 second)
+Spike magnitude correlates with workload size
+
+ATTACK SCENARIO
+1. Attacker on co-tenant GPU monitors VRAM via NVML
+2. Previous tenant exits gracefully
+3. Attacker reads VRAM residual: 625MB / 1009MB / 2161MB
+4. Attacker determines previous tenant workload size
+5. No privileged access required
+6. Detection impossible via standard monitoring

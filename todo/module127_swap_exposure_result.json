@@ -1,0 +1,8 @@
+{
+  "swap_status": "could not read /proc/swaps: PermissionError: [Errno 13] Permission denied: '/proc/swaps'",
+  "crypttab": null,
+  "has_active_swap": false,
+  "swap_in_crypttab": false,
+  "finding_summary": "Active swap present: False. No active swap device found on this system \u2014 this specific exposure vector doesn't apply here. ",
+  "timestamp": "2026-08-09T07:17:39.922879+00:00"
+}

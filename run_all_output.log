@@ -1,0 +1,61 @@
+Running module32.py
+Running module33.py
+Running module34.py
+Running module35.py
+Running module36.py
+Running module37.py
+Running module38.py
+Running module39.py
+Running module40.py
+Running module41.py
+Running module42.py
+Running module43.py
+Running module44.py
+Running module45.py
+Running module46.py
+Running module47.py
+Running module48.py
+Running module49.py
+Running module50.py
+Running module51.py
+Running module52.py
+Running module53.py
+Running module54.py
+Running module55.py
+Running module56.py
+Running module57.py
+Running module58.py
+Running module59.py
+Running module60.py
+Running module61.py
+Running module62.py
+Running module63.py
+Running module64.py
+Running module65.py
+Running module66.py
+Running module67.py
+Running module68.py
+Running module69.py
+Running module70.py
+Running module71.py
+Running module72.py
+Running module73.py
+Running module74.py
+Running module75.py
+
+=== Watchdog Run Summary ===
+Modules: 44
+Events:  51
+Alerts:  3
+JSONL:   /data/data/com.termux/files/home/Watchdog/watchdog_output.jsonl
+Dashboard: /data/data/com.termux/files/home/Watchdog/dashboard.html
+
+Top events:
+  MODULE_DISABLED: 33
+  RAW_OUTPUT: 3
+  PROVIDER_NOT_SUPPORTED: 3
+  CIRCUIT_INTEGRITY_PROBE: 1
+  API_HEALTH: 1
+  CALIBRATION_EMPTY: 1
+  REPLAY_CHECK_CLEAN: 1
+  TIMING_BASELINE_NORMAL: 1

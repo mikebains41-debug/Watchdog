@@ -1,0 +1,6 @@
+{
+  "hosts_findings": [],
+  "resolv_conf": "nameserver 8.8.8.8\nnameserver 8.8.4.4",
+  "finding_summary": "Checked /etc/hosts for explicit overrides of 5 commonly-trusted domains \u2014 found 0. Any override here would silently redirect traffic for that domain without any TLS certificate warning being triggered, since the redirect happens before DNS resolution ever occurs.",
+  "timestamp": "2026-08-09T07:17:19.193556+00:00"
+}

@@ -1,0 +1,82 @@
+{
+  "apt_keyring_results": [
+    {
+      "keyring_file": "/etc/apt/trusted.gpg.d/ubuntu-keyring-2012-cdimage.gpg",
+      "algorithms_found": [
+        "RSA"
+      ],
+      "key_bit_sizes_found": [
+        "4096"
+      ],
+      "parse_status": "ok"
+    },
+    {
+      "keyring_file": "/etc/apt/trusted.gpg.d/ubuntu-keyring-2018-archive.gpg",
+      "algorithms_found": [
+        "RSA"
+      ],
+      "key_bit_sizes_found": [
+        "4096"
+      ],
+      "parse_status": "ok"
+    },
+    {
+      "keyring_file": "/usr/share/keyrings/ubuntu-archive-keyring.gpg",
+      "algorithms_found": [
+        "RSA"
+      ],
+      "key_bit_sizes_found": [
+        "4096"
+      ],
+      "parse_status": "ok"
+    },
+    {
+      "keyring_file": "/usr/share/keyrings/ubuntu-archive-removed-keys.gpg",
+      "algorithms_found": [
+        "DSA"
+      ],
+      "key_bit_sizes_found": [
+        "1024"
+      ],
+      "parse_status": "ok"
+    },
+    {
+      "keyring_file": "/usr/share/keyrings/ubuntu-cloudimage-keyring.gpg",
+      "algorithms_found": [
+        "RSA"
+      ],
+      "key_bit_sizes_found": [
+        "4096"
+      ],
+      "parse_status": "ok"
+    },
+    {
+      "keyring_file": "/usr/share/keyrings/ubuntu-cloudimage-removed-keys.gpg",
+      "algorithms_found": null,
+      "key_bit_sizes_found": null,
+      "parse_status": "no_algo_detected"
+    },
+    {
+      "keyring_file": "/usr/share/keyrings/ubuntu-master-keyring.gpg",
+      "algorithms_found": [
+        "RSA"
+      ],
+      "key_bit_sizes_found": [
+        "4096"
+      ],
+      "parse_status": "ok"
+    }
+  ],
+  "apt_finding": "This system's apt trusts 7 keyring file(s), signing algorithms found: ['DSA', 'RSA']. No PQC signature algorithm is in mainstream apt/GPG use as of this writing \u2014 this reflects the ecosystem's current state, not a local misconfiguration.",
+  "pip_findings": {
+    "pip_config_list": "(empty \u2014 no explicit pip config set)",
+    "require_hashes_enforced_globally": false,
+    "config_files_checked": {
+      "/root/.pip/pip.conf": "(not present)",
+      "/root/.config/pip/pip.conf": "(not present)",
+      "/etc/pip.conf": "(not present)"
+    }
+  },
+  "pip_finding": "This system's pip does NOT enforce hash-checking globally (require-hashes not set in any checked config location). Without --require-hashes, pip installs rely on TLS transport security only for package integrity \u2014 there is no local cryptographic verification step being enforced by this system's configuration for package CONTENT, independent of whatever PyPI itself may or may not do server-side (not checked by this script).",
+  "timestamp": "2026-08-09T03:08:26.504979+00:00"
+}

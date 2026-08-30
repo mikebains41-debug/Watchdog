@@ -1,0 +1,8 @@
+{
+  "docker_installed": false,
+  "docker_sock_exists": false,
+  "docker_sock_world_accessible": null,
+  "privileged_containers": null,
+  "finding_summary": "Docker installed: False. docker.sock not present. Docker not installed \u2014 this check is not applicable on this system.",
+  "timestamp": "2026-08-09T07:17:19.329621+00:00"
+}
