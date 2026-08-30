@@ -999,3 +999,241 @@ class ContextSwitchTimingDetector:
                         f"Context only -- no model weights or architecture are "
                         f"recovered from this observation."),
         }
+
+
+class BMCExposureDetector:
+    """Checks whether the BMC management interface is reachable from inside
+    this container -- a signal that the server's out-of-band management
+    plane may be accessible from tenant code.
+
+    Research basis: Black Hat USA 2026 (Moore et al., runZero research).
+    More than 86,000 BMCs found internet-exposed, 54% with at least one
+    critical vulnerability. In a GPU cloud, a reachable BMC provides a
+    path to hardware-level server takeover below the OS -- remote server
+    control, firmware modification, ransomware deployment, months of
+    undetected persistence.
+
+    Checks IPMI port 623/UDP and Redfish ports 443/5000/8443/TCP.
+    CVE-2013-4786: IPMI 2.0 hash leak (20-year-old, actively exploited
+    August 2026 -- 24,000+ servers leaking password hashes).
+    CVE-2024-54085: AMI MegaRAC remote auth bypass, CVSS 10.0, CISA KEV.
+
+    HONEST LIMITS:
+      - Reachability does not confirm exploitability; a firewall may block
+        at a higher layer.
+      - Cannot test actual credential strength without attempting auth,
+        which this detector deliberately does not do.
+      - A negative result does not mean the BMC is secure.
+
+    Fires once at startup; call check() directly or wire into pipeline init.
+    """
+
+    IPMI_UDP_PORT = 623
+    REDFISH_PORTS = [443, 5000, 8443]
+    BMC_PROBE_ADDRS = ['127.0.0.1', '169.254.0.1', '169.254.1.1']
+    TIMEOUT_S = 1.0
+
+    def __init__(self):
+        self._checked = False
+        self._result = None
+
+    def _probe_tcp(self, host, port):
+        import socket as _socket
+        try:
+            s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
+            s.settimeout(self.TIMEOUT_S)
+            s.connect((host, port))
+            s.close()
+            return True
+        except (_socket.timeout, ConnectionRefusedError, OSError):
+            return False
+
+    def _probe_udp(self, host, port):
+        import socket as _socket
+        try:
+            s = _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
+            s.settimeout(self.TIMEOUT_S)
+            pkt = bytes([
+                0x06, 0x00, 0xff, 0x07,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x09, 0x20, 0x18,
+                0xc8, 0x81, 0x00, 0x38, 0x8e, 0x04, 0xb5
+            ])
+            s.sendto(pkt, (host, port))
+            data, _ = s.recvfrom(256)
+            s.close()
+            return len(data) > 0
+        except (_socket.timeout, OSError):
+            return False
+
+    def check(self):
+        if self._checked:
+            return self._result
+        self._checked = True
+        findings = []
+        exposed_ports = []
+        for addr in self.BMC_PROBE_ADDRS:
+            if self._probe_udp(addr, self.IPMI_UDP_PORT):
+                exposed_ports.append(f'{addr}:{self.IPMI_UDP_PORT}/udp(IPMI)')
+                findings.append(
+                    f"IPMI 623/UDP reachable at {addr} -- "
+                    f"CVE-2013-4786 hash leak exposure possible")
+            for port in self.REDFISH_PORTS:
+                if self._probe_tcp(addr, port):
+                    label = 'Redfish'
+                    if port == 5000:
+                        label = 'Redfish/AMI-MegaRAC(CVE-2024-54085)'
+                    exposed_ports.append(f'{addr}:{port}/tcp({label})')
+                    findings.append(
+                        f"BMC management port {port}/TCP reachable at {addr}")
+        if not findings:
+            self._result = None
+            return None
+        self._result = {
+            'type': 'BMC_MANAGEMENT_INTERFACE_EXPOSED',
+            'severity': 'CRITICAL',
+            'exposed_ports': exposed_ports,
+            'timestamp': datetime.now().isoformat(),
+            'message': (
+                f"BMC management interface reachable from inside this "
+                f"container: {', '.join(exposed_ports)}. In a GPU cloud a "
+                f"reachable BMC is a path to hardware-level server takeover "
+                f"below the OS (Black Hat USA 2026; 86,000+ BMCs found "
+                f"internet-exposed, 54% with critical CVEs). "
+                f"CVE-2013-4786 (IPMI 2.0 hash leak, actively exploited "
+                f"Aug 2026) and CVE-2024-54085 (AMI MegaRAC CVSS 10.0) "
+                f"are relevant if IPMI/Redfish are accessible. "
+                f"Honest limit: reachability does not confirm exploitability "
+                f"-- a firewall may block at a higher layer. "
+                f"Negative result does not mean BMC is secure."),
+        }
+        return self._result
+
+    def update(self, row):
+        if self._checked:
+            return None
+        return self.check()
+
+
+class ShadowInitPackageIntegrityDetector:
+    """Detects unpinned Python packages and suspicious installs -- the
+    initial access vector used by the ShadowInit malware family targeting
+    GPU clusters for model weight exfiltration.
+
+    Research basis: AI Infrastructure Security Operations, Introl, December
+    2025 / April 2026. ShadowInit abuses widely shared model-training
+    notebooks that rely on unpinned package versions to install malicious
+    packages into GPU cluster environments, then exfiltrates proprietary
+    model weights and silently manipulates inference outputs.
+
+    Checks:
+      - Package count above threshold (unpinned risk signal)
+      - Editable installs (bypass normal integrity checks)
+      - Typosquat patterns against common AI/ML packages
+
+    HONEST LIMITS:
+      - Unpinned packages are extremely common in legitimate ML environments.
+        This is a supply-chain hygiene signal, not a confirmed attack.
+      - Typosquat heuristic is a simple pattern match, not threat-intel.
+      - Cannot detect a malicious package that has already been renamed to
+        match the legitimate package it replaced.
+      - Runs once at startup.
+    """
+
+    TYPOSQUAT_PATTERNS = [
+        ('torch',        ['torchh', 'pytoch', 'torchs', 'torch-base']),
+        ('numpy',        ['nump', 'numply', 'numpy2']),
+        ('transformers', ['tranformers', 'transformerss']),
+        ('diffusers',    ['diffuser', 'diffuserss']),
+        ('accelerate',   ['acclerate', 'acceleratee']),
+    ]
+
+    def __init__(self, unpinned_threshold=20):
+        self.unpinned_threshold = unpinned_threshold
+        self._checked = False
+        self._result = None
+
+    def _get_packages(self):
+        import json as _json
+        try:
+            out = subprocess.check_output(
+                ['pip', 'list', '--format=json'],
+                stderr=subprocess.DEVNULL, timeout=10
+            ).decode('utf-8', errors='replace')
+            return _json.loads(out)
+        except Exception:
+            return None
+
+    def _get_editable(self):
+        import json as _json
+        try:
+            out = subprocess.check_output(
+                ['pip', 'list', '--editable', '--format=json'],
+                stderr=subprocess.DEVNULL, timeout=10
+            ).decode('utf-8', errors='replace')
+            return _json.loads(out)
+        except Exception:
+            return []
+
+    def _check_typosquats(self, pkg_names):
+        hits = []
+        for legit, squats in self.TYPOSQUAT_PATTERNS:
+            for squat in squats:
+                if squat in pkg_names:
+                    hits.append(f"{squat} (possible typosquat of {legit})")
+        return hits
+
+    def check(self):
+        if self._checked:
+            return self._result
+        self._checked = True
+        pkgs = self._get_packages()
+        if pkgs is None:
+            self._result = None
+            return None
+        pkg_names = {p['name'].lower() for p in pkgs}
+        editable = self._get_editable() or []
+        editable_names = [p['name'] for p in editable]
+        findings = []
+        severity = 'INFO'
+        if len(pkgs) > self.unpinned_threshold:
+            findings.append(
+                f"{len(pkgs)} packages installed -- large unpinned "
+                f"environments are the documented ShadowInit entry vector")
+        if editable_names:
+            findings.append(
+                f"Editable installs: {', '.join(editable_names[:5])} "
+                f"-- bypass normal package integrity checks")
+            severity = 'WARNING'
+        squats = self._check_typosquats(pkg_names)
+        if squats:
+            findings.append(
+                f"Possible typosquat packages: {', '.join(squats)}")
+            severity = 'CRITICAL'
+        if not findings:
+            self._result = None
+            return None
+        self._result = {
+            'type': 'SUPPLY_CHAIN_PACKAGE_RISK',
+            'severity': severity,
+            'package_count': len(pkgs),
+            'editable_installs': editable_names,
+            'findings': findings,
+            'timestamp': datetime.now().isoformat(),
+            'message': (
+                f"Python package environment risk indicators detected. "
+                f"ShadowInit (documented December 2025) targets GPU clusters "
+                f"via unpinned packages to exfiltrate model weights and "
+                f"manipulate inference outputs. "
+                f"Findings: {'; '.join(findings)}. "
+                f"Honest limit: unpinned packages are common in legitimate "
+                f"ML environments -- this is a hygiene signal, not a "
+                f"confirmed attack. Typosquat hits are higher confidence."),
+        }
+        return self._result
+
+    def update(self, row):
+        if self._checked:
+            return None
+        return self.check()

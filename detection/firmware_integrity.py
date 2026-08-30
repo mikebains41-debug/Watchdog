@@ -30,6 +30,20 @@ from datetime import datetime
 
 
 class VBIOSIntegrityDetector:
+    """Detects unauthorized VBIOS or firmware modifications on the GPU.
+
+    Research basis (2026): "A Security Look at NVIDIA GPU Confidential
+    Computing" (arXiv 2507.02770, April 2026) documents that adversaries
+    may flash the GPU VBIOS or update firmware via in-band tools (nvTrust)
+    or out-of-band interfaces (BMC), reassign GPUs between CVMs, or detach
+    and reattach GPUs from PCIe buses. GPU-CC enforces a secure boot chain
+    (CEC EROT -> SEC2) requiring cryptographic signatures, but this chain
+    is only validated at boot -- runtime VBIOS state requires active
+    monitoring to detect post-boot tampering.
+
+    Supply chain compromise targeting GPU firmware is documented as an
+    emerging threat in AI infrastructure security (Introl, December 2025).
+    """
     def __init__(self):
         self.known_vbios = {}
 
