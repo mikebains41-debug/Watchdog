@@ -20,7 +20,7 @@ Watchdog/
   todo/              ← Security modules 01-47 (detection + prevention + quantum security)
   quantum_models/    ← Physics models (this directory)
   b200_watchdog/     ← Real B200 hardware test data
-  detection/         ← 32 automatic detection engines
+  detection/         ← 41 automatic detection engines
 ```
 
 ## Integration point

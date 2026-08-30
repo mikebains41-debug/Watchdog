@@ -50,7 +50,7 @@ Our self-assessed CVSS is 8.4; that score has not been reviewed by anyone else.
 
 ---
 
-## Detection engines (32 automatic + 2 separate)
+## Detection engines (41 automatic + 2 separate)
 
 Four foundational engines, detailed below. Twenty-five more were added
 since, covering hardware attacks, memory attacks, LLM/agent attacks, PCIe
@@ -387,7 +387,7 @@ to hardware attestation, not a substitute for it.
 
 detection/fleet_aggregation.py rolls up alerts across any number of nodes
 into a single view ("N of M nodes currently affected by alert type X"),
-covering all 32 automatic engines including the original four — which
+covering all 41 automatic engines including the original four — which
 initially bypassed both the ledger and the fleet rollup, since
 DetectionPipeline.process()'s return value was being computed and
 silently discarded; both now consume it directly. alerting/state.py

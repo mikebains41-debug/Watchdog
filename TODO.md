@@ -99,7 +99,7 @@ Throttle reason fields — added recently, never run on hardware. Confirm
   promising signal available.
 scripts/check_pcie_telemetry.py — settles whether pcie.bandwidth.util_pct
   is obtainable. PCIeBandwidthMismatchDetector reads that field, nothing
-  supplies it, and it is currently the one engine of 32 that cannot fire.
+  supplies it, and it is currently the one engine of 41 that cannot fire.
 run_cei_benchmark() — produces a real FLOPs/joule figure. Unblocks
   CEIDegradationForecaster, which cannot fire without one.
 run_residency_probe() — produces a real memory-latency figure. Unblocks

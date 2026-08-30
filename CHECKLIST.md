@@ -15,7 +15,7 @@ Nothing in this section can be closed without a real GPU. Every item
 is code that exists and is tested, waiting on hardware to exercise it.
 
 - [ ] Run the 360-hour campaign (5 providers x 4 architectures x 18h)
-- [ ] Validate all 32 automatic engines' thresholds against real telemetry
+- [ ] Validate all 41 automatic engines' thresholds against real telemetry
 - [ ] Run the pipeline negative control for 1 hour on a clean idle H200
 - [ ] Measure real achieved sample rate vs requested (DeltaTimedSampler)
 - [ ] Run `run_cei_benchmark()` -> unblocks CEIDegradationForecaster
