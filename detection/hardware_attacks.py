@@ -828,3 +828,174 @@ class PCIeAnomalyDetector:
                         f"which produce an identical signature and cannot be "
                         f"ruled out from this telemetry alone."),
         }
+
+
+class NVIDIAContainerToolkitCVEChecker:
+    """Checks whether the NVIDIA Container Toolkit is patched against
+    CVE-2025-23266 (NVIDIA Security Bulletin, January 2025).
+
+    Versions before 1.17.4 allow container escape / root access bypass
+    via a flaw in the toolkit's runtime hook handling. NVIDIA recommends
+    quarterly firmware and driver updates; this detector automates the
+    version check at startup or on demand.
+
+    HONEST LIMITS:
+      - Only checks the version string. Does not verify the patch was
+        applied correctly or that the runtime is configured securely.
+      - If the toolkit is not installed this returns None (clean) --
+        an uninstalled toolkit cannot be exploited via this CVE.
+      - Falls back to None if the command fails or returns an unexpected
+        format; does not fabricate a finding.
+    """
+
+    FIXED_VERSION = (1, 17, 4)
+    CVE_ID = "CVE-2025-23266"
+
+    def __init__(self):
+        self._result = None
+        self._checked = False
+
+    def _parse_version(self, s):
+        import re
+        m = re.search(r'(\d+)\.(\d+)\.(\d+)', s)
+        if not m:
+            return None
+        return tuple(int(x) for x in m.groups())
+
+    def _get_installed_version(self):
+        import subprocess
+        for cmd in [['nvidia-ctk', 'version'],
+                    ['nvidia-container-toolkit', '--version']]:
+            try:
+                out = subprocess.check_output(
+                    cmd, stderr=subprocess.STDOUT, timeout=5
+                ).decode('utf-8', errors='replace')
+                v = self._parse_version(out)
+                if v:
+                    return v
+            except (FileNotFoundError, subprocess.CalledProcessError,
+                    subprocess.TimeoutExpired, PermissionError):
+                continue
+        return None
+
+    def check(self):
+        if self._checked:
+            return self._result
+        self._checked = True
+        version = self._get_installed_version()
+        if version is None or version >= self.FIXED_VERSION:
+            self._result = None
+            return None
+        ver_str = '.'.join(str(x) for x in version)
+        fixed_str = '.'.join(str(x) for x in self.FIXED_VERSION)
+        self._result = {
+            'type': 'CONTAINER_TOOLKIT_CVE',
+            'severity': 'CRITICAL',
+            'cve': self.CVE_ID,
+            'installed_version': ver_str,
+            'fixed_version': fixed_str,
+            'timestamp': datetime.now().isoformat(),
+            'message': (f"{self.CVE_ID}: NVIDIA Container Toolkit {ver_str} is "
+                        f"vulnerable to container escape / root access bypass. "
+                        f"Fixed in {fixed_str}. Update immediately: "
+                        f"https://nvidia.custhelp.com/app/answers/detail/a_id/5614"),
+        }
+        return self._result
+
+    def update(self, row):
+        """Drop-in compatible with the .update(row) detector interface.
+        Fires on the first call if vulnerable, then stays silent."""
+        if self._checked:
+            return None
+        return self.check()
+
+
+class ContextSwitchTimingDetector:
+    """Detects abnormal SM clock variance during idle -- the observable
+    telemetry signature of GPU context-switch activity while this GPU
+    reports little local compute.
+
+    Research basis:
+      - Leaky DNN (Wei et al., DSN 2020): GPU context switches leak
+        deep-learning model architecture to co-resident tenants via
+        timing side channels.
+      - Improved Micro-Architectural Covert-Channel on GPUs (Baddour,
+        Sanadhya, Banerjee, J. Hardware & Systems Security, Sep 2025):
+        updated micro-architectural channel via context-switch patterns.
+
+    The existing clocks.sm field shows brief transients when context
+    switches occur -- the SM clock drops and recovers around each switch.
+    High variance in a rolling window at low utilization is consistent
+    with repeated context switches for a co-tenant's model.
+
+    HONEST LIMITS:
+      - clocks.sm variance also arises from DVFS, power-save states, and
+        driver-initiated clock changes -- identical signal, cannot be
+        distinguished from this field alone.
+      - INFO severity only. No model weights or architecture are recovered.
+    """
+
+    def __init__(self, util_ceiling=10.0, clock_variance_threshold=50.0,
+                 window_samples=20, baseline_min_samples=30,
+                 require_consecutive=4, refire_after_s=600):
+        self.util_ceiling = util_ceiling
+        self.clock_variance_threshold = clock_variance_threshold
+        self.window_samples = window_samples
+        self.baseline_min_samples = baseline_min_samples
+        self.clock_window = collections.deque(maxlen=window_samples)
+        self.baseline_variance = None
+        self.baseline_samples = collections.deque(maxlen=baseline_min_samples * 2)
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
+    def _variance(self, vals):
+        if len(vals) < 2:
+            return 0.0
+        mean = sum(vals) / len(vals)
+        return sum((v - mean) ** 2 for v in vals) / len(vals)
+
+    def update(self, row):
+        util = _f(row, 'utilization.gpu')
+        clock = _f(row, 'clocks.sm') if 'clocks.sm' in row else None
+        if util is None or clock is None:
+            return None
+        if util > self.util_ceiling:
+            return None
+
+        self.clock_window.append(clock)
+
+        if self.baseline_variance is None:
+            self.baseline_samples.append(clock)
+            if len(self.baseline_samples) >= self.baseline_min_samples:
+                self.baseline_variance = self._variance(
+                    list(self.baseline_samples))
+            return None
+
+        if len(self.clock_window) < self.window_samples:
+            return None
+
+        current_var = self._variance(list(self.clock_window))
+        delta = current_var - self.baseline_variance
+
+        if not self.state.should_emit(delta > self.clock_variance_threshold):
+            return None
+
+        return {
+            'type': 'CONTEXT_SWITCH_CLOCK_VARIANCE',
+            'severity': 'INFO',
+            'gpu': row.get('index'),
+            'sm_clock_variance': round(current_var, 2),
+            'baseline_variance': round(self.baseline_variance, 2),
+            'delta_variance': round(delta, 2),
+            'utilization': util,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (f"SM clock variance {delta:.1f} above this GPU's own "
+                        f"learned idle baseline at {util:.0f}% local compute "
+                        f"-- consistent with GPU context-switch activity for "
+                        f"a co-resident workload (see Leaky DNN, DSN 2020; "
+                        f"Baddour et al., J. Hardware & Systems Security 2025). "
+                        f"Cause unconfirmed: DVFS, power-save transitions, and "
+                        f"driver clock changes produce an identical signal. "
+                        f"Context only -- no model weights or architecture are "
+                        f"recovered from this observation."),
+        }
