@@ -76,7 +76,7 @@ Note: synthetic samples, not an idle GPU. Real-hardware equivalent is in
 TODO.md as a one-hour idle run.
 Verify: `python3 tests/test_engines.py`
 
-### Engine count: 29 automatic, 2 endpoint-driven
+### Engine count: 32 automatic, 2 endpoint-driven
 Verify: `python3 -c "from watchdog import FullDetectionPipeline; print(FullDetectionPipeline(fleet_size=10).total_engine_count)"`
 Caveat: PCIeBandwidthMismatchDetector reads `pcie.bandwidth.util_pct`,
 which nothing collects. It is counted among the 29 and cannot currently

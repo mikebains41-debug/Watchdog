@@ -42,8 +42,11 @@ class ClockGlitchDetector:
                                   refire_after_s=refire_after_s)
 
     def update(self, row):
-        sm_clock = _f(row, 'clocks.sm')
-        util = _f(row, 'utilization.gpu')
+        # FIX: _f() has default=0.0 so a missing key returns 0.0 not None.
+        # A missing clocks.sm returning 0.0 looks like the GPU is throttled
+        # to zero -- could fire falsely on any GPU that omits this field.
+        sm_clock = _f(row, 'clocks.sm') if 'clocks.sm' in row else None
+        util = _f(row, 'utilization.gpu') if 'utilization.gpu' in row else None
         if sm_clock is None or util is None:
             return None
 
@@ -115,8 +118,11 @@ class VoltageGlitchDetector:
                                   refire_after_s=refire_after_s)
 
     def update(self, row):
-        power = _f(row, 'power.draw')
-        util = _f(row, 'utilization.gpu')
+        # FIX: _f() has default=0.0 so a missing key returns 0.0 not None.
+        # A missing power.draw returning 0.0 would silently contaminate
+        # the ghost-power baseline with 'GPU drawing 0W' samples.
+        power = _f(row, 'power.draw') if 'power.draw' in row else None
+        util = _f(row, 'utilization.gpu') if 'utilization.gpu' in row else None
         if power is None or util is None:
             return None
 

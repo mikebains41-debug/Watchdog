@@ -20,7 +20,7 @@ Built around confirmed hardware findings on real B200 SXM silicon. Extended to q
 todo/              Security modules 01–50
 quantum_models/    19 quantum physics models (18 M_*.py + Prometheus exporter)
 b200_watchdog/     Real B200 hardware test data and evidence logs
-detection/         29 automatic detection engines (FullDetectionPipeline)
+detection/         32 automatic detection engines (FullDetectionPipeline)
 intelligence/      5 prediction agents (swarm/)
 forensics/         Tamper-evident audit ledger, clean-run certificates
 remediation/       Response actions (log, kill, quarantine, reset)

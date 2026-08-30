@@ -146,3 +146,40 @@ Nothing from this checklist goes into a report, deck, or pitch until it has:
 2. A commit hash
 3. Either a pass, a fail, or an honestly stated inconclusive result -- never silently
    dropped if it didn't go the way you wanted
+
+## GROUP F — New detectors needing real-hardware validation
+
+### F1. ECCAnomalyDetector — GPUHammer/Rowhammer signal
+Built and unit-tested (18/18 passing). Never run against real hardware.
+- [ ] Rent a GPU pod, induce ECC correctable errors (sustained matmul stress)
+- [ ] Confirm detector fires with a sane per-second rate, not a raw counter
+- [ ] Confirm it stays silent on a healthy GPU with a flat ECC counter
+
+### F2. ThermalSideChannelDetector — Hot Pixels thermal channel
+Built and unit-tested. Never run against real hardware.
+- [ ] Run with a co-located heavy workload and watch whether idle-GPU temperature
+      rises above its own learned baseline
+- [ ] Confirm INFO severity only, no overclaiming
+
+### F3. PCIeAnomalyDetector — Invisible Probe / LockedDown PCIe channel
+Built and unit-tested. PCIe throughput fields not present in every telemetry
+configuration -- confirm they are available on B200 pods before testing.
+- [ ] Check which PCIe field names the B200 pod actually exports
+- [ ] Run a large model load at low compute and confirm it fires
+- [ ] Confirm it stays silent during heavy compute with heavy PCIe
+
+## GROUP G — Highest-priority open research items (unchanged)
+
+### G1. Same-GPU cross-tenant exploit PoC
+The hardest open item. Only the memory-management accounting gap is confirmed,
+not a working exploit where Process B reads Process A's residual data.
+- [ ] Attempt same-GPU cross-tenant data recovery on a real multi-tenant pod
+- [ ] This is the finding that would change the whole story -- currently the
+      most important unresolved item in the entire project
+
+### G2. Remediation end-to-end test
+kubernetes_taint, slurm_evict_job, nvlink_disable all exist in
+orchestration/cluster_actions.py but have never been tested end-to-end.
+- [ ] Set up a controlled test where a detector fires and a remediation action
+      executes correctly, with human-approval gate confirmed working
+- [ ] Needs a real Kubernetes cluster or SLURM scheduler, not a plain GPU pod
