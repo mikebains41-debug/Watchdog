@@ -45,6 +45,7 @@ TEST_FILES = [
     "test_fusion_detectors.py",
     "test_quantum_control_plane.py",
     "test_sdc_compute_integrity.py",
+    "test_unified_correlator.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
