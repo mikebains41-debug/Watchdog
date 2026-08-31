@@ -36,6 +36,7 @@ TEST_FILES = [
     "test_run_negative_control_harness.py",
     "test_check_pcie_telemetry.py",
     "test_ai_attack_detectors.py",
+    "test_ai_attack_detectors_batch2.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
