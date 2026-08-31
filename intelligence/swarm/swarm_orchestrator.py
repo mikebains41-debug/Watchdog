@@ -2,17 +2,22 @@
 # Author: Manmohan (Mike) Bains -- Watchdog
 """
 Watchdog Swarm Intelligence — Orchestrator
-Runs all 5 prediction agents in parallel on live GPU telemetry.
+Runs all prediction agents in parallel on live GPU telemetry.
 
 Watchdog detects what is happening now.
 Watchdog Swarm predicts what is about to happen next.
 
-5 Agents:
+8 Agents:
 - Agent 1: Ghost Power Predictor
 - Agent 2: CEI Degradation Forecaster
 - Agent 3: Thermal Event Predictor
 - Agent 4: Tenant Isolation Risk Scorer
 - Agent 5: EU AI Act Compliance Forecaster
+- Agent 6: Rowhammer / ECC-Break Precursor Predictor   (security)
+- Agent 7: Cryptojacking / Covert-Compute Onset Predictor (security)
+- Agent 8: Model-Extraction / Abnormal-Inference Precursor (security)
+Plus a Security Correlation Layer that escalates co-occurring alerts
+into single incidents.
 
 Grounded in Serial Alice validated H200 measurements:
 - 15 certificates all overall_valid — June 27 2026
@@ -31,25 +36,29 @@ from intelligence.swarm.agent2_cei_degradation_forecaster import CEIDegradationF
 from intelligence.swarm.agent3_thermal_event_predictor import ThermalEventPredictor
 from intelligence.swarm.agent4_tenant_isolation_risk_scorer import TenantIsolationRiskScorer
 from intelligence.swarm.agent5_eu_ai_act_compliance_forecaster import EUAIActComplianceForecaster
+from intelligence.swarm.agent6_rowhammer_precursor_predictor import RowhammerPrecursorPredictor
+from intelligence.swarm.agent7_cryptojacking_onset_predictor import CryptojackingOnsetPredictor
+from intelligence.swarm.agent8_model_extraction_precursor_predictor import ModelExtractionPrecursorPredictor
+from intelligence.swarm.security_correlator import SecurityCorrelator
 
 
 class WatchdogSwarm:
     """
     Watchdog Swarm Intelligence Orchestrator
 
-    Runs all 5 prediction agents on every telemetry sample.
+    Runs all prediction agents on every telemetry sample.
     Collects alerts from all agents.
+    Correlates co-occurring alerts into incidents.
     Provides unified swarm summary.
 
     NOTE: Simulation-based. Requires real hardware validation.
     """
 
-    def __init__(self, gpu_id=0, gpu_arch='H200',
-                 idle_floor_w=80.36):
+    def __init__(self, gpu_id=0, gpu_arch='H200', idle_floor_w=80.36):
         self.gpu_id = gpu_id
         self.gpu_arch = gpu_arch
 
-        # Initialize all 5 agents
+        # Initialize the 5 operational prediction agents
         self.agent1 = GhostPowerPredictor(
             gpu_id=gpu_id,
             idle_floor_w=idle_floor_w
@@ -65,12 +74,21 @@ class WatchdogSwarm:
         )
         self.agent5 = EUAIActComplianceForecaster(gpu_id=gpu_id)
 
+        # Security prediction agents (6-8) + correlation layer
+        self.agent6 = RowhammerPrecursorPredictor(gpu_id=gpu_id)
+        self.agent7 = CryptojackingOnsetPredictor(gpu_id=gpu_id)
+        self.agent8 = ModelExtractionPrecursorPredictor(gpu_id=gpu_id)
+        self.correlator = SecurityCorrelator(window_seconds=30.0)
+
         self.agents = [
             self.agent1,
             self.agent2,
             self.agent3,
             self.agent4,
-            self.agent5
+            self.agent5,
+            self.agent6,
+            self.agent7,
+            self.agent8
         ]
 
         self.alert_history = collections.deque(maxlen=1000)
@@ -81,13 +99,13 @@ class WatchdogSwarm:
         print(f"[SWARM] Watchdog Swarm Intelligence initialized")
         print(f"[SWARM] GPU{gpu_id} | Arch: {gpu_arch} | "
               f"Idle floor: {idle_floor_w}W")
-        print(f"[SWARM] 5 agents active")
+        print(f"[SWARM] 8 agents active (5 operational + 3 security) + correlator")
         print(f"[SWARM] NOTE: Simulation-based. Real hardware validation required.")
 
     def ingest(self, telemetry: dict) -> list:
         """
-        Feed one telemetry sample to all 5 agents.
-        Returns list of alerts fired this sample.
+        Feed one telemetry sample to all agents.
+        Returns list of alerts (and any correlated incidents) fired this sample.
         """
         alerts = []
 
@@ -116,6 +134,30 @@ class WatchdogSwarm:
         if a5:
             alerts.append(a5)
 
+        # Agent 6 — Rowhammer / ECC-break precursor
+        a6 = self.agent6.update(telemetry)
+        if a6:
+            alerts.append(a6)
+
+        # Agent 7 — Cryptojacking / covert-compute onset
+        a7 = self.agent7.update(telemetry)
+        if a7:
+            alerts.append(a7)
+
+        # Agent 8 — Model-extraction / abnormal-inference precursor
+        a8 = self.agent8.update(telemetry)
+        if a8:
+            alerts.append(a8)
+
+        # Correlation layer — escalate co-occurring alerts into incidents.
+        # The correlator sees EVERY alert fired this sample (operational +
+        # security), so rules can pair a security precursor with an
+        # operational signal (e.g. model-extraction + tenant-isolation-risk).
+        incidents = []
+        for alert in alerts:
+            incidents.extend(self.correlator.observe(alert))
+        alerts.extend(incidents)
+
         with self.lock:
             self.total_samples += 1
             self.total_alerts += len(alerts)
@@ -125,10 +167,10 @@ class WatchdogSwarm:
         return alerts
 
     def get_swarm_summary(self) -> dict:
-        """Return unified summary across all 5 agents."""
+        """Return unified summary across all agents."""
         return {
             'swarm': 'Watchdog Swarm Intelligence',
-            'version': '1.0',
+            'version': '1.1',
             'gpu_id': self.gpu_id,
             'gpu_arch': self.gpu_arch,
             'total_samples': self.total_samples,
@@ -139,6 +181,10 @@ class WatchdogSwarm:
                 'agent3_thermal': self.agent3.get_stats(),
                 'agent4_isolation': self.agent4.get_stats(),
                 'agent5_compliance': self.agent5.get_stats(),
+                'agent6_rowhammer': self.agent6.get_stats(),
+                'agent7_cryptojacking': self.agent7.get_stats(),
+                'agent8_model_extraction': self.agent8.get_stats(),
+                'correlator': self.correlator.get_stats(),
             },
             'recent_alerts': list(self.alert_history)[-10:],
             'serial_alice_baseline': {
@@ -160,10 +206,9 @@ class WatchdogSwarm:
 
 if __name__ == "__main__":
     import random
-
     print("=" * 55)
     print("Watchdog Swarm Intelligence — Full Orchestrator Test")
-    print("All 5 agents running in parallel")
+    print("All 8 agents running in parallel + correlator")
     print("NOTE: Simulated data only. Not real hardware.")
     print("=" * 55)
 
@@ -184,13 +229,21 @@ if __name__ == "__main__":
             'vram_used_mb': 629 + random.uniform(-30, 30),
             'memory_access_timing_ms': 0.5 + random.uniform(-0.05, 0.05),
             'sm_clock_mhz': 1800 + random.uniform(-50, 50),
+            # security-agent telemetry (nominal)
+            'ecc_corrected_total': 0,
+            'ecc_uncorrectable_total': 0,
+            'mem_bw_util_pct': random.uniform(40, 70),
+            'inference_req_per_s': random.uniform(2, 8),
+            'avg_req_compute_ms': random.uniform(15, 55),
             'timestamp': datetime.now(timezone.utc).isoformat()
         }
         swarm.ingest(t)
 
-    print("\n[Phase 2] Degrading conditions — 80 samples")
+    print("\n[Phase 2] Degrading + attack precursors — 80 samples")
     alerts_fired = []
+    corrected = 0
     for i in range(80):
+        corrected += (i // 4 + random.randint(0, i // 3 + 1))  # accelerating ECC
         t = {
             'power_watts': 350 - (i * 2.5) + random.uniform(-5, 5),
             'gpu_util': max(0, 90 - (i * 1.5)) + random.uniform(-3, 3),
@@ -204,14 +257,19 @@ if __name__ == "__main__":
             'vram_used_mb': 629 + (i * 8) + random.uniform(-20, 20),
             'memory_access_timing_ms': 0.5 + (i * 0.015) + random.uniform(-0.05, 0.2),
             'sm_clock_mhz': 1800 - (i * 5) + random.uniform(-30, 30),
+            'ecc_corrected_total': corrected,
+            'ecc_uncorrectable_total': 0,
+            'mem_bw_util_pct': random.uniform(40, 70),
+            'inference_req_per_s': random.uniform(2, 8),
+            'avg_req_compute_ms': random.uniform(15, 55),
             'timestamp': datetime.now(timezone.utc).isoformat()
         }
         alerts = swarm.ingest(t)
         for alert in alerts:
             alerts_fired.append(alert['type'])
-            print(f"\n[SWARM ALERT] {alert['type']} — {alert['severity']} "
-                  f"— confidence/risk: "
-                  f"{alert.get('confidence_pct') or alert.get('risk_score_pct') or alert.get('compliance_risk_pct')}%")
+            label = alert.get('incident') or alert['type']
+            print(f"\n[SWARM ALERT] {label} — {alert['severity']} "
+                  f"— {alert.get('confidence_pct') or alert.get('risk_score_pct') or alert.get('compliance_risk_pct') or 'incident'}")
 
     print("\n" + "=" * 55)
     print("SWARM SUMMARY")
@@ -221,5 +279,4 @@ if __name__ == "__main__":
     print(f"Total alerts: {summary['total_alerts']}")
     print(f"Alert types fired: {list(set(alerts_fired))}")
     print(f"Serial Alice baseline: {summary['serial_alice_baseline']['certificates']} certs all valid")
-    print(f"Stable metric: FP8/BF16 ratio CV {summary['serial_alice_baseline']['fp8_bf16_ratio_cv_pct']}%")
     print(f"Note: {summary['note']}")
