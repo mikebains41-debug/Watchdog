@@ -52,3 +52,34 @@ file before it's written into a module.** Never reuse a number.
 
 Reserved blocks for future modules: D16–D25, D27–D31, D33–D36, D39–D44,
 D46–D47, D49, D52–D58, D60–D63, D65–D69, D76–D79, D93–D99.
+
+
+---
+
+## Scope: modules 1-16 only
+
+This registry and its companion `README_MODULES.md` cover modules 1-16.
+That is the ID-governed core.
+
+Modules 17 and above are NOT registered here. A full scan of modules
+17-104 (August 2026) confirmed two things:
+
+1. **No detector-ID usage.** None of modules 17-104 emit a registered
+   `D#` detector ID. They operate outside this registry's scheme. Do not
+   read this file as an inventory of the whole repository -- it governs
+   the first 16 modules only.
+
+2. **Detection-only, no destructive actions.** The same scan checked
+   every module 17-104 for genuinely destructive calls (process kills,
+   file deletion, power-limit changes via nvidia-smi -pl, driver
+   unloads, reboots). Zero were found. Every apparent match was a word
+   inside a comment, docstring, or string literal (e.g. "no reboot" in a
+   comment, "reboots and package updates" in a description string,
+   "ED25519" matching a D-number regex by accident). All genuinely gated
+   destructive actions live in `remediation/`, not in `todo/`.
+
+If modules 17+ are ever brought under ID governance, assign IDs from the
+reserved blocks above, extend README_MODULES.md to match, and update
+this scope note. Until then, the honest statement is: 1-16 are
+registered and detection-only; 17-104 are unregistered and
+detection-only.
