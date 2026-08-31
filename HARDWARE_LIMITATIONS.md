@@ -26,3 +26,30 @@ Power, temperature, clocks, VRAM usage, utilization, PCIe link generation/width,
 driver/VBIOS fingerprint, NVLink status. All 19 detection engines are built
 on these accessible fields. This is an honest scope boundary, not a gap to
 silently work around.
+
+## _f() default=0.0 audit (August 2026)
+
+`detection/_shared.py`'s `_f()` returns `0.0` for a missing key, not None.
+A detector checking `is None` after `_f()` therefore treats an absent
+field as a real zero.
+
+Full audit of 64 `_f(row, ...)` call sites across detection/:
+
+- **Fixed** where a false zero contaminates a learned baseline:
+  GhostPowerDetector (power.draw), clock/PState detector (clocks.sm),
+  ECCAnomalyDetector and PCIeAnomalyDetector (explicit key-presence
+  guards). ThermalSideChannelDetector reads temperature.gpu with the
+  same guard.
+- **Latent, unreachable on target hardware:** ~7 remaining power.draw
+  sites in engines.py, advanced.py, llm_attacks.py check `is None`.
+  Verified against 1,523 real B200 rows across b200_watchdog/*.csv:
+  zero N/A markers, power.draw populated in every row. On real
+  NVIDIA datacenter hardware these fields are always present.
+- **Direction of failure:** at the remaining sites a spurious 0.0
+  produces a MISSED detection (fail-closed), not a false alarm. The
+  baseline-contaminating cases (fail-open) are the ones already fixed.
+
+Decision: remaining sites are hardening, not a live-bug fix. If Watchdog
+is ever deployed to hardware/configs where power.draw can be absent
+(some MIG partitions, some virtualized passthrough), add key-presence
+guards to those 7 sites first.
