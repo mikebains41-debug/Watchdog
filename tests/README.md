@@ -1,7 +1,7 @@
 # Tests
 
 Run everything:
-Expected output ends with `TOTAL: 76 passed, 0 failed across 7 files`.
+Expected output ends with `TOTAL: 99 passed, 0 failed across 8 files`.
 
 Or run any file alone: `python3 tests/test_engines.py`. Every file is
 independently runnable and prints its own PASSED/FAILED breakdown.
@@ -10,8 +10,8 @@ independently runnable and prints its own PASSED/FAILED breakdown.
 
 ## What's actually tested vs. what isn't
 
-**Automated below (52 tests, run on every commit, all synthetic data):**
-the 5 files in this directory.
+**Automated below (75 tests, run on every commit, all synthetic data):**
+the 6 files in this directory.
 
 **Not automated, not run by `run_all.py`, not executed by anyone yet:**
 `scripts/run_negative_control.py`. It needs a live idle GPU for up to an
@@ -20,7 +20,7 @@ in an automated suite would misrepresent it as something that passes on
 every commit -- it doesn't run at all until someone executes it manually
 on real hardware. See that script's own docstring for usage.
 
-None of the 52 tests below have touched real GPU hardware. They test logic
+None of the 75 tests below have touched real GPU hardware. They test logic
 correctness against synthetic data and mocked filesystem states. That is
 a meaningfully weaker claim than "validated on hardware," and is stated as
 such deliberately -- see the main README's Limitations section.
