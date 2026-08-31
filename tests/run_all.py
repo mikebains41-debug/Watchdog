@@ -41,6 +41,7 @@ TEST_FILES = [
     "test_remediation_and_investigator.py",
     "test_aibom_and_hardening.py",
     "test_aibom_jurisdictions.py",
+    "test_saas_scaffold.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
