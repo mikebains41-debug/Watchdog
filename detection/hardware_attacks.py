@@ -1237,3 +1237,155 @@ class ShadowInitPackageIntegrityDetector:
         if self._checked:
             return None
         return self.check()
+
+
+class ConfidentialComputingModeDetector:
+    """Detects a GPU whose confidential-computing mode is CC-DevTools
+    (partial) rather than CC-On -- the CC badge is present but
+    side-channel protections are OFF.
+
+    NVIDIA GPU-CC has three states:
+      CC-On       -- full protection; performance counters DISABLED to
+                     block side channels; HBM writes AES-256-GCM encrypted.
+      CC-DevTools -- partial mode for profiling: matches CC-On workflows
+                     BUT security protections disabled and performance
+                     counters RE-ENABLED. Meant for debugging only.
+      CC-Off      -- no confidential computing.
+
+    The risk: a workload that believes it is confidential (attestation
+    reports "CC") but is actually in DevTools, where the exact
+    performance-counter side channels CC-On exists to prevent are wide
+    open. Same "claimed-secure but actually vulnerable" gap as WD-089-001
+    (144/144 certs quantum-vulnerable despite PQC available).
+
+    Reads the CC mode from the telemetry row; does not itself call
+    nvidia-smi.
+
+    HONEST LIMITS:
+      - Reports the mode as telemetry presents it. Does not independently
+        verify the attestation signature.
+      - CC-DevTools is a legitimate developer mode: correct to flag on a
+        production workload, a false positive during genuine profiling.
+        Severity WARNING, not CRITICAL, reflects that.
+      - Absence of a CC field means CC is not reported -> treated as
+        CC-Off / not-applicable, NOT an error.
+    """
+
+    CC_FIELDS = ('cc_mode', 'conf_compute_mode', 'confidential_computing')
+    ON_VALUES = {'on', 'cc-on', 'enabled', 'active', 'true', '1'}
+    DEVTOOLS_VALUES = {'devtools', 'cc-devtools', 'dev-tools',
+                       'partial', 'debug'}
+    OFF_VALUES = {'off', 'cc-off', 'disabled', 'none', 'false', '0'}
+
+    def __init__(self, require_consecutive=2, refire_after_s=600):
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
+    def _read_mode(self, row):
+        for k in self.CC_FIELDS:
+            if k in row and row[k] is not None:
+                return str(row[k]).strip().lower()
+        return None
+
+    def update(self, row):
+        mode = self._read_mode(row)
+        if mode is None:
+            return None
+        is_devtools = mode in self.DEVTOOLS_VALUES
+        if not self.state.should_emit(is_devtools):
+            return None
+        return {
+            'type': 'CC_MODE_DOWNGRADED_DEVTOOLS',
+            'severity': 'WARNING',
+            'gpu': row.get('index'),
+            'cc_mode': mode,
+            'timestamp': row.get('iso_timestamp'),
+            'message': (
+                "GPU confidential-computing mode is CC-DevTools, not CC-On. "
+                "DevTools keeps the confidential-computing attestation but "
+                "RE-ENABLES performance counters and DISABLES the "
+                "side-channel protections CC-On provides. A workload that "
+                "believes it is confidential is exposed to the exact "
+                "performance-counter side channels CC mode exists to block. "
+                "Correct to flag on a production workload; a false positive "
+                "during genuine profiling (DevTools is a legitimate "
+                "developer mode). Honest limit: reports the mode as "
+                "telemetry presents it and does not independently verify "
+                "the attestation signature."),
+        }
+
+
+class MIGCachePartitionSideChannelDetector:
+    """Flags a telemetry pattern consistent with the MIG cache-partition
+    cross-VM side channel ("Behind Bars", disclosed 2026) -- indirect,
+    hardware-gated, honestly caveated.
+
+    On H100 with Multi-Instance GPU (MIG), "Behind Bars" showed a Guest
+    VM can use memory-barrier timing to observe cache partitioning across
+    MIG instances -- a cross-VM inference channel. (AMD reviewed the same
+    class for MI3XX and stated their XCD partitioning does not exhibit it;
+    the finding is H100-MIG specific.)
+
+    Standard telemetry cannot see the memory-barrier timing the attack
+    uses. What this CAN flag is the PRECONDITION: MIG enabled AND multiple
+    instances active AND a memory-bandwidth pattern on one instance above
+    what its own compute accounts for -- cross-partition interference
+    consistent with (but NOT proof of) the side channel.
+
+    HONEST LIMITS (weaker than most, stated plainly):
+      - PRECONDITION + anomaly flag, NOT an attack detector.
+      - MIG cross-partition interference also arises from ordinary noisy
+        co-tenants sharing L2, no attack present. Identical signal.
+      - Needs MIG-specific fields the collector may not populate; silent
+        if MIG is not enabled or not reported.
+      - Research-stage. Needs validation on a real MIG-enabled pod.
+    """
+
+    def __init__(self, l2_interference_threshold=25.0,
+                 require_consecutive=4, refire_after_s=600):
+        self.l2_interference_threshold = l2_interference_threshold
+        self.require_consecutive = require_consecutive
+        self.state = _EventState(require_consecutive=require_consecutive,
+                                  refire_after_s=refire_after_s)
+
+    def _mig_enabled(self, row):
+        v = row.get('mig_mode')
+        if v is None:
+            return False
+        return str(v).strip().lower() in ('enabled', 'on', 'true', '1')
+
+    def update(self, row):
+        if not self._mig_enabled(row):
+            return None
+        instances = _f(row, 'mig_active_instances')
+        if instances is None or instances < 2:
+            return None
+        util = _f(row, 'utilization.gpu')
+        mem_bw = _f(row, 'utilization.memory')
+        if util is None or mem_bw is None:
+            return None
+        interference = mem_bw - util
+        if not self.state.should_emit(
+                interference > self.l2_interference_threshold):
+            return None
+        return {
+            'type': 'MIG_CROSS_PARTITION_INTERFERENCE',
+            'severity': 'INFO',
+            'gpu': row.get('index'),
+            'mig_active_instances': instances,
+            'mem_bw_util': mem_bw,
+            'compute_util': util,
+            'interference_delta': round(interference, 1),
+            'timestamp': row.get('iso_timestamp'),
+            'message': (
+                f"MIG enabled with {instances:.0f} active instances; this "
+                f"instance shows memory-bandwidth activity {interference:.0f} "
+                f"points above its own compute -- consistent with "
+                f"cross-partition cache interference (see 'Behind Bars' MIG "
+                f"cache-partition side channel, 2026). PRECONDITION + "
+                f"anomaly flag ONLY, not attack proof: standard telemetry "
+                f"cannot observe the memory-barrier timing the actual attack "
+                f"uses, and ordinary noisy co-tenants sharing L2 produce an "
+                f"identical signal. Research-stage; needs validation on a "
+                f"real MIG-enabled pod."),
+        }

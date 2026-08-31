@@ -86,3 +86,6 @@ As of August 2026, committed to the main Watchdog repo:
 - tenant_file_cleaner (PART 1 of REMEDIATION_CLEARING_PLAN)
 - action_switch — the Watchdog Switch (per-action promotion registry)
 - SideLink citation added to NVLinkContentionDetector docstring
+- ConfidentialComputingModeDetector (CC-DevTools downgrade, Aug 2026)
+- MIGCachePartitionSideChannelDetector ("Behind Bars" MIG precondition,
+  RESEARCH-STAGE -- needs validation on a real MIG-enabled pod)
