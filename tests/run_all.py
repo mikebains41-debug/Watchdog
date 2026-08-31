@@ -35,6 +35,7 @@ TEST_FILES = [
     "test_verify_ebpf_quarantine_core.py",
     "test_run_negative_control_harness.py",
     "test_check_pcie_telemetry.py",
+    "test_ai_attack_detectors.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
