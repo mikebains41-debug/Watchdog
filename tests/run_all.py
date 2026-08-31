@@ -47,6 +47,7 @@ TEST_FILES = [
     "test_sdc_compute_integrity.py",
     "test_unified_correlator.py",
     "test_watchdog_daemon.py",
+    "test_validation_harness.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
