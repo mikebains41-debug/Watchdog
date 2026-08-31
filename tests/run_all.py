@@ -39,6 +39,7 @@ TEST_FILES = [
     "test_ai_attack_detectors_batch2.py",
     "test_security_swarm.py",
     "test_remediation_and_investigator.py",
+    "test_aibom_and_hardening.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
