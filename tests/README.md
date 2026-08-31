@@ -1,7 +1,7 @@
 # Tests
 
 Run everything:
-Expected output ends with `TOTAL: 129 passed, 0 failed across 9 files`.
+Expected output ends with `TOTAL: 144 passed, 0 failed across 10 files`.
 
 Or run any file alone: `python3 tests/test_engines.py`. Every file is
 independently runnable and prints its own PASSED/FAILED breakdown.
