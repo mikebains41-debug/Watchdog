@@ -49,6 +49,7 @@ TEST_FILES = [
     "test_watchdog_daemon.py",
     "test_validation_harness.py",
     "test_published_circuit_verifier.py",
+    "test_agent_sandbox_isolation.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
