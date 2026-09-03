@@ -54,6 +54,7 @@ TEST_FILES = [
     "test_model_integrity.py",
     "test_extreme_environments.py",
     "test_solar_storm.py",
+    "test_storm_response.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
