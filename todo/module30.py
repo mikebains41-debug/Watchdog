@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import sys
+sys.exit("UNGATED: this module performs privileged destructive actions with no safety gate. See SECURITY_REVIEW_2026-09-04.md H1. Port module21 gating before running.")
+
 """
 Watchdog — Module 30: GPU Page Retirement Poisoning Prevention (B200/HBM3e)
 Attack: Attacker toggles faulty HBM3e pages on/off, causing repeated

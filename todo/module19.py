@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import sys
+sys.exit("UNGATED: this module performs privileged destructive actions with no safety gate. See SECURITY_REVIEW_2026-09-04.md H1. Port module21 gating before running.")
+
 """
 Watchdog — GPU Software & Context (B200)
 Combines: driver/context guard (was 19) + model integrity (was 23)

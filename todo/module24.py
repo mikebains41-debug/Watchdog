@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import sys
+sys.exit("UNGATED: this module performs privileged destructive actions with no safety gate. See SECURITY_REVIEW_2026-09-04.md H1. Port module21 gating before running.")
+
 """
 Watchdog — ACPI Power Guard (B200)
 Attack: Malformed ACPI _PSR / SMI requests cause rapid PCIe slot power cycling,
@@ -85,7 +88,7 @@ def ipmi_lock_psu() -> bool:
     """
     try:
         subprocess.check_output(
-            ["ipmitool", "raw", "0x00", "0x02", "0x00"],
+            ["ipmitool", "mc", "info"],  # DISABLED 2026-09-04: was chassis POWER DOWN (0x00 0x02 0x00). See SECURITY_REVIEW C1.
             timeout=5, stderr=subprocess.DEVNULL)
         return True
     except:

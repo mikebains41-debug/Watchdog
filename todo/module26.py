@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import sys
+sys.exit("UNGATED: this module performs privileged destructive actions with no safety gate. See SECURITY_REVIEW_2026-09-04.md H1. Port module21 gating before running.")
+
 """
 Watchdog — GDS (GPU Direct Storage) VRAM Guard (B200)
 Attack: Compromised NVMe SSD with GDS support writes directly to GPU VRAM
