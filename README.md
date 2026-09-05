@@ -446,22 +446,19 @@ alerting/manager.py handles severity filtering and audit logging for
 every alert, fully wired in. Two further modules are now also live:
 alerting/state.py (deduplication, described above under audit trail) and
 alerting/siem.py (PagerDuty/Splunk/Sentinel/Datadog routing — safe by
-design, each integration no-ops without its own credential env var). Two
-modules remain dead imports — present, loaded, doing nothing:
-alerting/email_alerter.py and intelligence/threat_intel.py.
-email_alerter.py's previously-documented bug -- a hardcoded
-CVE-2048350 reference in every alert email regardless of the alert's
-actual type -- is no longer present in the file; its body carries only
-timestamp, type, severity, GPU, confidence, and message. It does
-default to a hardcoded personal recipient address when none is
-configured, which any real deployment should override.
-
-intelligence/threat_intel.py additionally has a known problem in its own
-data, not just its wiring: KNOWN_IOCS previously listed named attack
-campaigns with invented attribution, dates, and CVSS scores. That
-fabricated data has been removed entirely rather than "corrected" with
-more guessing — the correlation logic is intact and now honestly reports
-zero matches until real, sourced entries are added. Still not wired in.
+design, each integration no-ops without its own credential env var).
+modules that were previously dead imports have been resolved:
+alerting/email_alerter.py has been REMOVED (it was imported by watchdog.py
+but never called, and defaulted to a hardcoded personal recipient
+address); alert delivery goes through alerting/siem.py. intelligence/
+threat_intel.py is KEPT and is live -- it is the base class for
+intelligence/threat_intel_airgap.py (AirGappedThreatIntel). Its KNOWN_IOCS
+list previously carried named attack campaigns with invented attribution,
+dates, and CVSS scores; that fabricated data has been removed entirely
+rather than corrected with more guessing, so the correlation logic is
+intact and honestly reports zero matches until real, sourced entries are
+added. scripts/audit_dead_imports.py verifies this state (it detects both
+calls and inheritance).
 
 ---
 

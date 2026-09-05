@@ -86,7 +86,9 @@ def audit_one(rel, spec):
         if imp_re.search(s):
             importers.append(os.path.relpath(f, REPO))
         for name in defs:
-            if re.search(rf"\b{re.escape(name)}\s*\(", s):
+            # a CALL:  Name(   -- or an INHERITANCE:  class X(Name  /  class X(Base, Name
+            if re.search(rf"\b{re.escape(name)}\s*\(", s) or \
+                    re.search(rf"class\s+\w+\s*\([^)]*\b{re.escape(name)}\b", s):
                 callers.append((os.path.relpath(f, REPO), name))
                 break
     out["imported_by"] = importers
