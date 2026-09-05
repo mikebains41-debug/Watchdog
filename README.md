@@ -447,7 +447,7 @@ every alert, fully wired in. Two further modules are now also live:
 alerting/state.py (deduplication, described above under audit trail) and
 alerting/siem.py (PagerDuty/Splunk/Sentinel/Datadog routing — safe by
 design, each integration no-ops without its own credential env var).
-modules that were previously dead imports have been resolved:
+The two modules that were previously dead imports have been resolved:
 alerting/email_alerter.py has been REMOVED (it was imported by watchdog.py
 but never called, and defaulted to a hardcoded personal recipient
 address); alert delivery goes through alerting/siem.py. intelligence/
