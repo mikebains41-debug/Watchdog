@@ -14,7 +14,9 @@ class AuditLog:
             with open(self.path,'r') as f: lines = f.readlines()
             if lines:
                 try: self.last_hash = json.loads(lines[-1]).get('hash','0'*64)
-                except: pass
+                except (json.JSONDecodeError, ValueError) as e:
+                    self.last_hash = '0'*64
+                    self.chain_warning = f'audit log tail unreadable ({type(e).__name__}); chain restarted'
     def append(self, alert):
         entry = {'iso_timestamp':datetime.now().isoformat(),'alert':alert,'prev_hash':self.last_hash}
         entry_str = json.dumps(entry, sort_keys=True)

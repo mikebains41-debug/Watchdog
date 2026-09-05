@@ -105,8 +105,10 @@ class RemediationEngine:
             target_pid = str(target_pid)
             if target_pid not in pids:
                 return f'TARGET_PID_{target_pid}_NOT_FOUND_ON_GPU_{gpu}'
-            try: subprocess.run(['kill','-9',target_pid],timeout=3)
-            except: pass
+            try:
+                subprocess.run(['kill','-9',target_pid],timeout=3,check=True)
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as e:
+                return f'KILL_FAILED_PID_{target_pid}:{type(e).__name__}:{e}'
             return f'KILLED_TARGETED_PID_{target_pid}'
         except Exception as e: return f'KILL_FAILED:{e}'
 

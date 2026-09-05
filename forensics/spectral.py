@@ -19,7 +19,7 @@ class SpectralAnalyzer:
             reader = csv.DictReader(f)
             for row in reader:
                 try: signal.append(float(row.get(power_col,0)))
-                except: pass
+                except (ValueError, TypeError): pass
         if len(signal) < 16: return None
         n = 2**int(math.log2(len(signal)))
         signal = signal[:n]
