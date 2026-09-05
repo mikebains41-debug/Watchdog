@@ -36,8 +36,6 @@ from alerting.manager import AlertManager
 from detection.cvss_scores import enrich_alert
 from alerting.state import AlertStateManager
 from alerting.siem import SIEMRouter
-from alerting.email_alerter import EmailAlerter
-from intelligence.threat_intel import ThreatIntelEngine
 from remediation.response import RemediationEngine
 
 class FullDetectionPipeline:
