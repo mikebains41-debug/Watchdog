@@ -59,6 +59,7 @@ TEST_FILES = [
     "test_operator_guardrail_handoff.py",
     "test_master_and_hygiene.py",
     "test_collective_sdc_attribution.py",
+    "test_model_substitution_auditor.py",
 ]
 
 RESULT_RE = re.compile(r"PASSED:\s*(\d+)\s+FAILED:\s*(\d+)")
