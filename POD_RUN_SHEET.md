@@ -1,4 +1,6 @@
-# POD RUN SHEET — 4× H200 SXM
+# POD RUN SHEET
+
+See `TEST_DESCRIPTIONS.md` for what each test proves and does not prove. — 4× H200 SXM
 
 **Companion to `POD_VALIDATION_PLAN.md`** (which defines the tier scheme). This is the sheet you tick through on the pod. Book **5 hours** — work is ~3.5h, the rest absorbs first-run fixes on code that has never touched hardware.
 
@@ -20,6 +22,7 @@
 - [ ] **All GPUs ~0% util.** Not 0% = a neighbour. Kill the pod, get another
 - [ ] **GPU3 is the cold reference. Never touch it all session.** No context, ever
 - [ ] `git clone` Watchdog · `mkdir -p evidence`
+- [ ] **`python3 scripts/hardware_preflight_check.py` -- RUN THIS FIRST.** sample_gpu() silently drops an entire row when the column count does not match, so one unsupported field gives an empty run with NO error explaining why. Isolates it in two minutes instead of debugging blind at $18/hr
 - [ ] `python3 tests/test_engines.py` and `python3 tests/attack_injection_suite.py` → 17/17 and 36/36
 
 ---
@@ -124,6 +127,7 @@ README: *"the negative control needs an hour on a clean idle H200 before it mean
 - [ ] `nohup python3 scripts/run_negative_control.py &` on the **untouched GPU3**, one full hour
 - [ ] Target: 3600 consecutive clean samples → **0 alerts**
 - [ ] Run it during Stages 5–7 so it costs no extra wall-clock
+- [ ] **Coverage gap, per the script's own docstring:** compute_apps is not queried, so it runs with vram_strict=False and **VRAMResidualDetector does not evaluate.** State the negative control as covering the pipeline MINUS that detector, not all 41 engines
 
 ---
 
