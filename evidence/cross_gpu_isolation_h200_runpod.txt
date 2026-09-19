@@ -1,0 +1,21 @@
+CROSS-GPU ISOLATION, H200 x4 RunPod, driver 570.124.06, all pairs NV18
+
+cross_gpu_isolation_check.py reported: GPU1 1.0MB -> 4.0MB after GPU0 workload,
+verdict "possible isolation bleed".
+
+FALSE POSITIVE. Isolated the mechanism:
+  torch.cuda.device_count() alone      -> all 4 GPUs stay at 1 MiB
+  single context+alloc on GPU0 alone   -> GPU0 640 MiB, GPU1/2/3 ALL 4 MiB
+
+All three untouched GPUs move together, not just GPU1. This is peer-mapping /
+NVLink structure allocation at CUDA context creation -- expected driver
+behaviour on an NV18-connected box, not data crossing a boundary.
+
+RESULT: no cross-GPU residual detected on bare RunPod. The 528MB GPU0->GPU1
+figure from the Serial Alice Intel TDX CVM does NOT reproduce here (3 MB vs
+528 MB, two orders of magnitude). That figure is likely a CVM artifact rather
+than a GPU property.
+
+FIX NEEDED: cross_gpu_isolation_check.py flags any nonzero delta. It needs a
+threshold above peer-mapping overhead (>10 MB) and should sample ALL peer GPUs,
+since a change on every peer indicates driver overhead, not a targeted bleed.

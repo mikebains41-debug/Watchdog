@@ -7,3 +7,4 @@ GPU must be genuinely idle for the entire run -- any workload invalidates this r
 [WARNING] GHOST_POWER — Ghost power 42.5W above 79.2W idle floor at 0% utilization
 [WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.67 at lag 3 samples, amplitude 43.5W. Cause unconfirmed.
 [WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.96 at lag 3 samples, amplitude 48.4W. Cause unconfirmed.
+[WARNING] GHOST_POWER — Ghost power 25.1W above 79.2W idle floor at 0% utilization
