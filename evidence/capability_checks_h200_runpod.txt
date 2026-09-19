@@ -1,0 +1,23 @@
+CAPABILITY CHECKS, H200 x4 RunPod, driver 570.124.06
+
+PCIe telemetry        static link info YES; real-time dmon throughput MAYBE
+                      (script correctly refuses to conclude without a human
+                      reading raw output during an ACTIVE transfer -- not idle)
+ECC fields            READABLE on all 4 GPUs. Baseline 0 corrected /
+                      0 uncorrected, pstate P0, 31-36C.
+                      Tier-2 Rowhammer telemetry path CONFIRMED.
+/proc/net/tcp         READABLE inside the container. egress_collector.py has a
+                      working data source on RunPod.
+compute_apps          EMPTY even with a live workload (preflight + remediation
+                      both confirmed). Container cannot see process PIDs; the
+                      driver reports them in the host PID namespace.
+                      CONSEQUENCE: VRAMResidualDetector cannot evaluate here,
+                      and no detector can supply a PID to kill_process.
+
+/dev/nvidia*          devices 0,3,4,6 present (NON-CONTIGUOUS). Container maps
+                      them to CUDA indices 0-3. Host device numbering differs
+                      from container numbering -- relevant to any host-side
+                      correlation.
+/dev/shm              469G available, 0% used, CLEAN. No prior-tenant files.
+                      Consistent with the 2/2 clean RunPod scans in
+                      B200_FINDINGS_REPORT (vs 5/5 dirty on Vast.ai/H200).
