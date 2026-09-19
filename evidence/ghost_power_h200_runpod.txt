@@ -1,0 +1,9 @@
+H200 ghost power direct measurement, RunPod, driver 570.124.06
+GPU3, no CUDA context all session prior to this test
+cold baseline:        78.61 W, 345 MHz
+60s bf16 GEMM load, process exit, 15s settle
+post-exit:            79.14 W, 345 MHz
+delta:                +0.53 W  (inside NVML +/-5W accuracy)
+VERDICT: no post-exit ghost power detected on this platform
+Context cost observed separately: GPU0/GPU1 at ~125 W with live context,
+SM clock 1980 MHz vs 345 MHz idle -- releases fully on exit.

@@ -1,0 +1,267 @@
+{
+  "type": "POD_VALIDATION_RUN",
+  "run_id": "1789858783-32ba978711ee",
+  "backend": "real",
+  "backend_error": null,
+  "is_evidence": true,
+  "environment": {
+    "captured_at": "2026-09-19T22:59:41.313196+00:00",
+    "hostname": "32ba978711ee",
+    "gpus": [
+      {
+        "index": "0",
+        "name": "NVIDIA H200",
+        "uuid": "GPU-ff1e3761-3ab5-1898-57c1-8d7ee49a2731",
+        "driver_version": "570.124.06",
+        "vbios_version": "96.00.CF.00.02",
+        "memory.total": "143771",
+        "power.limit": "700.00",
+        "ecc.mode.current": "Enabled",
+        "utilization.gpu": "0",
+        "power.draw": "78.38",
+        "clocks.mem": "3201",
+        "clocks.sm": "345",
+        "ecc.errors.corrected.aggregate.total": "0",
+        "ecc.errors.uncorrected.aggregate.total": "0"
+      },
+      {
+        "index": "1",
+        "name": "NVIDIA H200",
+        "uuid": "GPU-3479cd45-8f60-a28d-838b-3e9b846adada",
+        "driver_version": "570.124.06",
+        "vbios_version": "96.00.CF.00.02",
+        "memory.total": "143771",
+        "power.limit": "700.00",
+        "ecc.mode.current": "Enabled",
+        "utilization.gpu": "0",
+        "power.draw": "77.56",
+        "clocks.mem": "3201",
+        "clocks.sm": "345",
+        "ecc.errors.corrected.aggregate.total": "0",
+        "ecc.errors.uncorrected.aggregate.total": "0"
+      },
+      {
+        "index": "2",
+        "name": "NVIDIA H200",
+        "uuid": "GPU-72fd0d86-6820-ab4c-68ea-c98a21f7d03c",
+        "driver_version": "570.124.06",
+        "vbios_version": "96.00.CF.00.02",
+        "memory.total": "143771",
+        "power.limit": "700.00",
+        "ecc.mode.current": "Enabled",
+        "utilization.gpu": "0",
+        "power.draw": "77.65",
+        "clocks.mem": "3201",
+        "clocks.sm": "345",
+        "ecc.errors.corrected.aggregate.total": "0",
+        "ecc.errors.uncorrected.aggregate.total": "0"
+      },
+      {
+        "index": "3",
+        "name": "NVIDIA H200",
+        "uuid": "GPU-85bde0e7-3c2a-2368-f385-c4ac25f5d91e",
+        "driver_version": "570.124.06",
+        "vbios_version": "96.00.CF.00.02",
+        "memory.total": "143771",
+        "power.limit": "700.00",
+        "ecc.mode.current": "Enabled",
+        "utilization.gpu": "0",
+        "power.draw": "78.68",
+        "clocks.mem": "3201",
+        "clocks.sm": "345",
+        "ecc.errors.corrected.aggregate.total": "0",
+        "ecc.errors.uncorrected.aggregate.total": "0"
+      }
+    ],
+    "gpu_count": 4,
+    "topology": "\t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tNIC0\tNIC1\tNIC2\tNIC3\tNIC4\tNIC5\tNIC6\tNIC7\tNIC8\tNIC9\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nGPU0\t X \tNV18\tNV18\tNV18\tPIX\tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-47,96-143\t0\t\tN/A\nGPU1\tNV18\t X \tNV18\tNV18\tNODE\tNODE\tNODE\tPIX\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-47,96-143\t0\t\tN/A\nGPU2\tNV18\tNV18\t X \tNV18\tSYS\tSYS\tSYS\tSYS\tPIX\tNODE\tNODE\tNODE\tNODE\tNODE\t48-95,144-191\t1\t\tN/A\nGPU3\tNV18\tNV18\tNV18\t X \tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPIX\tNODE\tNODE\tNODE\t48-95,144-191\t1\t\tN/A\nNIC0\tPIX\tNODE\tSYS\tSYS\t X \tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t\t\t\t\nNIC1\tNODE\tNODE\tSYS\tSYS\tNODE\t X \tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t\t\t\t\nNIC2\tNODE\tNODE\tSYS\tSYS\tNODE\tNODE\t X \tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t\t\t\t\nNIC3\tNODE\tPIX\tSYS\tSYS\tNODE\tNODE\tNODE\t X \tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t\t\t\t\nNIC4\tSYS\tSYS\tPIX\tNODE\tSYS\tSYS\tSYS\tSYS\t X \tNODE\tNODE\tNODE\tNODE\tNODE\t\t\t\t\nNIC5\tSYS\tSYS\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\t X \tNODE\tNODE\tNODE\tNODE\t\t\t\t\nNIC6\tSYS\tSYS\tNODE\tPIX\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\t X \tNODE\tNODE\tNODE\t\t\t\t\nNIC7\tSYS\tSYS\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\t X \tNODE\tNODE\t\t\t\t\nNIC8\tSYS\tSYS\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tNODE\t X \tPIX\t\t\t\t\nNIC9\tSYS\tSYS\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tNODE\tPIX\t X \t\t\t\t\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n  NIC4: mlx5_4\n  NIC5: mlx5_5\n  NIC6: mlx5_6\n  NIC7: mlx5_7\n  NIC8: mlx5_8\n  NIC9: mlx5_9\n\n",
+    "python": "3.12.3",
+    "torch_version": "2.8.0+cu128",
+    "torch_cuda_available": true,
+    "torch_cuda_device_count": 4,
+    "architectures_seen": [
+      "NVIDIA H200"
+    ],
+    "arch_homogeneous": true
+  },
+  "detector_hook_paths": {
+    "cryptojacking_onset": "threshold(util>90 & uniform sm clock)",
+    "nvlink_contention": "threshold(nvlink_kb_per_s > 1e6)",
+    "ghost_power": "threshold(ghost_watts > 15)  # README: >15W over learned idle floor",
+    "sdc_drdna": "threshold(any |activation| > 10 vs baseline)",
+    "rowhammer_precursor": "silent-on-clean check (Tier 2)"
+  },
+  "summary": {
+    "type": "VALIDATION_SUMMARY",
+    "victim_gpu": 1,
+    "worker_gpus": [
+      2,
+      0
+    ],
+    "stages_total": 8,
+    "tier1_true_positive": {
+      "total": 6,
+      "passed": 3,
+      "stages": [
+        "nvlink_livefire",
+        "cross_gpu_residual",
+        "sdc_drdna"
+      ]
+    },
+    "tier2_capability": [
+      "rowhammer_capability"
+    ],
+    "tier3_cannot_induce": [
+      "quantum_control_plane"
+    ],
+    "results": [
+      {
+        "stage": "covert_compute",
+        "tier": "TIER1_TRUE_POSITIVE",
+        "passed": false,
+        "evidence": {
+          "induced": {
+            "gpu": 2,
+            "iterations": 1640,
+            "seconds": 5,
+            "util_pct": 57.0,
+            "mean_util_pct": 43.75609756097561,
+            "power_watts": 524.54,
+            "sm_clock_uniform": null,
+            "sm_clocks_seen": [
+              1650.0
+            ],
+            "samples": 82,
+            "measurement": "real"
+          },
+          "fired_on_attack": false,
+          "silent_on_clean": false
+        },
+        "note": "real heavy-compute inducer (safe, not a real miner binary)",
+        "timestamp": "2026-09-19T22:59:49.202638+00:00"
+      },
+      {
+        "stage": "nvlink_livefire",
+        "tier": "TIER1_TRUE_POSITIVE",
+        "passed": true,
+        "evidence": {
+          "induced": {
+            "src": 2,
+            "dst": 0,
+            "transferred_mb": 1024,
+            "seconds": 0.1917,
+            "nvlink_kb_per_s": 5470442.9,
+            "nvlink_counters_raw": "GPU 2: NVIDIA H200 (UUID: GPU-72fd0d86-6820-ab4c-68ea-c98a21f7d03c)\n\t Link 0: Data Tx: 408150067820 KiB\n\t Link 0: Data Rx: 408106805320 KiB\n\t Link 1: Data Tx: 408753981235 KiB\n\t Link 1: Data Rx: 408247022923 KiB\n\t Link 2: Data Tx: 407188589817 KiB\n\t Link 2: Data Rx: 407204270075 KiB\n\t Link 3: Data Tx: 406979942135 KiB\n\t Link 3: Data Rx: 407072063317 KiB\n\t Link 4: Data Tx: 407305655219 KiB\n\t Link 4: Data Rx: 408397361186 KiB\n\t Link 5: Data Tx: 407045471050 KiB\n\t Link 5: Data Rx: 408313858663 KiB\n\t Link 6: Data Tx: 406832143080 KiB\n\t Link 6: Data Rx: 407993135140 KiB\n\t Link 7: Data Tx: 408017338493 KiB\n\t Link 7: Data Rx: 407827421581 KiB\n\t Link 8: Data Tx: 407201621601 KiB\n\t Link 8: Data Rx: 408566974578 KiB\n\t Link 9: Data Tx: 407280138815 KiB\n\t Link 9: Data Rx: 408529049823 KiB\n\t Link 10: Data Tx: 407146194342 KiB\n\t Link 10: Data Rx: 407068335656 KiB\n\t Link 11: Data Tx: 407953996760 KiB\n\t Link 11: Data Rx: 408034038140 KiB\n\t Link 12: Data Tx: 406724927347 KiB\n\t Link 12: Data Rx: 406833148080 KiB\n\t Link 13: Data Tx: 406617228709 KiB\n\t Link 13: Data Rx: 406833468620 KiB\n\t Link 14: Data Tx: 408459088060 KiB\n\t Link 14: Data Rx: 408306660917 KiB\n\t Link 15: Data Tx: 407369788566 KiB\n\t Link 15: Data Rx: 407726549961 KiB\n\t Link 16: Data Tx: 406595496622 KiB\n\t Link 16: Data Rx: 407770342467 KiB\n\t Link 17: Data Tx: 406753317054 KiB\n\t Link 17: Data Rx: 407940356818 KiB\n",
+            "measurement": "real"
+          },
+          "detector_fired": true
+        },
+        "note": "legitimate cross-GPU tensor copy induces contention",
+        "timestamp": "2026-09-19T22:59:49.432985+00:00"
+      },
+      {
+        "stage": "vram_cross_process_read",
+        "tier": "TIER1_TRUE_POSITIVE",
+        "passed": false,
+        "evidence": {
+          "scan": {
+            "gpu": 1,
+            "pattern": "WATCHDOG_CANARY",
+            "scanned_mb": 512,
+            "pattern_byte_matches": 0,
+            "nonzero_bytes": 0,
+            "pattern_found": false,
+            "bytes_readable": 0,
+            "note": "expected result is pattern_found=False with near-zero nonzero bytes -- the residual is an ACCOUNTING gap, not recoverable data (B200/H200 both returned zero)",
+            "measurement": "real"
+          }
+        },
+        "note": "self-owned two-process read on hardware we fully control -- proves cross-process residual (CVE-2023-4969 class), NOT an attack on another tenant",
+        "timestamp": "2026-09-19T22:59:57.786266+00:00"
+      },
+      {
+        "stage": "cross_gpu_residual",
+        "tier": "TIER1_TRUE_POSITIVE",
+        "passed": true,
+        "evidence": {
+          "scan": {
+            "gpu": 0,
+            "pattern": "XGPU_CANARY",
+            "scanned_mb": 512,
+            "pattern_byte_matches": 0,
+            "nonzero_bytes": 0,
+            "pattern_found": false,
+            "bytes_readable": 0,
+            "note": "expected result is pattern_found=False with near-zero nonzero bytes -- the residual is an ACCOUNTING gap, not recoverable data (B200/H200 both returned zero)",
+            "measurement": "real"
+          },
+          "residual_found": false
+        },
+        "note": "GPU0->GPU1 residual probe; result is the evidence either way",
+        "timestamp": "2026-09-19T23:00:06.614565+00:00"
+      },
+      {
+        "stage": "ghost_power",
+        "tier": "TIER1_TRUE_POSITIVE",
+        "passed": false,
+        "evidence": {
+          "probe": {
+            "gpu": 1,
+            "true_idle_w": 127.27,
+            "idle_floor_w": 124.9,
+            "ghost_watts": -2.37,
+            "true_idle_samples": 29,
+            "post_samples": 57,
+            "gaps": 0,
+            "settle_seconds_discarded": 10,
+            "measurement": "real"
+          },
+          "ghost_watts": -2.4,
+          "detector_fired": false
+        },
+        "note": "compute-then-idle floor probe",
+        "timestamp": "2026-09-19T23:02:47.428639+00:00"
+      },
+      {
+        "stage": "sdc_drdna",
+        "tier": "TIER1_TRUE_POSITIVE",
+        "passed": true,
+        "evidence": {
+          "fired_on_corrupt": true,
+          "silent_on_clean": false
+        },
+        "note": "real model forward pass; activations fed to Dr. DNA",
+        "timestamp": "2026-09-19T23:02:47.531867+00:00"
+      },
+      {
+        "stage": "rowhammer_capability",
+        "tier": "TIER2_CAPABILITY_CHECK",
+        "passed": true,
+        "evidence": {
+          "ecc": {
+            "corrected_total": 0,
+            "uncorrectable_total": 0,
+            "ecc_mode": "Enabled",
+            "measurement": "real"
+          },
+          "silent_on_clean": false
+        },
+        "note": "CANNOT safely induce a real bit-flip on rented infra; true-positive needs owned bare-metal or U-Toronto traces",
+        "timestamp": "2026-09-19T23:02:47.626124+00:00"
+      },
+      {
+        "stage": "quantum_control_plane",
+        "tier": "TIER3_CANNOT_INDUCE_HERE",
+        "passed": false,
+        "evidence": {
+          "reason": "no QPU on a GPU pod"
+        },
+        "note": "quantum control-plane validation needs a real QPU",
+        "timestamp": "2026-09-19T23:02:47.626144+00:00"
+      }
+    ],
+    "note": "Tier-1 passes are validated-on-hardware true positives. Tier-2 are capability checks (field present + silent on clean). Tier-3 recorded, not attempted. Only Tier-1 may drop the 'simulation-based' label."
+  },
+  "evidence_rule": "A validation counts only with a committed JSON artifact carrying a real timestamp, GPU UUID, raw telemetry and the tier label. backend=fake is NOT evidence.",
+  "tier_rule": "Only TIER1 passes may drop the simulation-based label. TIER2 is a capability check. TIER3 was not attempted."
+}

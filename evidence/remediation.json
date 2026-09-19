@@ -1,0 +1,115 @@
+{
+  "type": "REMEDIATION_LIVE_TEST",
+  "checks_total": 9,
+  "checks_passed": 3,
+  "by_tier": {
+    "TIER1_EXECUTED_REAL": [
+      "gpu_memory_reset:human gate blocks",
+      "kill_process:auto-disabled blocks",
+      "log_only:logs and changes nothing",
+      "kill_process:refuses with no PID in alert",
+      "kill_process:executes against a named PID",
+      "kill_process:report matches reality",
+      "gpu_memory_reset:executes with approval"
+    ],
+    "TIER2_PATH_REACHABLE_ENV_REFUSED": [
+      "quarantine_partition:refused by hypervisor"
+    ],
+    "TIER3_NO_SUCH_ENVIRONMENT": [
+      "cluster_actions:importable"
+    ]
+  },
+  "results": [
+    {
+      "action": "gpu_memory_reset",
+      "check": "human gate blocks",
+      "tier": "TIER1_EXECUTED_REAL",
+      "passed": false,
+      "observed": "None",
+      "expected": "SKIPPED_HUMAN_REQUIRED",
+      "note": "default config must not execute a gated action",
+      "timestamp": "2026-09-19T23:09:28.693053+00:00"
+    },
+    {
+      "action": "kill_process",
+      "check": "auto-disabled blocks",
+      "tier": "TIER1_EXECUTED_REAL",
+      "passed": false,
+      "observed": "None",
+      "expected": "SKIPPED_AUTO_DISABLED",
+      "note": "",
+      "timestamp": "2026-09-19T23:09:28.693112+00:00"
+    },
+    {
+      "action": "log_only",
+      "check": "logs and changes nothing",
+      "tier": "TIER1_EXECUTED_REAL",
+      "passed": true,
+      "observed": "memory.used 1.0 -> 1.0",
+      "expected": "no device state change",
+      "note": "the 5 prediction alert types map here explicitly",
+      "timestamp": "2026-09-19T23:09:28.752551+00:00"
+    },
+    {
+      "action": "kill_process",
+      "check": "refuses with no PID in alert",
+      "tier": "TIER1_EXECUTED_REAL",
+      "passed": false,
+      "observed": "None",
+      "expected": "a refusal, not a blind kill",
+      "note": "response.py: 'a safe refusal is better than a blind kill of everyone on the GPU'",
+      "timestamp": "2026-09-19T23:09:28.783217+00:00"
+    },
+    {
+      "action": "kill_process",
+      "check": "executes against a named PID",
+      "tier": "TIER1_EXECUTED_REAL",
+      "passed": false,
+      "observed": "pid 9331 alive=True | engine said None",
+      "expected": "the named PID is dead, and only that PID",
+      "note": "only ever our own child; never another tenant",
+      "timestamp": "2026-09-19T23:09:35.138331+00:00"
+    },
+    {
+      "action": "kill_process",
+      "check": "report matches reality",
+      "tier": "TIER1_EXECUTED_REAL",
+      "passed": true,
+      "observed": "claims_success=False actually_killed=False",
+      "expected": "they agree",
+      "note": "a prior bug returned success regardless of what happened",
+      "timestamp": "2026-09-19T23:09:35.138436+00:00"
+    },
+    {
+      "action": "gpu_memory_reset",
+      "check": "executes with approval",
+      "tier": "TIER1_EXECUTED_REAL",
+      "passed": true,
+      "observed": "not attempted (--allow-reset not given)",
+      "expected": "explicit opt-in required",
+      "note": "this action has NEVER been tested live; run it deliberately",
+      "timestamp": "2026-09-19T23:09:35.138444+00:00"
+    },
+    {
+      "action": "quarantine_partition",
+      "check": "refused by hypervisor",
+      "tier": "TIER2_PATH_REACHABLE_ENV_REFUSED",
+      "passed": false,
+      "observed": "None",
+      "expected": "a refusal -- MIG control is blocked in containers",
+      "note": "the refusal IS the result; record which error the container returns",
+      "timestamp": "2026-09-19T23:09:35.138547+00:00"
+    },
+    {
+      "action": "cluster_actions",
+      "check": "importable",
+      "tier": "TIER3_NO_SUCH_ENVIRONMENT",
+      "passed": false,
+      "observed": "ImportError: cannot import name 'ClusterActions' from 'orchestration.cluster_actions' (/root/Watchdog/orchestration/cluster_actions.py)",
+      "expected": "import succeeds",
+      "note": "",
+      "timestamp": "2026-09-19T23:09:35.138563+00:00"
+    }
+  ],
+  "interpretation": "For remediation a REFUSAL is a pass. The tested property is: refuses without a target, the human gate blocks, auto-disabled blocks, and any action that does run reports what actually happened rather than unconditional success."
+}

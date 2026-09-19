@@ -1,0 +1,5 @@
+index, name, uuid, driver_version, vbios_version, memory.total [MiB], power.limit [W], ecc.mode.current, utilization.gpu [%], power.draw [W], clocks.current.memory [MHz], clocks.current.sm [MHz], ecc.errors.corrected.aggregate.total
+0, NVIDIA H200, GPU-ff1e3761-3ab5-1898-57c1-8d7ee49a2731, 570.124.06, 96.00.CF.00.02, 143771 MiB, 700.00 W, Enabled, 0 %, 78.68 W, 3201 MHz, 345 MHz, 0
+1, NVIDIA H200, GPU-3479cd45-8f60-a28d-838b-3e9b846adada, 570.124.06, 96.00.CF.00.02, 143771 MiB, 700.00 W, Enabled, 0 %, 77.58 W, 3201 MHz, 345 MHz, 0
+2, NVIDIA H200, GPU-72fd0d86-6820-ab4c-68ea-c98a21f7d03c, 570.124.06, 96.00.CF.00.02, 143771 MiB, 700.00 W, Enabled, 0 %, 77.72 W, 3201 MHz, 345 MHz, 0
+3, NVIDIA H200, GPU-85bde0e7-3c2a-2368-f385-c4ac25f5d91e, 570.124.06, 96.00.CF.00.02, 143771 MiB, 700.00 W, Enabled, 0 %, 78.75 W, 3201 MHz, 345 MHz, 0

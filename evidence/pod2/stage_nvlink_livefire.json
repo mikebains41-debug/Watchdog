@@ -1,0 +1,88 @@
+{
+  "run_id": "1789858783-32ba978711ee",
+  "backend": "real",
+  "is_evidence": true,
+  "gpus": [
+    {
+      "index": "0",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-ff1e3761-3ab5-1898-57c1-8d7ee49a2731",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "78.38",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "1",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-3479cd45-8f60-a28d-838b-3e9b846adada",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "77.56",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "2",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-72fd0d86-6820-ab4c-68ea-c98a21f7d03c",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "77.65",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "3",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-85bde0e7-3c2a-2368-f385-c4ac25f5d91e",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "78.68",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    }
+  ],
+  "stage": "nvlink_livefire",
+  "tier": "TIER1_TRUE_POSITIVE",
+  "passed": true,
+  "evidence": {
+    "induced": {
+      "src": 2,
+      "dst": 0,
+      "transferred_mb": 1024,
+      "seconds": 0.1917,
+      "nvlink_kb_per_s": 5470442.9,
+      "nvlink_counters_raw": "GPU 2: NVIDIA H200 (UUID: GPU-72fd0d86-6820-ab4c-68ea-c98a21f7d03c)\n\t Link 0: Data Tx: 408150067820 KiB\n\t Link 0: Data Rx: 408106805320 KiB\n\t Link 1: Data Tx: 408753981235 KiB\n\t Link 1: Data Rx: 408247022923 KiB\n\t Link 2: Data Tx: 407188589817 KiB\n\t Link 2: Data Rx: 407204270075 KiB\n\t Link 3: Data Tx: 406979942135 KiB\n\t Link 3: Data Rx: 407072063317 KiB\n\t Link 4: Data Tx: 407305655219 KiB\n\t Link 4: Data Rx: 408397361186 KiB\n\t Link 5: Data Tx: 407045471050 KiB\n\t Link 5: Data Rx: 408313858663 KiB\n\t Link 6: Data Tx: 406832143080 KiB\n\t Link 6: Data Rx: 407993135140 KiB\n\t Link 7: Data Tx: 408017338493 KiB\n\t Link 7: Data Rx: 407827421581 KiB\n\t Link 8: Data Tx: 407201621601 KiB\n\t Link 8: Data Rx: 408566974578 KiB\n\t Link 9: Data Tx: 407280138815 KiB\n\t Link 9: Data Rx: 408529049823 KiB\n\t Link 10: Data Tx: 407146194342 KiB\n\t Link 10: Data Rx: 407068335656 KiB\n\t Link 11: Data Tx: 407953996760 KiB\n\t Link 11: Data Rx: 408034038140 KiB\n\t Link 12: Data Tx: 406724927347 KiB\n\t Link 12: Data Rx: 406833148080 KiB\n\t Link 13: Data Tx: 406617228709 KiB\n\t Link 13: Data Rx: 406833468620 KiB\n\t Link 14: Data Tx: 408459088060 KiB\n\t Link 14: Data Rx: 408306660917 KiB\n\t Link 15: Data Tx: 407369788566 KiB\n\t Link 15: Data Rx: 407726549961 KiB\n\t Link 16: Data Tx: 406595496622 KiB\n\t Link 16: Data Rx: 407770342467 KiB\n\t Link 17: Data Tx: 406753317054 KiB\n\t Link 17: Data Rx: 407940356818 KiB\n",
+      "measurement": "real"
+    },
+    "detector_fired": true
+  },
+  "note": "legitimate cross-GPU tensor copy induces contention",
+  "timestamp": "2026-09-19T22:59:49.432985+00:00"
+}

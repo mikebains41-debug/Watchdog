@@ -1,0 +1,16 @@
+REMEDIATION LIVE TEST, H200 RunPod, driver 570.124.06
+Harness reported 3/9 but reads str(handle()) -- handle() returns None and prints.
+Engine's own output shows correct behaviour on 7 of 8:
+  human gate           SKIPPED_HUMAN_REQUIRED          gate held
+  auto-disabled        SKIPPED_AUTO_DISABLED           held
+  log_only             LOGGED, memory.used 1.0 -> 1.0  no device change
+  kill no PID          NO_PROCESSES                    refused
+  kill named PID       TARGET_PID_9331_NOT_FOUND_ON_GPU_2  refused after verifying
+                       against the GPU process list -- compute_apps is empty in
+                       this container, so no PID can be confirmed here
+  report honesty       claims_success=False, killed=False  agreed
+  MIG quarantine       MIG_QUARANTINE_REQUIRES_HUMAN_APPROVAL  gate held
+GAP FOUND: orchestration/cluster_actions.py has no ClusterActions class;
+functions are module-level. Import fails.
+FIX NEEDED (harness, not engine): parse the engine's printed result, not its
+return value.
