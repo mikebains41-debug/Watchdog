@@ -85,3 +85,36 @@ AGGREGATE_AUDITS: 1 instance / 1 provider. 0/1 left tenant files behind,
 
 CHECK_STATUS / DIAGNOSE_ALL_JOBS: both fell back to MockProvider, 0 jobs.
   Correct -- quantum job tools, nothing to diagnose on a GPU pod.
+
+ATTACK INJECTION SUITE -- per-detector detail, on hardware
+  test_positive_controls_memory  5/5
+    CacheSideChannelDetector fired; alert states "cause unconfirmed,
+      overlaps with DMAAttackDetector and SequentialVRAMReadDetector"
+    MIGPartitionDesyncDetector fired on 45% bandwidth above learned idle
+      floor; silent on normal load
+    SequentialVRAMReadDetector fired (CVSS 9.0 CRITICAL) on 35% of VRAM at
+      80% mem bandwidth / 0% compute; alert states "possible exfiltration
+      OR bulk data load (cannot be distinguished from telemetry alone)";
+      silent on normal inference
+  test_positive_controls_llm  7/7
+    AgentOrchestrationAnomalyDetector fired on 110W above learned
+      idle-with-context floor; silent on true idle
+    AgentSessionVRAMRetentionDetector fired (CVSS 8.4) on an exited PID
+      leaving 5000MB allocated; cites CVE-2048350 pending MITRE assignment;
+      silent on clean exit
+    InferencePowerFingerprintDetector fired at robust z=6.41; alert states
+      "consistent with workload change, model swap, or adversarial input"
+    InterAgentHandoffAnomalyDetector fired on 200W vs 80W baseline
+    PromptInjectionSideEffectDetector fired on 100W above session baseline;
+      alert states "consistent with a longer prompt, larger batch, or an
+      adversarial input"
+  EVERY positive control has a paired negative control that stayed silent,
+  and EVERY alert names what it cannot distinguish from benign causes.
+
+test_engines.py standalone on hardware: 17/17 PASSED, including
+  "PIPELINE NEGATIVE CONTROL: 3600 clean idle samples, 0 alerts",
+  ghost_power_baseline_w 80.36, and the full VRAM positive/negative pair
+  plus "refuses to run without per-process data".
+
+verify_patched_daemons.py: 10/11 OK. module56 TIMEOUT -- needs attention.
+check_indent_mismatch.py: 8 files flagged in validation_results/.
