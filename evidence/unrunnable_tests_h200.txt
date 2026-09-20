@@ -3,6 +3,7 @@ Found on real hardware, 4x H200 RunPod, 2026-09-20
 
 tests/false_positive_benchmark.py
 tests/latency_test.py
+tests/stability_test.py
 
 Both call:
     TelemetryCollector(hz=self.hz)     -> TypeError, no such kwarg
@@ -26,3 +27,19 @@ flagged that they were broken.
 
 (Local edits reverted -- the repo is left as found, with the defect
 documented rather than half-fixed on a pod.)
+
+THIRD FILE, same defect: tests/stability_test.py also calls
+  TelemetryCollector(hz=self.hz) -> TypeError. Never executable either.
+
+ALSO FOUND, these DID run on hardware:
+  resource_benchmark.py  10,000 rows in 6.18s = 1,618 rows/sec.
+                         Memory min 12.0 MB, max 12.0 MB, variance 0.0 MB
+                         across 10k rows -- no leak in the pipeline.
+                         CPU ~100% single-core.
+  competitor_benchmark.py  3 confirmed structural advantages, 1 pending
+                         real-hardware validation. Its own note: "does not
+                         include a live side-by-side benchmark against
+                         installed competitor tools -- every claim above is
+                         traceable to a specific existing finding."
+  burnin_stability.py    TERMINATED at a 180s timeout. Long-running by
+                         design; needs a longer window or a duration flag.
