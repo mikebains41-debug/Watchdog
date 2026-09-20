@@ -1,0 +1,52 @@
+DETECTORS DRIVEN WITH REAL DATA, 4x H200 RunPod, driver 570.124.06
+
+CollectiveCommSDCTracer -- full control pair on tonight's real all-reduce
+  1. REAL data (4 ranks, post_digest 14d254a39cbd9b86 on all four):
+     type COLLECTIVE_CONSISTENT, severity INFO. No false alarm.
+  2. INJECTED divergence on rank 2:
+     type COLLECTIVE_SDC_DETECTED, severity CRITICAL
+     distinct_results 2, majority_rank_count 3, divergent_ranks [2]
+     detail: "ranks disagree after a collective that is mathematically
+     required to produce identical results on every rank -- the corruption
+     is in the communication path, not the per-GPU compute"
+     It LOCALISED the offending rank.
+  3. MALFORMED ranks: COLLECTIVE_CHECK_ERROR, WARNING,
+     "malformed rank data; failed loud, NOT reported clean"
+  4. MISSING post_digest: COLLECTIVE_CHECK_INCOMPLETE, WARNING
+  stats: 4 checks, 1 flag -- flagged only the one that deserved it.
+
+FaultAttributionEngine
+  A. Fabric signals (COLLECTIVE_SDC_DETECTED, NVLINK_CONTENTION,
+     PCIE_ANOMALY) -> interconnect score 2.2 share 0.71, fabric_switch 0.6.
+     Correct: fabric-layer signals implicate the interconnect, not the die.
+  B. ENVIRONMENTAL CARVE-OUT CONFIRMED ON REAL EXECUTION:
+     signals SOLAR_PARTICLE_EVENT + ECC_BREAK_SUSPECTED +
+     TID_THRESHOLD_CROSSED
+     -> primary_component hbm (0.591), gpu_die (0.409),
+        separation_confidence 0.308, verdict ATTRIBUTED, severity WARNING
+     environmental_signals: ['SOLAR_PARTICLE_EVENT','TID_THRESHOLD_CROSSED']
+     environmental_note: "an environmental cause is present -- the component
+       may be HEALTHY and merely exposed; do not retire hardware on this
+       evidence alone"
+     This is the property that stops a solar storm getting a healthy GPU
+     decommissioned. Validated, not assumed.
+  C. Unknown signal names -> NO_COMPONENT_IMPLICATED with
+     signals_without_affinity listed. Refuses to attribute rather than guess.
+  Every response carries: "a ranking over evidence, not proof -- 'most
+  consistent with', never 'caused by'".
+  components_known: gpu_die, hbm, interconnect, power_rail, host,
+  fabric_switch, cooling
+
+ECCErrorTrendDetector.update() -- 5 samples x 4 GPUs on live ECC (0/0).
+  Zero alerts. threshold 5, window 50. Correct silence on clean ECC.
+
+ConfidentialComputingIntegrityDetector.query_cc_state() -- REAL H200 STATE:
+    CC State: OFF
+    Multi-GPU Mode: None
+    CPU CC Capabilities: None
+    GPU CC Capabilities: CC Capable
+    CC GPUs Ready State: Not Ready
+  The H200 is CC-CAPABLE but confidential computing is OFF and the CPU has
+  no CC capability at all. Relevant to the Serial Alice comparison: that
+  environment was an Intel TDX CVM, this one has no CC whatsoever.
+  check() returned null (no baseline established yet on first call).
