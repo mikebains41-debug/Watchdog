@@ -21,3 +21,31 @@ compute_apps          EMPTY even with a live workload (preflight + remediation
 /dev/shm              469G available, 0% used, CLEAN. No prior-tenant files.
                       Consistent with the 2/2 clean RunPod scans in
                       B200_FINDINGS_REPORT (vs 5/5 dirty on Vast.ai/H200).
+
+ROUND 2 -- the four covert-channel capability questions, ANSWERED:
+TLB miss counters      NOT PRESENT. nvidia-smi -q -d PERFORMANCE,UTILIZATION
+                       returns no tlb/cache/compression fields at all.
+cache-eviction perf    NOT PRESENT (same query, same result).
+GPU.zip compression    NOT PRESENT / not reachable from NVML.
+Baddour micro-arch     NOT PRESENT -- no underlying counter exists here.
+  => DO NOT BUILD these four detectors for H200. The telemetry does not exist.
+
+Fields that ARE readable and are detector-viable:
+  utilization.memory              OK (0%)
+  encoder.stats.averageFps        OK (0)
+  clocks_throttle_reasons.active  OK (0x...01 = GpuIdle, correct at idle)
+  pcie.link.gen.current           OK (Gen 5 on all four)
+  retired_pages.pending           [N/A] on H200 -- uses row-remapping, not
+                                  page retirement. A retired-pages detector
+                                  would be silent on this architecture.
+
+COVERT-COMPUTE INDUCER, corrected:
+  harness inducer  8192^2 bf16 GEMM,  5s  -> 57% util, 524.54 W  (BELOW the
+                   detector's >90% util threshold -- stage FAILED for this
+                   reason, not because the detector is wrong)
+  proper inducer   16384^2 bf16 GEMM, 60s -> 100% util, 684.08 W, SM 1455 MHz
+                   (684 W against a 700 W limit; SM settles from 1980 boost to
+                   1455 sustained -- the flat near-TDP signature
+                   CovertMiningDetector is built for)
+  => FIX NEEDED in validation_harness: the covert_compute inducer needs a
+     larger matrix and a longer run to reach the threshold it is testing.
