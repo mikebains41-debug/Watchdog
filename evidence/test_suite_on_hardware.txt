@@ -150,3 +150,13 @@ FINAL FIVE
 
   burnin_stability.py  terminated at 300s as it did at 180s. Long-running by
     design; needs a duration flag or a multi-hour window.
+
+  module56 IDENTIFIED: "Watchdog Module 56: FPGA Bitstream & JTAG Integrity
+    Verifier", status "PARTIAL -- host-side checks functional, bitstream
+    readback AWAITING HARDWARE INTEGRATION".
+    It hangs because it probes for FPGA/JTAG hardware that does not exist on
+    a GPU pod, and the probe BLOCKS rather than timing out. Not a logic
+    defect -- a missing timeout on hardware enumeration that will never
+    respond in this environment.
+    FIX: bound the probe with a timeout and return NO_FPGA_PRESENT rather
+    than hanging. As written it stalls any suite that includes it.
