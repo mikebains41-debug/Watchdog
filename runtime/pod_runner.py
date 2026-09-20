@@ -187,7 +187,7 @@ class RealBackend:
         same telemetry signature safely (harness docstring)."""
         t = self.torch
         dev = t.device(f"cuda:{gpu}")
-        n = 8192
+        n = 16384
         a = t.randn(n, n, device=dev, dtype=t.bfloat16)
         b = t.randn(n, n, device=dev, dtype=t.bfloat16)
         t.cuda.synchronize(dev)

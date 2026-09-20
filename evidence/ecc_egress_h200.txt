@@ -21,3 +21,19 @@ RESIDUAL "DECAY" TEST -- reinterpreted
   a pool INSIDE a live process after del + empty_cache(). Distinct from the
   post-exit case, where memory returned to 1 MB (see sigkill/sigterm results,
   both 0.0 MB residual).
+
+RESIDUAL DECAY -- FULL 30 MINUTE CURVE, COMPLETE
+  t=0s     620 MB,  86.92 W
+  t=60s    620 MB, 121.65 W
+  t=300s   620 MB, 121.87 W
+  t=900s   620 MB, 126.13 W
+  t=1800s  620 MB, 126.00 W
+
+ZERO decay across 30 minutes. The CUDA caching allocator pool does not
+shrink with time. Power settled at ~126 W, the live-context level.
+
+Combined with the SIGKILL and SIGTERM results (both 0.0 MB residual after
+process exit), the behaviour is BINARY, not decaying:
+  process alive -> pool held indefinitely, 620 MB, ~126 W
+  process exits -> released completely, 0 MB, back to the ~78 W cold floor
+There is no middle state and no time-based release.

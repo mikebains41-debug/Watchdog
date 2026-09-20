@@ -150,7 +150,7 @@ class ValidationHarness:
     # -- Tier 1: covert compute / cryptojacking onset ----------------------
     def stage_covert_compute(self):
         # induce on a worker, check the victim's onset detector on that signal
-        induced = self.backend.run_covert_compute(self.workers[0], seconds=5)
+        induced = self.backend.run_covert_compute(self.workers[0], seconds=60)
         clean = {"util_pct": 5.0, "sm_clock_uniform": False, "mem_bw_util_pct": 60.0}
         fired_on_attack = self._fired("cryptojacking_onset", induced)
         silent_on_clean = self._fired("cryptojacking_onset", clean)
