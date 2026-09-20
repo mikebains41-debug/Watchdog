@@ -1,0 +1,53 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-09-20T02:25:36.922238
+[WATCHDOG] GPUs: ['0, NVIDIA H200', '1, NVIDIA H200', '2, NVIDIA H200', '3, NVIDIA H200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 8 agents active (5 operational + 3 security) + correlator
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[API] pip3 install fastapi uvicorn --break-system-packages
+FastAPI not installed[WATCHDOG] API at http://0.0.0.0:8080
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → watchdog_data/telemetry_20260920_022536.csv
+
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA H200', '1, NVIDIA H200', '2, NVIDIA H200', '3, NVIDIA H200']
+[INFO] LASER_INJECTION — Temperature changed 5.0C within 0.5s -- consistent with a normal workload start/stop transient. Not evidence of physical fault injection, which cannot be detected from software telemetry alone.
+[REMEDIATION] log_only → LOGGED
+[INFO] LASER_INJECTION — Temperature changed 5.0C within 0.5s -- consistent with a normal workload start/stop transient. Not evidence of physical fault injection, which cannot be detected from software telemetry alone.
+[REMEDIATION] log_only → LOGGED
+[t+60s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+60s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+60s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+60s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.726Hz (requested 100Hz) -- min/mean/max interval: 342.559/366.83/583.667ms
+[t+60s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+60s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+60s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+60s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.727Hz (requested 100Hz) -- min/mean/max interval: 342.559/366.703/583.667ms
+[t+60s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+60s] GPU1: 78.0W mem=1MB temp=37C util=0%
+[t+60s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+60s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.728Hz (requested 100Hz) -- min/mean/max interval: 342.559/366.624/583.667ms
+[INFO] LASER_INJECTION — Temperature changed 5.0C within 0.5s -- consistent with a normal workload start/stop transient. Not evidence of physical fault injection, which cannot be detected from software telemetry alone.
+[REMEDIATION] log_only → LOGGED
+[t+120s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+120s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+120s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+120s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.721Hz (requested 100Hz) -- min/mean/max interval: 340.83/367.455/583.667ms
+[t+120s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+120s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+120s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+120s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.722Hz (requested 100Hz) -- min/mean/max interval: 340.83/367.389/583.667ms
+[t+120s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+120s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+120s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+120s] GPU3: 78.1W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.722Hz (requested 100Hz) -- min/mean/max interval: 340.83/367.326/583.667ms

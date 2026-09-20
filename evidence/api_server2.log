@@ -1,0 +1,51 @@
+nohup: ignoring input
+
+[WATCHDOG v2.0] Start: 2026-09-20T02:28:05.389743
+[WATCHDOG] GPUs: ['0, NVIDIA H200', '1, NVIDIA H200', '2, NVIDIA H200', '3, NVIDIA H200']
+[SWARM] Watchdog Swarm Intelligence initialized
+[SWARM] GPU0 | Arch: H200 | Idle floor: 80.36W
+[SWARM] 8 agents active (5 operational + 3 security) + correlator
+[SWARM] NOTE: Simulation-based. Real hardware validation required.
+[WATCHDOG] Detection engines: 29 active
+[WATCHDOG] API at http://0.0.0.0:8080
+[WATCHDOG] Running... Ctrl+C to stop
+
+[WATCHDOG] Starting -- requested 100Hz → watchdog_data/telemetry_20260920_022805.csv
+[WATCHDOG] Actual achieved rate will be measured and reported below, not assumed.
+[WATCHDOG] GPUs: ['0, NVIDIA H200', '1, NVIDIA H200', '2, NVIDIA H200', '3, NVIDIA H200']
+[t+60s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+60s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+60s] GPU2: 77.5W mem=1MB temp=34C util=0%
+[t+60s] GPU3: 78.1W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.726Hz (requested 100Hz) -- min/mean/max interval: 342.775/366.834/590.455ms
+[t+60s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+60s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+60s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+60s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.727Hz (requested 100Hz) -- min/mean/max interval: 342.775/366.707/590.455ms
+[INFO] LASER_INJECTION — Temperature changed 5.0C within 0.5s -- consistent with a normal workload start/stop transient. Not evidence of physical fault injection, which cannot be detected from software telemetry alone.
+[REMEDIATION] log_only → LOGGED
+[t+60s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+60s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+60s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+60s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.728Hz (requested 100Hz) -- min/mean/max interval: 342.775/366.634/590.455ms
+[WEBHOOK] WatchdogCEIDegradationCritical cvss=9.6
+[WEBHOOK] WatchdogCEIDegradationCritical cvss=9.6
+[t+120s] GPU0: 78.4W mem=1MB temp=31C util=0%
+[t+120s] GPU1: 77.5W mem=1MB temp=36C util=0%
+[t+120s] GPU2: 77.5W mem=1MB temp=34C util=0%
+[t+120s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.708Hz (requested 100Hz) -- min/mean/max interval: 341.974/369.319/1040.698ms
+[t+120s] GPU0: 88.6W mem=530MB temp=32C util=0%
+[t+120s] GPU1: 77.5W mem=4MB temp=36C util=0%
+[t+120s] GPU2: 77.6W mem=4MB temp=34C util=0%
+[t+120s] GPU3: 78.2W mem=4MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.674Hz (requested 100Hz) -- min/mean/max interval: 341.974/373.949/1855.485ms
+[WARNING] GHOST_POWER — Ghost power 22.5W above 78.1W idle floor at 0% utilization
+[WARNING] GHOST_POWER — Ghost power 43.9W above 78.1W idle floor at 0% utilization
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.61 at lag 4 samples, amplitude 45.0W. Cause unconfirmed.
+[INFO] BILLING_INTEGRITY_GAP — GPU reports 0% utilization (billed as idle) but drew 47.2W above this device's own learned idle floor -- a billing metering question, not necessarily a security one. Does not know your billing model; only the physical wattage gap is measured; no cost rate supplied.
+[REMEDIATION] log_only → LOGGED
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.68 at lag 4 samples, amplitude 48.7W. Cause unconfirmed.
+[INFO] MULTI_GPU_CORRELATION — Anomalies co-occurring on 2 GPUs. Note: coordinated bursts are known architectural behaviour on A100 SXM / B200. Context only.

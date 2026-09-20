@@ -160,3 +160,36 @@ FINAL FIVE
     respond in this environment.
     FIX: bound the probe with a timeout and return NO_FPGA_PRESENT rather
     than hanging. As written it stalls any suite that includes it.
+
+API-DEPENDENT TESTS -- all three now run, on hardware
+  The API requires fastapi + uvicorn, which were NOT installed. The log said
+  so plainly ("[API] pip3 install fastapi uvicorn --break-system-packages")
+  and the server silently ran as a daemon with no HTTP listener. After
+  installing, python3 listens on 0.0.0.0:8080 and /health returns
+  {"status":"ok"}.
+
+  swarm_test.py            1/1 nodes reachable.
+                           "Throughput contention triggered on
+                           localhost:8080: True"
+                           FIRST live confirmation of
+                           ThroughputContentionDetector -- it never
+                           evaluated in any daemon or negative-control run
+                           because it needs externally-reported throughput
+                           via its own /throughput endpoint.
+  test_metrics_alert_firing.py   7 distinct metric names found. PASS.
+  test_webhook_pipeline_delivery.py  FIRING processed, RESOLVED processed.
+
+  Also observed from the running daemon, an honestly-worded alert:
+    "[INFO] LASER_INJECTION - Temperature changed 5.0C within 0.5s --
+     consistent with a normal workload start/stop transient. Not evidence of
+     physical fault injection, which cannot be detected from software
+     telemetry alone."
+
+REPO NOW EXHAUSTED. Everything runnable has run. Remaining items are
+environment-bound, not skipped:
+  torture.py / endurance.py / burnin_stability.py  -- 72h and multi-hour
+  quantum modules                                  -- no QPU
+  neutral_current_harmonic.py                      -- no PDU SNMP/Modbus
+  todo/module56.py                                 -- no FPGA, hangs
+  false_positive_benchmark / latency_test / stability_test -- broken code,
+    TelemetryCollector(hz=) and .collect() do not exist
