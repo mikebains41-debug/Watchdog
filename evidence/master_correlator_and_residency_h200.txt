@@ -1,0 +1,22 @@
+MASTER CORRELATOR, first execution on real telemetry, 4x H200 RunPod
+  LOADED 7/7: Security, CrossLayer, SDCSwarm, SandboxSwarm, EgressSwarm,
+              ExtremeEnvSwarm, SolarStormSwarm.  NOT LOADED: 0
+  80 real telemetry samples observed, master_incidents 0, sub_incidents 0.
+  Rules armed: COORDINATED_MULTI_VECTOR_ATTACK,
+  ENVIRONMENT_INDUCED_INTEGRITY_FAILURE, LOW_CONFIDENCE_WINDOW,
+  FULL_SPECTRUM_INCIDENT.
+  Cross-suite fusion runs clean on real hardware and does not fabricate
+  incidents from ordinary idle telemetry.
+
+VRAM RESIDENCY CHALLENGE (Monfared et al., arXiv 2602.09369), 512 MB
+  hot_threshold 0.3405 ms   cold_threshold 50.3405 ms
+  19/20 hot, 1/20 "ambiguous" (round 3, 0.3665 ms)
+  All 20 rounds fell in 0.30-0.37 ms. The ambiguous round is 0.026 ms over
+  the hot bound and 50 ms BELOW the cold bound.
+
+  VERDICT: NOT an eviction. The hot threshold sits inside the natural jitter
+  band, so ordinary variance trips it. Genuinely evicted data would read
+  ~50 ms, two orders of magnitude higher.
+  FIX NEEDED: calibrate hot_threshold from the observed distribution
+  (e.g. mean + 3 sigma of a warm-up run) rather than a fixed value, or the
+  script will keep reporting phantom evictions.

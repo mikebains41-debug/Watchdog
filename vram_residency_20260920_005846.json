@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-09-20T00:58:46.777240",
+  "gpu": "NVIDIA H200",
+  "challenge_mb": 512,
+  "hot_threshold_ms": 0.34047476947307587,
+  "cold_threshold_ms": 50.340474769473076,
+  "results": [
+    {
+      "round": 1,
+      "latency_ms": 0.33432990312576294,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:11.746443"
+    },
+    {
+      "round": 2,
+      "latency_ms": 0.31280145049095154,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:16.748031"
+    },
+    {
+      "round": 3,
+      "latency_ms": 0.3664568066596985,
+      "classification": "ambiguous",
+      "timestamp": "2026-09-20T00:57:21.749809"
+    },
+    {
+      "round": 4,
+      "latency_ms": 0.302683562040329,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:26.751420"
+    },
+    {
+      "round": 5,
+      "latency_ms": 0.3101639449596405,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:31.753030"
+    },
+    {
+      "round": 6,
+      "latency_ms": 0.3037191927433014,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:36.754613"
+    },
+    {
+      "round": 7,
+      "latency_ms": 0.3000721335411072,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:41.756195"
+    },
+    {
+      "round": 8,
+      "latency_ms": 0.3245547413825989,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:46.757779"
+    },
+    {
+      "round": 9,
+      "latency_ms": 0.3042370080947876,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:51.759359"
+    },
+    {
+      "round": 10,
+      "latency_ms": 0.30519068241119385,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:57:56.760906"
+    },
+    {
+      "round": 11,
+      "latency_ms": 0.3206320106983185,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:01.762673"
+    },
+    {
+      "round": 12,
+      "latency_ms": 0.3098510205745697,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:06.764363"
+    },
+    {
+      "round": 13,
+      "latency_ms": 0.30026957392692566,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:11.765944"
+    },
+    {
+      "round": 14,
+      "latency_ms": 0.3041364252567291,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:16.767528"
+    },
+    {
+      "round": 15,
+      "latency_ms": 0.30043721199035645,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:21.769045"
+    },
+    {
+      "round": 16,
+      "latency_ms": 0.29686465859413147,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:26.770584"
+    },
+    {
+      "round": 17,
+      "latency_ms": 0.30028820037841797,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:31.772168"
+    },
+    {
+      "round": 18,
+      "latency_ms": 0.32617151737213135,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:36.773895"
+    },
+    {
+      "round": 19,
+      "latency_ms": 0.3022104501724243,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:41.775523"
+    },
+    {
+      "round": 20,
+      "latency_ms": 0.30008330941200256,
+      "classification": "hot",
+      "timestamp": "2026-09-20T00:58:46.777047"
+    }
+  ]
+}
