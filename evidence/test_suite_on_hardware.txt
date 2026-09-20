@@ -118,3 +118,35 @@ test_engines.py standalone on hardware: 17/17 PASSED, including
 
 verify_patched_daemons.py: 10/11 OK. module56 TIMEOUT -- needs attention.
 check_indent_mismatch.py: 8 files flagged in validation_results/.
+
+FINAL FIVE
+  container_escape_test.py  2/3
+    "CVE-2026-31431: not detected on this host"
+    "/tmp is clean"
+    "WARNING: /proc visible -- possible container escape vector"
+    CONTRADICTION WORTH NOTING: this reports CVE-2026-31431 NOT detected,
+    while scripts/check_copyfail_afalg.py found AF_ALG socket creation
+    SUCCEEDED (mitigation absent). Two checks for the same CVE disagree.
+    That is exactly what the AF_ALG script's own docstring predicts: the
+    kernel-version check is "fragile to backports", the AF_ALG check tests
+    reachability directly. The disagreement IS the finding -- neither alone
+    is conclusive.
+
+  compliance_evidence_test.py  2/2
+    AuditLedger chain: VALID. 10 entries retrieved. The hash-chained audit
+    trail verifies on real hardware.
+
+  cpu_advanced_tests.py
+    NUMA: numactl not available in the container.
+    Context switching: 100 threads x 10,000 ops in 2.54s.
+    Memory latency: sequential 0.0422s, random 0.5011s, ratio 11.86x.
+    Note: the EPYC TEST 9 cache-hierarchy test was DISABLED because Python
+    interpreter overhead swamped the L1-to-RAM difference (1.01x spread).
+    Here the sequential-vs-random ratio is 11.86x and clearly measurable.
+
+  todo/module56.py  HANGS. rc=143 (SIGTERM at 60s) with ZERO output printed.
+    Not slow -- hung from the start. This is the module56 TIMEOUT that
+    verify_patched_daemons.py reported (10/11 OK).
+
+  burnin_stability.py  terminated at 300s as it did at 180s. Long-running by
+    design; needs a duration flag or a multi-hour window.
