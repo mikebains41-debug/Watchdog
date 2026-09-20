@@ -1,0 +1,5 @@
+index, name, power.draw [W], utilization.gpu [%], memory.used [MiB], ecc.errors.corrected.aggregate.total, ecc.errors.uncorrected.aggregate.total, temperature.gpu
+0, NVIDIA H200, 78.89 W, 0 %, 1 MiB, 0, 0, 33
+1, NVIDIA H200, 77.85 W, 0 %, 1 MiB, 0, 0, 38
+2, NVIDIA H200, 77.88 W, 0 %, 1 MiB, 0, 0, 35
+3, NVIDIA H200, 78.46 W, 0 %, 1 MiB, 0, 0, 36

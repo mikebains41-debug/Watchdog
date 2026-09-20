@@ -4,3 +4,10 @@ GPU must be genuinely idle for the entire run -- any workload invalidates this r
 
 [WARNING] GHOST_POWER — Ghost power 44.5W above 78.4W idle floor at 0% utilization
 [WARNING] GHOST_POWER — Ghost power 48.1W above 78.4W idle floor at 0% utilization
+
+============================================================
+RESULT -- expect alerts == 0 for a valid negative control
+{'samples': 3523, 'alerts': 2, 'alerts_per_sample': 0.000568, 'ghost_power_baseline_w': 78.4, 'throughput_samples': 0, 'throughput_alerts': 0, 'throughput_alerts_per_sample': 0.0}
+Sampling (actual measured rate, not requested):
+{'samples': 1000, 'achieved_hz': 0.979, 'min_ms': 1015.667, 'max_ms': 1197.151, 'mean_ms': 1021.771}
+============================================================

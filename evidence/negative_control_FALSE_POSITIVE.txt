@@ -28,3 +28,14 @@ found on real hardware, with ground truth captured alongside it.
 NOTE: run_negative_control.py does not query compute_apps and runs with
 vram_strict=False, so VRAMResidualDetector is constructed but never
 evaluates. This control covers the pipeline MINUS that detector.
+
+FINAL RESULT, full hour completed:
+  samples 3523, alerts 2, false-positive rate 0.057% (0.000568/sample)
+  ghost_power_baseline_w 78.4
+  achieved sample rate 0.979 Hz against 1.0 Hz requested (mean 1021.8 ms)
+  -- at 1 Hz the sampler keeps up; the 3.7-7.1 Hz shortfall recorded earlier
+     was against a 100 Hz request, so the blind spot is rate-dependent
+  throughput_samples 0 -- ThroughputContentionDetector needs its own API
+     endpoint and never evaluated, same coverage gap as VRAMResidualDetector
+  Both false positives occurred by minute 36; none in the final 24 minutes.
+  Intermittent, not systematic.
