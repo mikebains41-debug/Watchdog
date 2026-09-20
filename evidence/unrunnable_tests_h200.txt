@@ -69,3 +69,15 @@ OTHER RESULTS THIS ROUND
     RECOMMENDATION KEEP. The AST-based fix works; the earlier regex version
     would have deleted a live base class.
   Container Escape: FAIL (/proc visible). Compliance Evidence: PASS.
+
+MY OWN TOOLING BUGS, exact lines:
+  scripts/remediation_live_test.py:273-274
+    imports ClusterActions; the real class is ClusterOrchestration.
+    This is why its check 9 failed with ImportError.
+  scripts/sigkill_residual_measure.py:197
+    hardcodes verdict "SIGKILL_CLEARS_ACCOUNTING" regardless of --signal,
+    so the SIGTERM run is labelled SIGKILL. Measurement correct, label wrong.
+  tests/test_pod_runner.py
+    exceeds tests/run_all.py:81 timeout=120 on a real-GPU host because it
+    shells out to pod_runner.py --live --allow-fake several times. Instant
+    on a phone, slow on a GPU box. Blocks run_all.py from completing.
