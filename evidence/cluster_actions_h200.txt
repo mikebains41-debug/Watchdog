@@ -1,0 +1,40 @@
+CLUSTER ACTIONS, tested live on 4x H200 RunPod
+
+CLASS NAME: ClusterOrchestration (NOT ClusterActions). My
+remediation_live_test.py imported the wrong name -- that is why its check 9
+failed with ImportError. Harness bug, not a repo bug.
+
+LIVE RESULTS
+  kubernetes_taint(None)      -> KUBECTL_NOT_AVAILABLE: expected str, bytes
+                                 or os.PathLike object, not NoneType
+  kubernetes_taint('fakenode')-> KUBECTL_NOT_AVAILABLE: No such file or
+                                 directory: 'kubectl'
+  slurm_evict_job(None)       -> EVICT_FAILED: scancel: res_nsearch error:
+                                 Unknown host
+  slurm_evict_job(99999)      -> EVICT_FAILED: same
+  nvlink_disable(0, None)     -> NVLINK_DISABLE_FAILED: (empty stderr)
+  nvlink_disable(0, 3)        -> NVLINK_DISABLE_FAILED: (empty stderr)
+
+FINDING: NONE of the three validates its target. They refuse by ACCIDENT,
+not by design.
+
+  1. kubernetes_taint(None) fails on a TypeError raised INSIDE
+     subprocess.run, caught by the broad except and mislabelled
+     KUBECTL_NOT_AVAILABLE. The true cause is a null node name; the message
+     says something else.
+  2. slurm_evict_job is the serious one: scancel EXISTS on this host and
+     RAN. It failed only on DNS resolution of the SLURM controller. With a
+     reachable controller, scancel None / scancel 99999 would have been
+     sent for real. There is no null check before the call.
+  3. nvlink_disable returns empty stderr for BOTH a null and a valid link
+     index -- refusal and failure are indistinguishable from the return
+     value.
+
+The README states these "refuse cleanly unless the alert supplies a specific
+target". On real execution they do not check the target at all; they fail
+because kubectl is absent and the SLURM controller is unreachable. In a real
+cluster the null-target case would reach the cluster.
+
+FIX NEEDED: validate node_name / job_id / link_index BEFORE the subprocess
+call and return an explicit NO_TARGET refusal. Narrow the except so a
+TypeError is not reported as a missing binary.
