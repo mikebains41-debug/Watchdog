@@ -1,0 +1,27 @@
+NOISY-NEIGHBOUR CONTENTION, H200 RunPod, driver 570.124.06
+gpu_audit.py, 1 competing process, 3 runs
+
+  run 1  baseline 366.47 it/s  contended 175.59  loss 52.09%
+  run 2  baseline 371.16 it/s  contended 175.91  loss 52.60%
+  run 3  baseline 371.41 it/s  contended 176.35  loss 52.52%
+  mean 52.4%, stdev 0.22%
+
+Baselines within 1.3% of each other, contended values within 0.4%. Tight and
+reproducible. Sits inside the B200 band (-43% to -55%), NOT the original
+-9.5% single measurement from the Vast.ai/H200 session.
+
+TENANT FILES: /tmp, /var/tmp, /dev/shm scanned. 0 foreign-owned files.
+  Third clean RunPod scan (2/2 previously), against 5/5 dirty on Vast.ai/H200.
+
+STALE CVE: kernel 6.8.0-83-generic. Status PARTIAL -- the script refuses
+  automated range matching without an authoritative CVE database rather than
+  guessing. Candidates listed for manual verification: CVE-2026-31431
+  (Copy Fail, CISA KEV) and CVE-2026-64600 (RefluXFS).
+
+CVE-2026-64600 RefluXFS check: XFS present but xfs_info unavailable in the
+  container, so reflink status could not be determined. Script reported that
+  rather than claiming clean. Verdict: exposure conditions not met.
+
+FULL MODULE RUN: 23 modules, 46 events, 4 alerts.
+  RAW_OUTPUT 20, MODULE_DISABLED 15, PROVIDER_NOT_SUPPORTED 3,
+  MODULE_ERROR 2, BASELINE_ESTABLISHED 1, SUSPICIOUSLY_NOISELESS 1.

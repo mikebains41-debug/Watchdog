@@ -14,451 +14,354 @@ pre{margin:4px 0 0;white-space:pre-wrap;word-break:break-all;font-size:0.85em}
 </style></head><body>
 <h1>Watchdog Quantum Security Suite</h1>
 <div class="summary">
-  <b>Generated:</b> 2026-08-09T05:08:18.468623+00:00<br>
-  <b>Modules:</b> 44 | <b>Events:</b> 51 | <b>Alerts:</b> 3
+  <b>Generated:</b> 2026-09-20T01:15:09.753798+00:00<br>
+  <b>Modules:</b> 23 | <b>Events:</b> 46 | <b>Alerts:</b> 4
 </div>
-<div id="content"><div class="module OK"><div class="timestamp">2026-08-09T05:00:09.157063+00:00 | module32.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:00:08.306763+00:00",
-  "module": "module32.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module32.py",
-  "_collected_at": "2026-08-09T05:00:09.157063+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:00:22.130841+00:00 | module33.py | RAW_OUTPUT</div><pre>{
-  "event": "RAW_OUTPUT",
-  "raw": "[OpenQuantum] Warning: unsupported circuit type. Returning mock job ID: mock-585173a0",
-  "_module": "module33.py",
-  "_collected_at": "2026-08-09T05:00:22.130841+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:00:22.130947+00:00 | module33.py | CIRCUIT_INTEGRITY_PROBE</div><pre>{
-  "event": "CIRCUIT_INTEGRITY_PROBE",
-  "timestamp": "2026-08-09T05:00:21.662802+00:00",
-  "device_id": "iqm:garnet",
-  "job_id": "mock-585173a0",
-  "circuit_hash": "ac1da9952ca62e59",
-  "round_trip_ms": 0.04,
-  "_module": "module33.py",
-  "_collected_at": "2026-08-09T05:00:22.130947+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:00:22.130980+00:00 | module33.py | API_HEALTH</div><pre>{
-  "event": "API_HEALTH",
-  "timestamp": "2026-08-09T05:00:21.662918+00:00",
-  "provider": "OpenQuantum",
-  "device_id": "iqm:garnet",
-  "pending_jobs": 0,
-  "status": "approximate_own_jobs_only",
-  "_module": "module33.py",
-  "_collected_at": "2026-08-09T05:00:22.130980+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:00:36.949003+00:00 | module34.py | CALIBRATION_EMPTY</div><pre>{
-  "event": "CALIBRATION_EMPTY",
-  "device_id": "iqm:garnet",
-  "timestamp": "2026-08-09T05:00:36.451843+00:00",
-  "_module": "module34.py",
-  "_collected_at": "2026-08-09T05:00:36.949003+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:00:48.463564+00:00 | module35.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:00:48.017029+00:00",
-  "module": "module35.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module35.py",
-  "_collected_at": "2026-08-09T05:00:48.463564+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:00:59.322832+00:00 | module36.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:00:58.897122+00:00",
-  "module": "module36.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module36.py",
-  "_collected_at": "2026-08-09T05:00:59.322832+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:01:07.921085+00:00 | module37.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:01:07.453258+00:00",
-  "module": "module37.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module37.py",
-  "_collected_at": "2026-08-09T05:01:07.921085+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:01:17.158692+00:00 | module38.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:01:16.729111+00:00",
-  "module": "module38.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module38.py",
-  "_collected_at": "2026-08-09T05:01:17.158692+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:01:24.530188+00:00 | module39.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:01:24.077902+00:00",
-  "module": "module39.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module39.py",
-  "_collected_at": "2026-08-09T05:01:24.530188+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:01:37.842509+00:00 | module40.py | RAW_OUTPUT</div><pre>{
-  "event": "RAW_OUTPUT",
-  "raw": "[OpenQuantum] Warning: unsupported circuit type. Returning mock job ID: mock-78e9b5f9",
-  "_module": "module40.py",
-  "_collected_at": "2026-08-09T05:01:37.842509+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:01:37.842585+00:00 | module40.py | REPLAY_CHECK_CLEAN</div><pre>{
-  "event": "REPLAY_CHECK_CLEAN",
-  "timestamp": "2026-08-09T05:01:37.358031+00:00",
-  "probe_job_id": "mock-78e9b5f9",
-  "round_trip_ms": 1852.51,
-  "nonce_prefix": "51dd2bb0",
-  "_module": "module40.py",
-  "_collected_at": "2026-08-09T05:01:37.842585+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:01:49.649904+00:00 | module41.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:01:49.181618+00:00",
-  "module": "module41.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module41.py",
-  "_collected_at": "2026-08-09T05:01:49.649904+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:02:00.951632+00:00 | module42.py | TIMING_BASELINE_NORMAL</div><pre>{
-  "event": "TIMING_BASELINE_NORMAL",
-  "timestamp": "2026-08-09T05:02:00.464017+00:00",
-  "devices_tracked": 0,
-  "new_jobs_checked": 1,
-  "_module": "module42.py",
-  "_collected_at": "2026-08-09T05:02:00.951632+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:02:11.758183+00:00 | module43.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:02:11.274398+00:00",
-  "module": "module43.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module43.py",
-  "_collected_at": "2026-08-09T05:02:11.758183+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:02:22.159526+00:00 | module44.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:02:21.696686+00:00",
-  "module": "module44.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module44.py",
-  "_collected_at": "2026-08-09T05:02:22.159526+00:00"
-}</pre></div>
-<div class="module WARN"><div class="timestamp">2026-08-09T05:02:35.087765+00:00 | module45.py | MODULE_ERROR</div><pre>{
-  "_module": "module45.py",
+<div id="content"><div class="module WARN"><div class="timestamp">2026-09-20T01:14:35.650280+00:00 | module146.py | MODULE_ERROR</div><pre>{
+  "_module": "module146.py",
   "event": "MODULE_ERROR",
   "severity": "WARN",
-  "stderr": " line 125, in <module>\n    main()\n    ~~~~^^\n  File \"/data/data/com.termux/files/home/Watchdog/modules/module45.py\", line 117, in main\n    analyze_jobs(jobs, state)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^\n  File \"/data/data/com.termux/files/home/Watchdog/modules/module45.py\", line 60, in analyze_jobs\n    if created.tzinfo is None:\n       ^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute 'tzinfo'\n",
-  "_collected_at": "2026-08-09T05:02:35.087765+00:00"
+  "stderr": "Traceback (most recent call last):\n  File \"/root/Watchdog/modules/module146.py\", line 4, in <module>\n    from qiskit import QuantumCircuit\nModuleNotFoundError: No module named 'qiskit'\n",
+  "_collected_at": "2026-09-20T01:14:35.650280+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:02:51.744405+00:00 | module46.py | ANNEALER_INSUFFICIENT_DATA</div><pre>{
-  "event": "ANNEALER_INSUFFICIENT_DATA",
-  "timestamp": "2026-08-09T05:02:51.246720+00:00",
-  "samples": 0,
-  "need": 20,
-  "_module": "module46.py",
-  "_collected_at": "2026-08-09T05:02:51.744405+00:00"
-}</pre></div>
-<div class="module WARN"><div class="timestamp">2026-08-09T05:03:21.763069+00:00 | module47.py | MODULE_TIMEOUT</div><pre>{
-  "_module": "module47.py",
-  "event": "MODULE_TIMEOUT",
-  "severity": "WARN",
-  "error": "Timed out after 30s",
-  "_collected_at": "2026-08-09T05:03:21.763069+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:03:32.208333+00:00 | module48.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:03:31.757437+00:00",
-  "module": "module48.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module48.py",
-  "_collected_at": "2026-08-09T05:03:32.208333+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:03:43.256238+00:00 | module49.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:03:42.817389+00:00",
-  "module": "module49.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module49.py",
-  "_collected_at": "2026-08-09T05:03:43.256238+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:03:54.732911+00:00 | module50.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:03:54.259833+00:00",
-  "module": "module50.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module50.py",
-  "_collected_at": "2026-08-09T05:03:54.732911+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:07.031274+00:00 | module51.py | RUN_START</div><pre>{
-  "event": "RUN_START",
-  "timestamp": "2026-08-09T05:04:05.394482+00:00",
-  "module": "51_result_verification",
-  "provider": "OpenQuantum",
-  "_module": "module51.py",
-  "_collected_at": "2026-08-09T05:04:07.031274+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:07.031382+00:00 | module51.py | RAW_OUTPUT</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:36.068459+00:00 | module34.py | RAW_OUTPUT</div><pre>{
   "event": "RAW_OUTPUT",
-  "raw": "[OpenQuantum] Warning: unsupported circuit type. Returning mock job ID: mock-13dd0ef2",
-  "_module": "module51.py",
-  "_collected_at": "2026-08-09T05:04:07.031382+00:00"
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module34.py",
+  "_collected_at": "2026-09-20T01:14:36.068459+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:07.031419+00:00 | module51.py | PROBE_COMPLETE</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:36.068474+00:00 | module34.py | BASELINE_ESTABLISHED</div><pre>{
+  "event": "BASELINE_ESTABLISHED",
+  "device_id": "mock_5q",
+  "timestamp": "2026-09-20T01:14:36.062787+00:00",
+  "qubits": 5,
+  "_module": "module34.py",
+  "_collected_at": "2026-09-20T01:14:36.068474+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.855116+00:00 | module51.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module51.py",
+  "_collected_at": "2026-09-20T01:14:37.855116+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.855130+00:00 | module51.py | RUN_START</div><pre>{
+  "event": "RUN_START",
+  "timestamp": "2026-09-20T01:14:37.849458+00:00",
+  "module": "51_result_verification",
+  "provider": "MockProvider",
+  "_module": "module51.py",
+  "_collected_at": "2026-09-20T01:14:37.855130+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.855139+00:00 | module51.py | PROBE_COMPLETE</div><pre>{
   "event": "PROBE_COMPLETE",
-  "timestamp": "2026-08-09T05:04:06.573717+00:00",
-  "backend": "iqm:garnet",
-  "job_id": "mock-13dd0ef2",
+  "timestamp": "2026-09-20T01:14:37.849523+00:00",
+  "backend": "mock_5q",
+  "job_id": "mock-e19c468a4d8b",
   "counts": {
-    "00": 1983,
-    "11": 2112,
+    "00": 2094,
+    "11": 2001,
     "01": 0,
     "10": 1
   },
   "alerts_triggered": 1,
   "_module": "module51.py",
-  "_collected_at": "2026-08-09T05:04:07.031419+00:00"
+  "_collected_at": "2026-09-20T01:14:37.855139+00:00"
 }</pre></div>
-<div class="module CRITICAL"><div class="timestamp">2026-08-09T05:04:07.031450+00:00 | module51.py | SUSPICIOUSLY_NOISELESS</div><pre>{
+<div class="module CRITICAL"><div class="timestamp">2026-09-20T01:14:37.855145+00:00 | module51.py | SUSPICIOUSLY_NOISELESS</div><pre>{
   "event": "SUSPICIOUSLY_NOISELESS",
-  "timestamp": "2026-08-09T05:04:06.573768+00:00",
+  "timestamp": "2026-09-20T01:14:37.849540+00:00",
   "severity": "CRITICAL",
   "noise_fraction": 0.00024,
   "note": "Too clean \u2013 likely simulation",
   "_module": "module51.py",
-  "_collected_at": "2026-08-09T05:04:07.031450+00:00"
+  "_collected_at": "2026-09-20T01:14:37.855145+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:07.031470+00:00 | module51.py | RUN_END</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.855148+00:00 | module51.py | RUN_END</div><pre>{
   "event": "RUN_END",
-  "timestamp": "2026-08-09T05:04:06.573790+00:00",
+  "timestamp": "2026-09-20T01:14:37.849552+00:00",
   "alerts": 1,
   "_module": "module51.py",
-  "_collected_at": "2026-08-09T05:04:07.031470+00:00"
+  "_collected_at": "2026-09-20T01:14:37.855148+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:15.870117+00:00 | module52.py | PROVIDER_NOT_SUPPORTED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.893426+00:00 | module52.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module52.py",
+  "_collected_at": "2026-09-20T01:14:37.893426+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.893432+00:00 | module52.py | PROVIDER_NOT_SUPPORTED</div><pre>{
   "event": "PROVIDER_NOT_SUPPORTED",
-  "timestamp": "2026-08-09T05:04:15.426647+00:00",
-  "provider": "OpenQuantum",
+  "timestamp": "2026-09-20T01:14:37.887750+00:00",
+  "provider": "MockProvider",
   "note": "Module52 requires IBM Quantum",
   "_module": "module52.py",
-  "_collected_at": "2026-08-09T05:04:15.870117+00:00"
+  "_collected_at": "2026-09-20T01:14:37.893432+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:27.481624+00:00 | module53.py | PROVIDER_NOT_SUPPORTED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.933152+00:00 | module53.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module53.py",
+  "_collected_at": "2026-09-20T01:14:37.933152+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.933158+00:00 | module53.py | PROVIDER_NOT_SUPPORTED</div><pre>{
   "event": "PROVIDER_NOT_SUPPORTED",
-  "timestamp": "2026-08-09T05:04:27.042262+00:00",
-  "provider": "OpenQuantum",
+  "timestamp": "2026-09-20T01:14:37.927388+00:00",
+  "provider": "MockProvider",
   "note": "Module53 requires IBM Quantum",
   "_module": "module53.py",
-  "_collected_at": "2026-08-09T05:04:27.481624+00:00"
+  "_collected_at": "2026-09-20T01:14:37.933158+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:38.935652+00:00 | module54.py | PROVIDER_NOT_SUPPORTED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.972904+00:00 | module54.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module54.py",
+  "_collected_at": "2026-09-20T01:14:37.972904+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:14:37.972910+00:00 | module54.py | PROVIDER_NOT_SUPPORTED</div><pre>{
   "event": "PROVIDER_NOT_SUPPORTED",
-  "timestamp": "2026-08-09T05:04:38.499011+00:00",
-  "provider": "OpenQuantum",
+  "timestamp": "2026-09-20T01:14:37.967210+00:00",
+  "provider": "MockProvider",
   "note": "Module54 requires IBM Quantum",
   "_module": "module54.py",
-  "_collected_at": "2026-08-09T05:04:38.935652+00:00"
+  "_collected_at": "2026-09-20T01:14:37.972910+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:04:50.968519+00:00 | module55.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:04:50.509178+00:00",
-  "module": "module55.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module55.py",
-  "_collected_at": "2026-08-09T05:04:50.968519+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:05:02.146420+00:00 | module56.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:05:01.697030+00:00",
-  "module": "module56.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+<div class="module WARN"><div class="timestamp">2026-09-20T01:15:08.031645+00:00 | module56.py | MODULE_TIMEOUT</div><pre>{
   "_module": "module56.py",
-  "_collected_at": "2026-08-09T05:05:02.146420+00:00"
+  "event": "MODULE_TIMEOUT",
+  "severity": "WARN",
+  "error": "Timed out after 30s",
+  "_collected_at": "2026-09-20T01:15:08.031645+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:05:12.667130+00:00 | module57.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:05:12.205554+00:00",
-  "module": "module57.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module57.py",
-  "_collected_at": "2026-08-09T05:05:12.667130+00:00"
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.193899+00:00 | module61.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module61.py",
+  "_collected_at": "2026-09-20T01:15:09.193899+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:05:24.392471+00:00 | module58.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.193915+00:00 | module61.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:05:23.949250+00:00",
-  "module": "module58.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module58.py",
-  "_collected_at": "2026-08-09T05:05:24.392471+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:05:35.898625+00:00 | module59.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:05:35.437850+00:00",
-  "module": "module59.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module59.py",
-  "_collected_at": "2026-08-09T05:05:35.898625+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:05:47.172450+00:00 | module60.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:05:46.721076+00:00",
-  "module": "module60.py",
-  "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
-  "_module": "module60.py",
-  "_collected_at": "2026-08-09T05:05:47.172450+00:00"
-}</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:05:56.944738+00:00 | module61.py | MODULE_DISABLED</div><pre>{
-  "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:05:56.326021+00:00",
+  "timestamp": "2026-09-20T01:15:09.188364+00:00",
   "module": "module61.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module61.py",
-  "_collected_at": "2026-08-09T05:05:56.944738+00:00"
+  "_collected_at": "2026-09-20T01:15:09.193915+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:06:06.271880+00:00 | module62.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.228375+00:00 | module62.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module62.py",
+  "_collected_at": "2026-09-20T01:15:09.228375+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.228386+00:00 | module62.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:06:05.795664+00:00",
+  "timestamp": "2026-09-20T01:15:09.223080+00:00",
   "module": "module62.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module62.py",
-  "_collected_at": "2026-08-09T05:06:06.271880+00:00"
+  "_collected_at": "2026-09-20T01:15:09.228386+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:06:14.831030+00:00 | module63.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.263633+00:00 | module63.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module63.py",
+  "_collected_at": "2026-09-20T01:15:09.263633+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.263644+00:00 | module63.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:06:14.322789+00:00",
+  "timestamp": "2026-09-20T01:15:09.258235+00:00",
   "module": "module63.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module63.py",
-  "_collected_at": "2026-08-09T05:06:14.831030+00:00"
+  "_collected_at": "2026-09-20T01:15:09.263644+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:06:26.245097+00:00 | module64.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.297913+00:00 | module64.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module64.py",
+  "_collected_at": "2026-09-20T01:15:09.297913+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.297921+00:00 | module64.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:06:25.778563+00:00",
+  "timestamp": "2026-09-20T01:15:09.292720+00:00",
   "module": "module64.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module64.py",
-  "_collected_at": "2026-08-09T05:06:26.245097+00:00"
+  "_collected_at": "2026-09-20T01:15:09.297921+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:06:37.162454+00:00 | module65.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.333604+00:00 | module65.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module65.py",
+  "_collected_at": "2026-09-20T01:15:09.333604+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.333611+00:00 | module65.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:06:36.684606+00:00",
+  "timestamp": "2026-09-20T01:15:09.328130+00:00",
   "module": "module65.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module65.py",
-  "_collected_at": "2026-08-09T05:06:37.162454+00:00"
+  "_collected_at": "2026-09-20T01:15:09.333611+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:06:49.039000+00:00 | module66.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.369236+00:00 | module66.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module66.py",
+  "_collected_at": "2026-09-20T01:15:09.369236+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.369242+00:00 | module66.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:06:48.588259+00:00",
+  "timestamp": "2026-09-20T01:15:09.363793+00:00",
   "module": "module66.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module66.py",
-  "_collected_at": "2026-08-09T05:06:49.039000+00:00"
+  "_collected_at": "2026-09-20T01:15:09.369242+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:07:00.740676+00:00 | module67.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.404788+00:00 | module67.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module67.py",
+  "_collected_at": "2026-09-20T01:15:09.404788+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.404796+00:00 | module67.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:07:00.255650+00:00",
+  "timestamp": "2026-09-20T01:15:09.399332+00:00",
   "module": "module67.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module67.py",
-  "_collected_at": "2026-08-09T05:07:00.740676+00:00"
+  "_collected_at": "2026-09-20T01:15:09.404796+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:07:12.098597+00:00 | module68.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.439795+00:00 | module68.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module68.py",
+  "_collected_at": "2026-09-20T01:15:09.439795+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.439801+00:00 | module68.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:07:11.628590+00:00",
+  "timestamp": "2026-09-20T01:15:09.434503+00:00",
   "module": "module68.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module68.py",
-  "_collected_at": "2026-08-09T05:07:12.098597+00:00"
+  "_collected_at": "2026-09-20T01:15:09.439801+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:07:22.524139+00:00 | module69.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.474217+00:00 | module69.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module69.py",
+  "_collected_at": "2026-09-20T01:15:09.474217+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.474223+00:00 | module69.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:07:22.092409+00:00",
+  "timestamp": "2026-09-20T01:15:09.469018+00:00",
   "module": "module69.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module69.py",
-  "_collected_at": "2026-08-09T05:07:22.524139+00:00"
+  "_collected_at": "2026-09-20T01:15:09.474223+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:07:33.726006+00:00 | module70.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.508737+00:00 | module70.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module70.py",
+  "_collected_at": "2026-09-20T01:15:09.508737+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.508743+00:00 | module70.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:07:33.245466+00:00",
+  "timestamp": "2026-09-20T01:15:09.503452+00:00",
   "module": "module70.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module70.py",
-  "_collected_at": "2026-08-09T05:07:33.726006+00:00"
+  "_collected_at": "2026-09-20T01:15:09.508743+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:07:43.575993+00:00 | module71.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.543151+00:00 | module71.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module71.py",
+  "_collected_at": "2026-09-20T01:15:09.543151+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.543156+00:00 | module71.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:07:43.111719+00:00",
+  "timestamp": "2026-09-20T01:15:09.537894+00:00",
   "module": "module71.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module71.py",
-  "_collected_at": "2026-08-09T05:07:43.575993+00:00"
+  "_collected_at": "2026-09-20T01:15:09.543156+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:07:53.131615+00:00 | module72.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.577662+00:00 | module72.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module72.py",
+  "_collected_at": "2026-09-20T01:15:09.577662+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.577668+00:00 | module72.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:07:52.653074+00:00",
+  "timestamp": "2026-09-20T01:15:09.572356+00:00",
   "module": "module72.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module72.py",
-  "_collected_at": "2026-08-09T05:07:53.131615+00:00"
+  "_collected_at": "2026-09-20T01:15:09.577668+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:08:02.530651+00:00 | module73.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.611772+00:00 | module73.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module73.py",
+  "_collected_at": "2026-09-20T01:15:09.611772+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.611779+00:00 | module73.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:08:02.069497+00:00",
+  "timestamp": "2026-09-20T01:15:09.606645+00:00",
   "module": "module73.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module73.py",
-  "_collected_at": "2026-08-09T05:08:02.530651+00:00"
+  "_collected_at": "2026-09-20T01:15:09.611779+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:08:08.290386+00:00 | module74.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.647462+00:00 | module74.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module74.py",
+  "_collected_at": "2026-09-20T01:15:09.647462+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.647470+00:00 | module74.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:08:07.863908+00:00",
+  "timestamp": "2026-09-20T01:15:09.641923+00:00",
   "module": "module74.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module74.py",
-  "_collected_at": "2026-08-09T05:08:08.290386+00:00"
+  "_collected_at": "2026-09-20T01:15:09.647470+00:00"
 }</pre></div>
-<div class="module OK"><div class="timestamp">2026-08-09T05:08:18.464249+00:00 | module75.py | MODULE_DISABLED</div><pre>{
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.681742+00:00 | module75.py | RAW_OUTPUT</div><pre>{
+  "event": "RAW_OUTPUT",
+  "raw": "[get_provider] No credentials \u2014 falling back to Mock",
+  "_module": "module75.py",
+  "_collected_at": "2026-09-20T01:15:09.681742+00:00"
+}</pre></div>
+<div class="module OK"><div class="timestamp">2026-09-20T01:15:09.681748+00:00 | module75.py | MODULE_DISABLED</div><pre>{
   "event": "MODULE_DISABLED",
-  "timestamp": "2026-08-09T05:08:18.039305+00:00",
+  "timestamp": "2026-09-20T01:15:09.676576+00:00",
   "module": "module75.py",
   "reason": "Fast stub \u2013 no hang",
-  "provider": "OpenQuantum",
+  "provider": "MockProvider",
   "_module": "module75.py",
-  "_collected_at": "2026-08-09T05:08:18.464249+00:00"
+  "_collected_at": "2026-09-20T01:15:09.681748+00:00"
+}</pre></div>
+<div class="module WARN"><div class="timestamp">2026-09-20T01:15:09.753058+00:00 | modules_146_150_combined.py | MODULE_ERROR</div><pre>{
+  "_module": "modules_146_150_combined.py",
+  "event": "MODULE_ERROR",
+  "severity": "WARN",
+  "stderr": "Traceback (most recent call last):\n  File \"/root/Watchdog/modules/modules_146_150_combined.py\", line 8, in <module>\n    from qiskit import QuantumCircuit\nModuleNotFoundError: No module named 'qiskit'\n",
+  "_collected_at": "2026-09-20T01:15:09.753058+00:00"
 }</pre></div></div>
 </body></html>

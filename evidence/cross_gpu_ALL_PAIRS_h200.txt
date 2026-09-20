@@ -1,0 +1,24 @@
+CROSS-GPU ISOLATION, ALL THREE PAIRS MEASURED SIMULTANEOUSLY
+4x H200 RunPod, driver 570.124.06, all pairs NV18
+
+Workload on GPU0 ONLY (8192^2 bf16 GEMM x200). All four GPUs sampled together.
+
+  BEFORE:  GPU0    4.0   GPU1 4.0   GPU2 620.0*  GPU3 4.0   MB
+  DURING:  GPU0 1140.0   GPU1 4.0   GPU2 620.0*  GPU3 4.0   MB
+  AFTER:   GPU0  628.0   GPU1 4.0   GPU2 620.0*  GPU3 4.0   MB
+  * GPU2's 620 MB is a concurrent test's allocator pool, unrelated.
+
+GPU1, GPU2 and GPU3 did not move by a single MB at any point.
+
+RESULT: ZERO cross-GPU residual on 0->1, 0->2 AND 0->3.
+The 528 MB GPU0->GPU1 figure from the Serial Alice Intel TDX CVM does NOT
+reproduce on bare RunPod. Three pairs, one measurement, no bleed.
+
+Confirms the earlier 1->4 MB "delta" was CUDA context peer-mapping at creation:
+every GPU was ALREADY at 4 MB before this workload, and none moved when GPU0
+took on 1136 MB of real work.
+
+SECOND CONFIRMATION of the allocator-pool behaviour: GPU0 settled at 628 MB
+after del + empty_cache() with the process STILL ALIVE -- matching GPU2's
+620 MB from the decay test. The pool releases only on process exit
+(SIGKILL and SIGTERM both measured 0.0 MB residual).
