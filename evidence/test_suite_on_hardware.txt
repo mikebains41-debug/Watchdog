@@ -203,3 +203,14 @@ BURNIN STABILITY -- attempted with a 30 minute window
   Writes to cpu_results/burnin_20260920_023052.jsonl.
   CONCLUSION: not skipped, not broken -- it needs a 24h booking. Three
   attempts tonight (180s, 300s, 1800s) all terminated mid-first-interval.
+
+  CORRECTION: burnin_stability.py DID work. The console log was sparse but
+  cpu_results/burnin_20260920_023052.jsonl has 4 samples at 300s intervals:
+    02:30:52  0.000h  load 2.8%  ctxt/s 63230.7  mem 1960.29 GB
+    02:35:52  0.083h  load 2.7%  ctxt/s 19787.6  mem 1960.76 GB
+    02:40:52  0.167h  load 2.8%  ctxt/s 18913.3  mem 1960.83 GB
+    02:45:52  0.250h  load 2.7%  ctxt/s 18769.7  mem 1960.53 GB
+  Memory FLAT at ~1960.5 GB +/- 0.3 across the window -- no leak.
+  Load steady 2.7-2.8% of 192 usable cores.
+  Context switches settled from a 63k startup spike to ~18.8k steady.
+  The test is sound; it simply needs a 24h booking to complete.

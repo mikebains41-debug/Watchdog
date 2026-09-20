@@ -79,3 +79,234 @@ nohup: ignoring input
 [t+300s] GPU2: 77.5W mem=1MB temp=34C util=0%
 [t+300s] GPU3: 78.3W mem=1MB temp=35C util=0%
 [WATCHDOG] Actual achieved rate: 2.691Hz (requested 100Hz) -- min/mean/max interval: 322.623/371.678/1855.485ms
+[t+360s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+360s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+360s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+360s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.699Hz (requested 100Hz) -- min/mean/max interval: 322.623/370.521/1855.485ms
+[t+360s] GPU0: 78.8W mem=1MB temp=33C util=0%
+[t+360s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+360s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+360s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.699Hz (requested 100Hz) -- min/mean/max interval: 322.623/370.497/1855.485ms
+[t+360s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+360s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+360s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+360s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.699Hz (requested 100Hz) -- min/mean/max interval: 322.623/370.481/1855.485ms
+[t+420s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+420s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+420s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+420s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.703Hz (requested 100Hz) -- min/mean/max interval: 322.623/370.024/1855.485ms
+[t+420s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+420s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+420s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+420s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.703Hz (requested 100Hz) -- min/mean/max interval: 322.623/370.014/1855.485ms
+[t+480s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+480s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+480s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+480s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.704Hz (requested 100Hz) -- min/mean/max interval: 322.623/369.858/1855.485ms
+[t+480s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+480s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+480s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+480s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.704Hz (requested 100Hz) -- min/mean/max interval: 322.623/369.856/1855.485ms
+[t+540s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+540s] GPU1: 78.0W mem=1MB temp=37C util=0%
+[t+540s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+540s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.737Hz (requested 100Hz) -- min/mean/max interval: 339.761/365.344/573.61ms
+[t+540s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+540s] GPU1: 78.0W mem=1MB temp=37C util=0%
+[t+540s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+540s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.737Hz (requested 100Hz) -- min/mean/max interval: 339.761/365.341/573.61ms
+[t+540s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+540s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+540s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+540s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.737Hz (requested 100Hz) -- min/mean/max interval: 339.761/365.332/573.61ms
+[t+600s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+600s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+600s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+600s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.741Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.786/566.905ms
+[t+600s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+600s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+600s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+600s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.741Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.792/566.905ms
+[t+600s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+600s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+600s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+600s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.741Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.783/566.905ms
+[t+660s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+660s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+660s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+660s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.744Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.387/566.905ms
+[t+660s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+660s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+660s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+660s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.744Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.38/566.905ms
+[t+720s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+720s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+720s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+720s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.746Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.173/566.905ms
+[t+720s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+720s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+720s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+720s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.746Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.185/566.905ms
+[t+720s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+720s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+720s] GPU2: 77.7W mem=1MB temp=34C util=0%
+[t+720s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.746Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.18/566.905ms
+[t+780s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+780s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+780s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+780s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.745Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.315/608.643ms
+[t+780s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+780s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+780s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+780s] GPU3: 78.1W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.746Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.125/608.643ms
+[t+780s] GPU0: 78.8W mem=1MB temp=33C util=0%
+[t+780s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+780s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+780s] GPU3: 78.1W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.746Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.122/608.643ms
+[t+840s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+840s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+840s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+840s] GPU3: 78.1W mem=1MB temp=34C util=0%
+[WATCHDOG] Actual achieved rate: 2.743Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.577/608.643ms
+[t+840s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+840s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+840s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+840s] GPU3: 78.1W mem=1MB temp=34C util=0%
+[WATCHDOG] Actual achieved rate: 2.743Hz (requested 100Hz) -- min/mean/max interval: 339.761/364.577/608.643ms
+[t+900s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+900s] GPU1: 77.7W mem=1MB temp=36C util=0%
+[t+900s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+900s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.745Hz (requested 100Hz) -- min/mean/max interval: 340.522/364.312/608.643ms
+[t+900s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+900s] GPU1: 77.7W mem=1MB temp=36C util=0%
+[t+900s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+900s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.745Hz (requested 100Hz) -- min/mean/max interval: 340.522/364.316/608.643ms
+[t+900s] GPU0: 78.6W mem=1MB temp=32C util=0%
+[t+900s] GPU1: 77.7W mem=1MB temp=36C util=0%
+[t+900s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+900s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.745Hz (requested 100Hz) -- min/mean/max interval: 340.522/364.308/608.643ms
+[t+960s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+960s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+960s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+960s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.74Hz (requested 100Hz) -- min/mean/max interval: 340.522/364.984/608.643ms
+[t+960s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+960s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+960s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+960s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.74Hz (requested 100Hz) -- min/mean/max interval: 340.522/364.984/608.643ms
+[t+960s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+960s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+960s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+960s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.74Hz (requested 100Hz) -- min/mean/max interval: 340.522/364.992/608.643ms
+[t+1020s] GPU0: 91.8W mem=530MB temp=33C util=0%
+[t+1020s] GPU1: 77.8W mem=4MB temp=37C util=0%
+[t+1020s] GPU2: 77.7W mem=4MB temp=34C util=0%
+[t+1020s] GPU3: 78.3W mem=4MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.718Hz (requested 100Hz) -- min/mean/max interval: 340.522/367.973/1266.536ms
+[t+1020s] GPU0: 121.9W mem=530MB temp=33C util=0%
+[t+1020s] GPU1: 97.9W mem=530MB temp=38C util=0%
+[t+1020s] GPU2: 85.4W mem=530MB temp=35C util=0%
+[t+1020s] GPU3: 78.2W mem=4MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.714Hz (requested 100Hz) -- min/mean/max interval: 340.522/368.506/1266.536ms
+[WARNING] GHOST_POWER — Ghost power 29.2W above 78.1W idle floor at 0% utilization
+[WARNING] GHOST_POWER — Ghost power 46.2W above 78.1W idle floor at 0% utilization
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.65 at lag 4 samples, amplitude 48.6W. Cause unconfirmed.
+[WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.69 at lag 4 samples, amplitude 49.5W. Cause unconfirmed.
+[INFO] MULTI_GPU_CORRELATION — Anomalies co-occurring on 2 GPUs. Note: coordinated bursts are known architectural behaviour on A100 SXM / B200. Context only.
+[WARNING] GHOST_POWER — Ghost power 17.3W above 78.1W idle floor at 0% utilization
+[t+1080s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+1080s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+1080s] GPU2: 77.9W mem=1MB temp=35C util=0%
+[t+1080s] GPU3: 78.5W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.697Hz (requested 100Hz) -- min/mean/max interval: 324.138/370.754/1266.536ms
+[t+1080s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+1080s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+1080s] GPU2: 77.9W mem=1MB temp=35C util=0%
+[t+1080s] GPU3: 78.5W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.697Hz (requested 100Hz) -- min/mean/max interval: 324.138/370.757/1266.536ms
+[t+1080s] GPU0: 78.9W mem=1MB temp=33C util=0%
+[t+1080s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+1080s] GPU2: 77.9W mem=1MB temp=35C util=0%
+[t+1080s] GPU3: 78.5W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.697Hz (requested 100Hz) -- min/mean/max interval: 324.138/370.761/1266.536ms
+[t+1140s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+1140s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+1140s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+1140s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.694Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.155/1266.536ms
+[t+1140s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+1140s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+1140s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+1140s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.694Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.158/1266.536ms
+[t+1140s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+1140s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+1140s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+1140s] GPU3: 78.4W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.694Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.157/1266.536ms
+[t+1200s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+1200s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+1200s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+1200s] GPU3: 78.4W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.695Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.106/1266.536ms
+[t+1200s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+1200s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+1200s] GPU2: 77.7W mem=1MB temp=35C util=0%
+[t+1200s] GPU3: 78.5W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.693Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.274/1266.536ms
+[t+1200s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+1200s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+1200s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+1200s] GPU3: 78.5W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.695Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.049/1266.536ms
+[t+1260s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+1260s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+1260s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+1260s] GPU3: 78.5W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.694Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.214/1266.536ms
+[t+1260s] GPU0: 78.8W mem=1MB temp=32C util=0%
+[t+1260s] GPU1: 77.8W mem=1MB temp=37C util=0%
+[t+1260s] GPU2: 77.8W mem=1MB temp=35C util=0%
+[t+1260s] GPU3: 78.6W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.694Hz (requested 100Hz) -- min/mean/max interval: 324.138/371.213/1266.536ms
+[t+1320s] GPU0: 79.1W mem=1MB temp=33C util=0%
+[t+1320s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+1320s] GPU2: 78.1W mem=1MB temp=36C util=0%
+[t+1320s] GPU3: 78.8W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.7Hz (requested 100Hz) -- min/mean/max interval: 324.138/370.315/1266.536ms
+[t+1320s] GPU0: 79.1W mem=1MB temp=33C util=0%
+[t+1320s] GPU1: 77.9W mem=1MB temp=37C util=0%
+[t+1320s] GPU2: 78.1W mem=1MB temp=36C util=0%
+[t+1320s] GPU3: 78.8W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.7Hz (requested 100Hz) -- min/mean/max interval: 324.138/370.319/1266.536ms
+[t+1320s] GPU0: 79.1W mem=1MB temp=33C util=0%
+[t+1320s] GPU1: 78.0W mem=1MB temp=37C util=0%
+[t+1320s] GPU2: 78.1W mem=1MB temp=36C util=0%
+[t+1320s] GPU3: 78.8W mem=1MB temp=36C util=0%
+[WATCHDOG] Actual achieved rate: 2.7Hz (requested 100Hz) -- min/mean/max interval: 324.138/370.306/1266.536ms
