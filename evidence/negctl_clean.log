@@ -1,0 +1,6 @@
+nohup: ignoring input
+Negative control: 3600s on GPU 0.
+GPU must be genuinely idle for the entire run -- any workload invalidates this result.
+
+[WARNING] GHOST_POWER — Ghost power 44.5W above 78.4W idle floor at 0% utilization
+[WARNING] GHOST_POWER — Ghost power 48.1W above 78.4W idle floor at 0% utilization

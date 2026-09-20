@@ -1,0 +1,30 @@
+NEGATIVE CONTROL, H200 RunPod, driver 570.124.06
+Started 23:27:19 UTC, GPU0, 3600s target, interval 1.0s
+
+RESULT: 2 FALSE POSITIVES at ~36 minutes.
+
+  [WARNING] GHOST_POWER - 44.5W above 78.4W idle floor at 0% utilization
+  [WARNING] GHOST_POWER - 48.1W above 78.4W idle floor at 0% utilization
+
+The detector therefore claims it observed GPU0 at ~122.9W and ~126.5W.
+
+GROUND TRUTH at the time of checking, five consecutive nvidia-smi reads
+over ten seconds:
+  0, 78.98 W    0, 78.98 W    0, 78.99 W    0, 78.95 W    0, 78.94 W
+  utilization 0%, memory 1 MiB, SM clock 345 MHz on all four GPUs
+  ps aux | grep -c python = 3 (the control itself plus grep). Nothing ran.
+
+The GPU was never at 122W. These are FALSE POSITIVES on idle hardware.
+
+SUSPECTED CAUSE: 122.9W and 126.5W match almost exactly the CONTEXT-ALIVE
+figures recorded earlier this session (pod1 GPU0 123.30W, pod2 GPU1 127.27W).
+The detector appears to be reading stale or wrong-GPU telemetry rather than
+the current GPU0 sample. Too precise a match to be coincidence.
+
+WHY THIS MATTERS: this is exactly what a negative control is for. A clean
+hour would have proved less. The pipeline has a real telemetry-sourcing bug,
+found on real hardware, with ground truth captured alongside it.
+
+NOTE: run_negative_control.py does not query compute_apps and runs with
+vram_strict=False, so VRAMResidualDetector is constructed but never
+evaluates. This control covers the pipeline MINUS that detector.
