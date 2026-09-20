@@ -1,0 +1,17 @@
+COLLECTIVE COMMUNICATION, real NCCL all-reduce, 4x H200 RunPod, all pairs NV18
+
+Each rank initialised a 1024x1024 tensor filled with (rank+1), digested it,
+all_reduced, synchronised, digested again.
+
+  rank 0  pre e678838a4ec435fc  post 14d254a39cbd9b86  val 10.0
+  rank 1  pre a2593333ae6a852e  post 14d254a39cbd9b86  val 10.0
+  rank 2  pre eb8a846ab9226b38  post 14d254a39cbd9b86  val 10.0
+  rank 3  pre 9805f10af9e2eb26  post 14d254a39cbd9b86  val 10.0
+
+4 DISTINCT pre-digests -> 1 IDENTICAL post-digest. Sum 1+2+3+4 = 10.0 exact.
+VERDICT: CONSISTENT. No collective-communication SDC.
+
+This validates the redundancy property CollectiveCommSDCTracer is built on --
+a correct all-reduce must leave every rank holding an identical result, so
+rank divergence localises corruption to the fabric rather than the compute.
+First execution of that premise on real multi-GPU hardware.

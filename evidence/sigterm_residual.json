@@ -1,0 +1,379 @@
+{
+  "type": "SIGKILL_RESIDUAL_MEASUREMENT",
+  "gpu": 3,
+  "alloc_mb": 2048,
+  "kill_signal": "SIGTERM",
+  "watch_seconds": 60.0,
+  "timestamp": "2026-09-20T00:48:20.253395+00:00",
+  "method": "reads memory.used only; allocates nothing on the GPU -- this is why it can answer what the 256MB-buffer tests cannot",
+  "not_a_remediation_test": "SIGKILL is NOT a remediation for cross-tenant VRAM residual (disproven on B200, zero recoveries). This measures ACCOUNTING only.",
+  "baseline_used_mb": 1.0,
+  "with_child_alive_used_mb": 2668.0,
+  "child_allocation_observed_mb": 2667.0,
+  "child_pid": 21527,
+  "post_kill_samples": [
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 0.03
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 1.06
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 2.09
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 3.12
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 4.15
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 5.18
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 6.21
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 7.24
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 8.28
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 9.3
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 10.33
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 11.36
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 12.39
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 13.42
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 14.45
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 15.48
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 16.51
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 17.54
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 18.57
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 19.6
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 20.63
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 21.65
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 22.68
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 23.71
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 24.74
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 25.79
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 26.82
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 27.85
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 28.88
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 29.91
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 30.94
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 31.97
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 33.0
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 34.02
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 35.05
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 36.08
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 37.11
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 38.14
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 39.17
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 40.2
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 41.23
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 42.26
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 43.29
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 44.32
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 45.35
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 46.38
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 47.41
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 48.44
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 49.47
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 50.51
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 51.54
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 52.57
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 53.6
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 54.63
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 55.66
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 56.69
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 57.72
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 58.75
+    },
+    {
+      "used_mb": 1.0,
+      "total_mb": 143771.0,
+      "util_pct": 0.0,
+      "t": 59.78
+    }
+  ],
+  "post_kill_gaps": 0,
+  "residual_mb_immediately_after_kill": 0.0,
+  "residual_mb_at_end_of_watch": 0.0,
+  "residual_mb_lowest_observed": 0.0,
+  "decayed_mb": 0.0,
+  "settle_seconds_before_watch": 5.0,
+  "status": "OK",
+  "verdict": "SIGKILL_CLEARS_ACCOUNTING",
+  "detail": "memory.used returned to within 50.0 MB of baseline"
+}
