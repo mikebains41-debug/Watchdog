@@ -1,0 +1,30 @@
+CVE-2026-31431 "Copy Fail" -- AF_ALG MITIGATION CHECK
+4x H200 RunPod, kernel 6.8.0-83-generic, 2026-09-20
+
+RESULT: [NOT MITIGATED VIA THIS PATH]
+  "AF_ALG socket creation SUCCEEDED -- this specific mitigation path is NOT
+   in place."
+
+AF_ALG socket creation works from inside this container. That is one of
+Microsoft's two official mitigation paths for this CVE, and it is absent.
+The attack surface is reachable.
+
+CVE-2026-31431 is a Linux kernel local privilege escalation, disclosed
+2026-04-29, listed in CISA KEV (actively exploited).
+
+STATED LIMIT, from the script itself: "This does not confirm the host is
+vulnerable -- only that this specific mitigation is absent. Cross-reference
+against the kernel-version check and your distribution's own advisory before
+drawing a conclusion either way."
+
+SECOND, INDEPENDENT SIGNAL: gpu_audit.py's stale_cve check returned PARTIAL
+on kernel 6.8.0-83-generic and listed CVE-2026-31431 (Copy Fail, CISA KEV)
+as a candidate requiring manual verification, noting "kernel version fragile
+to backports".
+
+Two independent checks, two different methods, pointing the same way. Neither
+alone is conclusive; together they warrant raising it with the provider.
+
+PRECEDENT: the earlier Vast.ai/H200 session found an unpatched host against
+this same CVE roughly two months after disclosure, and security@vast.ai was
+notified. This is the same class of finding on a different provider.
