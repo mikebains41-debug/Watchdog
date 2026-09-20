@@ -1,0 +1,28 @@
+TWO TEST FILES HAVE NEVER BEEN EXECUTABLE
+Found on real hardware, 4x H200 RunPod, 2026-09-20
+
+tests/false_positive_benchmark.py
+tests/latency_test.py
+
+Both call:
+    TelemetryCollector(hz=self.hz)     -> TypeError, no such kwarg
+    collector.collect()                -> AttributeError, no such method
+
+The real API is:
+    agent/telemetry.py:300
+      def __init__(self, sample_hz=SAMPLE_HZ, output_dir='watchdog_data',
+                   gpu_index=None, ...)
+    public methods on TelemetryCollector: ['start', 'stop']   -- that is all
+
+Renaming hz -> sample_hz gets past the constructor and then fails on
+collector.collect(). These files were written against an API that has never
+existed in this repo. They cannot be fixed by a parameter rename; they need
+rewriting around start/stop, or around sample_gpu() directly.
+
+CONSEQUENCE: the false-positive RATE benchmark and the detection LATENCY
+test have never produced a number. Both are figures that would otherwise be
+quotable. Neither is covered by run_all.py's TEST_FILES list, so nothing
+flagged that they were broken.
+
+(Local edits reverted -- the repo is left as found, with the defect
+documented rather than half-fixed on a pod.)
