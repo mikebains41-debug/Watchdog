@@ -1,0 +1,3 @@
+nohup: ignoring input
+[BURNIN] 24.0h, 300s interval, 192 cores -> cpu_results/burnin_20260920_023052.jsonl
+[2026-09-20T02:30:52.487048] load=5.29 (2.8%) ctxt/s=63230.7 mem=1960.29GB

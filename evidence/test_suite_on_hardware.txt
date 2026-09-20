@@ -193,3 +193,13 @@ environment-bound, not skipped:
   todo/module56.py                                 -- no FPGA, hangs
   false_positive_benchmark / latency_test / stability_test -- broken code,
     TelemetryCollector(hz=) and .collect() do not exist
+
+BURNIN STABILITY -- attempted with a 30 minute window
+  The test is configured for 24 HOURS at 300s intervals, so a 30-minute
+  window captured only its first sample before timeout:
+    [2026-09-20T02:30:52] 192 cores -> load=5.29 (2.8%), ctxt/s=63230.7,
+    mem=1960.29GB
+  Host spec recorded: 192 cores, 1960 GB RAM, 2.8% load at idle.
+  Writes to cpu_results/burnin_20260920_023052.jsonl.
+  CONCLUSION: not skipped, not broken -- it needs a 24h booking. Three
+  attempts tonight (180s, 300s, 1800s) all terminated mid-first-interval.

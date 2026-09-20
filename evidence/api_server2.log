@@ -49,3 +49,33 @@ nohup: ignoring input
 [REMEDIATION] log_only → LOGGED
 [WARNING] POWER_PERIODICITY — Periodic power structure: autocorr 0.68 at lag 4 samples, amplitude 48.7W. Cause unconfirmed.
 [INFO] MULTI_GPU_CORRELATION — Anomalies co-occurring on 2 GPUs. Note: coordinated bursts are known architectural behaviour on A100 SXM / B200. Context only.
+[t+180s] GPU0: 78.7W mem=1MB temp=32C util=0%
+[t+180s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+180s] GPU2: 77.6W mem=1MB temp=34C util=0%
+[t+180s] GPU3: 78.2W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.661Hz (requested 100Hz) -- min/mean/max interval: 322.623/375.73/1855.485ms
+[t+240s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+240s] GPU1: 77.6W mem=1MB temp=36C util=0%
+[t+240s] GPU2: 77.5W mem=1MB temp=34C util=0%
+[t+240s] GPU3: 78.1W mem=1MB temp=34C util=0%
+[WATCHDOG] Actual achieved rate: 2.677Hz (requested 100Hz) -- min/mean/max interval: 322.623/373.531/1855.485ms
+[t+240s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+240s] GPU1: 77.6W mem=1MB temp=36C util=0%
+[t+240s] GPU2: 77.5W mem=1MB temp=34C util=0%
+[t+240s] GPU3: 78.1W mem=1MB temp=34C util=0%
+[WATCHDOG] Actual achieved rate: 2.677Hz (requested 100Hz) -- min/mean/max interval: 322.623/373.486/1855.485ms
+[t+240s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+240s] GPU1: 77.6W mem=1MB temp=36C util=0%
+[t+240s] GPU2: 77.5W mem=1MB temp=34C util=0%
+[t+240s] GPU3: 78.1W mem=1MB temp=34C util=0%
+[WATCHDOG] Actual achieved rate: 2.678Hz (requested 100Hz) -- min/mean/max interval: 322.623/373.449/1855.485ms
+[t+300s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+300s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+300s] GPU2: 77.5W mem=1MB temp=34C util=0%
+[t+300s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.69Hz (requested 100Hz) -- min/mean/max interval: 322.623/371.705/1855.485ms
+[t+300s] GPU0: 78.5W mem=1MB temp=32C util=0%
+[t+300s] GPU1: 77.7W mem=1MB temp=37C util=0%
+[t+300s] GPU2: 77.5W mem=1MB temp=34C util=0%
+[t+300s] GPU3: 78.3W mem=1MB temp=35C util=0%
+[WATCHDOG] Actual achieved rate: 2.691Hz (requested 100Hz) -- min/mean/max interval: 322.623/371.678/1855.485ms
