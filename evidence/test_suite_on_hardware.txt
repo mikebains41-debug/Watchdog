@@ -214,3 +214,18 @@ BURNIN STABILITY -- attempted with a 30 minute window
   Load steady 2.7-2.8% of 192 usable cores.
   Context switches settled from a 63k startup spike to ~18.8k steady.
   The test is sound; it simply needs a 24h booking to complete.
+
+  CORRECTION: burnin_stability.py DID work, and outlived its timeout wrapper.
+  cpu_results/burnin_20260920_023052.jsonl, 5 samples at 300s intervals:
+    02:30:52  0.000h  load 2.8%  ctxt/s 63230.7  mem 1960.29 GB
+    02:35:52  0.083h  load 2.7%  ctxt/s 19787.6  mem 1960.76 GB
+    02:40:52  0.167h  load 2.8%  ctxt/s 18913.3  mem 1960.83 GB
+    02:45:52  0.250h  load 2.7%  ctxt/s 18769.7  mem 1960.53 GB
+    02:50:52  0.333h  load 2.6%  ctxt/s 18953.2  mem 1960.76 GB
+  Memory FLAT: 1960.29-1960.83 GB, variance 0.54 GB on a 1960 GB host across
+  20 minutes. NO LEAK.
+  Load steady 2.6-2.8% of 192 usable cores.
+  Context switches settled from a 63k startup spike to ~18.8-19k steady.
+  Host spec: 192 cores, 1960 GB RAM.
+  The test is sound. It needs a 24h window to complete, which is better done
+  on a cheap CPU booking than at 4x H200 rates.
