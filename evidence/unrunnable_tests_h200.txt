@@ -43,3 +43,29 @@ ALSO FOUND, these DID run on hardware:
                          traceable to a specific existing finding."
   burnin_stability.py    TERMINATED at a 180s timeout. Long-running by
                          design; needs a longer window or a duration flag.
+
+CORRECTION -- run_all_tests.py already excludes these four, with this note:
+  "stability_test.py, false_positive_benchmark.py, latency_test.py, and
+   swarm_test.py require real GPU hardware / running servers and are NOT
+   included in this automated suite -- run them manually when hardware is
+   available."
+
+The EXCLUSION is deliberate. The stated REASON is wrong for three of them.
+We are on real GPU hardware (4x H200) and they still fail -- not because
+hardware is missing, but because they call an API that does not exist
+(TelemetryCollector(hz=) and .collect()). Only swarm_test.py genuinely
+needs something absent: running Watchdog API servers (0/1 reachable).
+FIX: correct the note, or fix the three files. As written it implies a
+hardware gap where there is a code defect.
+
+OTHER RESULTS THIS ROUND
+  resource_benchmark.py reproduced: 1,632 rows/sec (first run 1,618),
+    memory variance 0.0 MB both times.
+  repo_hygiene_audit.py: BARE_EXCEPT sweep, "701 more..." beyond the shown
+    lines, concentrated in todo/module19.py and todo/module20.py -- the
+    dormant module directory, consistent with the earlier 486+258 count.
+  audit_dead_imports.py: correctly classified intelligence/threat_intel.py
+    as LIVE -- imported AND called by threat_intel_airgap.py,
+    RECOMMENDATION KEEP. The AST-based fix works; the earlier regex version
+    would have deleted a live base class.
+  Container Escape: FAIL (/proc visible). Compliance Evidence: PASS.
