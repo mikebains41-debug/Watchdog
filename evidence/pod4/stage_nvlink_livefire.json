@@ -1,0 +1,88 @@
+{
+  "run_id": "1789869835-32ba978711ee",
+  "backend": "real",
+  "is_evidence": true,
+  "gpus": [
+    {
+      "index": "0",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-ff1e3761-3ab5-1898-57c1-8d7ee49a2731",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "78.59",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "1",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-3479cd45-8f60-a28d-838b-3e9b846adada",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "77.80",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "2",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-72fd0d86-6820-ab4c-68ea-c98a21f7d03c",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "77.79",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "3",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-85bde0e7-3c2a-2368-f385-c4ac25f5d91e",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "78.34",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    }
+  ],
+  "stage": "nvlink_livefire",
+  "tier": "TIER1_TRUE_POSITIVE",
+  "passed": true,
+  "evidence": {
+    "induced": {
+      "src": 1,
+      "dst": 2,
+      "transferred_mb": 1024,
+      "seconds": 0.1802,
+      "nvlink_kb_per_s": 5818291.3,
+      "nvlink_counters_raw": "GPU 1: NVIDIA H200 (UUID: GPU-3479cd45-8f60-a28d-838b-3e9b846adada)\n\t Link 0: Data Tx: 1049104402061 KiB\n\t Link 0: Data Rx: 1050019708652 KiB\n\t Link 1: Data Tx: 1048308513982 KiB\n\t Link 1: Data Rx: 1049954119454 KiB\n\t Link 2: Data Tx: 1050621522583 KiB\n\t Link 2: Data Rx: 1050617189084 KiB\n\t Link 3: Data Tx: 1050338446065 KiB\n\t Link 3: Data Rx: 1050619902788 KiB\n\t Link 4: Data Tx: 1051189697568 KiB\n\t Link 4: Data Rx: 1049675266917 KiB\n\t Link 5: Data Tx: 1050760688895 KiB\n\t Link 5: Data Rx: 1049768576223 KiB\n\t Link 6: Data Tx: 1049621688311 KiB\n\t Link 6: Data Rx: 1050128370709 KiB\n\t Link 7: Data Tx: 1049497758224 KiB\n\t Link 7: Data Rx: 1050029772814 KiB\n\t Link 8: Data Tx: 1049747086629 KiB\n\t Link 8: Data Rx: 1050193484885 KiB\n\t Link 9: Data Tx: 1049942327733 KiB\n\t Link 9: Data Rx: 1050205716191 KiB\n\t Link 10: Data Tx: 1048824574691 KiB\n\t Link 10: Data Rx: 1049040482818 KiB\n\t Link 11: Data Tx: 1049664841129 KiB\n\t Link 11: Data Rx: 1050741943582 KiB\n\t Link 12: Data Tx: 1051189942669 KiB\n\t Link 12: Data Rx: 1050985468769 KiB\n\t Link 13: Data Tx: 1051103736247 KiB\n\t Link 13: Data Rx: 1051018545575 KiB\n\t Link 14: Data Tx: 1047712516390 KiB\n\t Link 14: Data Rx: 1051042660120 KiB\n\t Link 15: Data Tx: 1047745387737 KiB\n\t Link 15: Data Rx: 1051044662361 KiB\n\t Link 16: Data Tx: 1052381229520 KiB\n\t Link 16: Data Rx: 1050599707244 KiB\n\t Link 17: Data Tx: 1051500544689 KiB\n\t Link 17: Data Rx: 1048980983778 KiB\n",
+      "measurement": "real"
+    },
+    "detector_fired": true
+  },
+  "note": "legitimate cross-GPU tensor copy induces contention",
+  "timestamp": "2026-09-20T02:05:02.624572+00:00"
+}

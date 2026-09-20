@@ -1,0 +1,34 @@
+COVERT_COMPUTE STAGE -- ROOT CAUSE FOUND, 4x H200 RunPod
+
+pod4 ran with the CORRECTED inducer: 16384^2 bf16 GEMM for 60 seconds.
+
+  util_pct           100.0
+  mean_util_pct       98.88
+  power_watts        706.53   (against a 700 W limit)
+  iterations          5119 over 60 s
+  samples             255
+  sm_clocks_seen     [1455.0]
+  sm_clock_uniform    null
+  RESULT: still FAIL.
+
+The inducer was never the problem. It saturates the GPU completely.
+
+ROOT CAUSE: the detector hook is
+    util_pct > 90 AND sm_clock_uniform
+sm_clock_uniform is computed in pod_runner.py as
+    (max(sm) - min(sm) < 50) if len(sm) > 1 else None
+sm_clocks_seen is a DEDUPLICATED set. The SM clock held at exactly
+1455 MHz across all 255 samples, so the set has ONE element, so the
+len > 1 branch is skipped and uniform returns None. None fails the AND.
+
+The stage therefore fails BECAUSE the clock was perfectly uniform -- the
+exact condition it is testing for. Inverted logic, in my own tooling.
+
+FIX: a single distinct clock value over N>1 samples is the STRONGEST
+possible evidence of uniformity and must return True, not None. Return
+None only when zero samples were collected.
+
+Earlier runs for comparison:
+  pod1/pod2/pod3  8192^2, 5 s  -> 57-59% util, 524-543 W, uniform null
+  pod4           16384^2, 60 s -> 100%  util, 706 W,     uniform null
+Both fail, for the same reason, at opposite ends of the load range.

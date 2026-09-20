@@ -1,0 +1,89 @@
+{
+  "run_id": "1789869835-32ba978711ee",
+  "backend": "real",
+  "is_evidence": true,
+  "gpus": [
+    {
+      "index": "0",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-ff1e3761-3ab5-1898-57c1-8d7ee49a2731",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "78.59",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "1",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-3479cd45-8f60-a28d-838b-3e9b846adada",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "77.80",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "2",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-72fd0d86-6820-ab4c-68ea-c98a21f7d03c",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "77.79",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    },
+    {
+      "index": "3",
+      "name": "NVIDIA H200",
+      "uuid": "GPU-85bde0e7-3c2a-2368-f385-c4ac25f5d91e",
+      "driver_version": "570.124.06",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.total": "143771",
+      "power.limit": "700.00",
+      "ecc.mode.current": "Enabled",
+      "utilization.gpu": "0",
+      "power.draw": "78.34",
+      "clocks.mem": "3201",
+      "clocks.sm": "345",
+      "ecc.errors.corrected.aggregate.total": "0",
+      "ecc.errors.uncorrected.aggregate.total": "0"
+    }
+  ],
+  "stage": "vram_cross_process_read",
+  "tier": "TIER1_TRUE_POSITIVE",
+  "passed": false,
+  "evidence": {
+    "scan": {
+      "gpu": 3,
+      "pattern": "WATCHDOG_CANARY",
+      "scanned_mb": 512,
+      "pattern_byte_matches": 0,
+      "nonzero_bytes": 0,
+      "pattern_found": false,
+      "bytes_readable": 0,
+      "note": "expected result is pattern_found=False with near-zero nonzero bytes -- the residual is an ACCOUNTING gap, not recoverable data (B200/H200 both returned zero)",
+      "measurement": "real"
+    }
+  },
+  "note": "self-owned two-process read on hardware we fully control -- proves cross-process residual (CVE-2023-4969 class), NOT an attack on another tenant",
+  "timestamp": "2026-09-20T02:05:10.685226+00:00"
+}
