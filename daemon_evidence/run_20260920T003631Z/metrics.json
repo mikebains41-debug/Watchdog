@@ -1,0 +1,17 @@
+{
+  "run_started": "2026-09-20T00:36:31.983247+00:00",
+  "run_ended": "2026-09-20T00:41:31.988617+00:00",
+  "duration_s": 300.0,
+  "interval_s": 1.0,
+  "samples_collected": 1116,
+  "alerts_fired": 0,
+  "incidents_correlated": 0,
+  "detectors_loaded": [
+    "rowhammer_precursor",
+    "cryptojacking_onset",
+    "ghost_power"
+  ],
+  "detectors_skipped": [],
+  "correlator": "unified",
+  "note": "Real-hardware run. Detector logic was simulation-tested; this run is the first live-telemetry execution -- results are evidence, not a pass/fail of the detectors themselves."
+}
