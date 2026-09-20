@@ -25,3 +25,20 @@ CVE-2026-64600 RefluXFS check: XFS present but xfs_info unavailable in the
 FULL MODULE RUN: 23 modules, 46 events, 4 alerts.
   RAW_OUTPUT 20, MODULE_DISABLED 15, PROVIDER_NOT_SUPPORTED 3,
   MODULE_ERROR 2, BASELINE_ESTABLISHED 1, SUSPICIOUSLY_NOISELESS 1.
+
+MODULE_ERROR x2 -- module146.py and modules_146_150_combined.py both failed
+  with ModuleNotFoundError: qiskit. Quantum modules on a GPU pod. Expected,
+  not a defect.
+
+SUSPICIOUSLY_NOISELESS (CRITICAL) -- module51.py, noise_fraction 0.00024,
+  note "Too clean - likely simulation".
+  SECOND FALSE POSITIVE OF THE SESSION, on real H200 hardware.
+  The detector exists to catch fabricated telemetry by flagging data too
+  clean to be real. But H200 idle telemetry genuinely IS that stable --
+  five consecutive nvidia-smi reads gave 78.98 / 78.98 / 78.99 / 78.95 /
+  78.94 W, a spread of 0.05 W.
+  The "too clean" threshold does not account for how quiet a modern idle
+  GPU is, so it flags real hardware as simulated.
+  FIX NEEDED: calibrate the noise floor per architecture from an observed
+  idle distribution, and do not raise CRITICAL on low variance alone while
+  the GPU is idle.
