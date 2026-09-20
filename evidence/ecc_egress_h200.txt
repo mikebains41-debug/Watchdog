@@ -1,0 +1,23 @@
+ECC DIFF, session start vs end, 4x H200 RunPod
+  start: 0 corrected / 0 uncorrected on all four
+  end:   0 corrected / 0 uncorrected on all four
+  No memory errors across ~2.5h including sustained 684W near-TDP load.
+
+EGRESS COLLECTOR, executed (not inferred) in the container
+  mode "proc" -- /proc/net/tcp parsed successfully
+  Real rows returned with proto/local_ip/local_port/remote_ip/remote_port/
+  state/inode/timestamp. e.g. 127.0.0.11:45331 LISTEN, 0.0.0.0:8001 LISTEN,
+  0.0.0.0:8081 LISTEN.
+  VERDICT: the network detection layer has a working data source on RunPod.
+
+RESIDUAL "DECAY" TEST -- reinterpreted
+  2 GB allocated on GPU2, filled, del'd, empty_cache() called. Parent python
+  process REMAINED ALIVE between samples.
+    t=0s    620 MB, 86.92 W
+    t=60s   620 MB, 121.65 W
+    t=300s  620 MB, 121.87 W
+  620 MB flat; power rose to the ~122 W live-context level.
+  This is NOT a post-exit residual. It is the CUDA caching allocator retaining
+  a pool INSIDE a live process after del + empty_cache(). Distinct from the
+  post-exit case, where memory returned to 1 MB (see sigkill/sigterm results,
+  both 0.0 MB residual).
