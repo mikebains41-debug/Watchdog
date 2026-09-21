@@ -22,3 +22,13 @@ from normal serving. OPEN: PACKAGE_CRACK_PREDICTED now fires on every GPU under
 normal load -- previously one alert only, because a single shared instance hit
 a 300 s wall-clock cooldown that outlasted the run. The condition itself needs
 examining.
+
+V3 (2026-09-21): PowerPeriodicityDetector now counts only autocorrelation peaks
+after the first dip below zero (persistence is not rhythm): bursty serving
+258/328 -> 0/328 windows, real rhythms still caught in every window.
+PromptInjectionSideEffect, FanWear, CapacitorAging, PackageCracking now PerGPU.
+Result: periodicity, correlation, capacitor and prompt-injection alerts gone
+from normal serving. OPEN: PACKAGE_CRACK_PREDICTED now fires on every GPU under
+normal load -- previously one alert only, because a single shared instance hit
+a 300 s wall-clock cooldown that outlasted the run. The condition itself needs
+examining.
