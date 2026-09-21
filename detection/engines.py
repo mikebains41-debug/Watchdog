@@ -185,11 +185,24 @@ class PowerPeriodicityDetector:
         var = sum(d * d for d in dev)
         if var <= 0:
             return 0.0, 0
-        best_r, best_lag = 0.0, 0
-        for lag in range(min_lag, n // 2):
+        # FIXED 2026-09-21: previously took the best r over every lag >= min_lag.
+        # A signal that merely changes slowly -- inference serving, where busy
+        # and idle spells outlast min_lag samples -- correlates with itself a few
+        # samples later just because it persists, so this reported periodicity
+        # on every GPU in normal bursty serving (scripts/repro_moe_multi_gpu.py).
+        # A real rhythm swings out of phase (autocorrelation below zero) and then
+        # returns at its period. Only lags after that first dip below zero count;
+        # no dip means no rhythm. Tested: square waves at 20/40/60 s and a spike
+        # train still detected in every window; bursty serving 258/328 -> 0/328.
+        best_r, best_lag, dipped = 0.0, 0, False
+        for lag in range(1, n // 2):
             s = sum(dev[i] * dev[i + lag] for i in range(n - lag))
             r = s / var
-            if r > best_r:
+            if not dipped:
+                if r < 0:
+                    dipped = True
+                continue
+            if lag >= min_lag and r > best_r:
                 best_r, best_lag = r, lag
         return best_r, best_lag
 
