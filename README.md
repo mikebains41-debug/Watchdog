@@ -38,15 +38,29 @@ SIGKILL in the other), then allocated a fresh buffer and read it for 240
 seconds. Both returned zero pattern matches and zero nonzero bytes,
 sustained. Nothing recoverable by either path.
 
-Whether SIGKILL clears the 527MB accounting is not established. Both
-tests above allocate a 256MB buffer to perform their read, so their own
-memory figures include the instrument and cannot answer it. A separate
-measurement is needed: kill the process, watch memory.used, allocate
-nothing.
+Whether SIGKILL clears the accounting is now established. The two tests above
+each allocate a 256MB buffer to perform their read, so their own memory figures
+include the instrument and could not answer it. scripts/sigkill_residual_measure.py
+was written to answer it directly -- it allocates nothing on the GPU and reads
+only memory.used. On 4x H200 (RunPod, driver 570.124.06, 2026-09-19): a child
+process allocated 2048MB, was killed, and the residual measured 0.0MB
+immediately and throughout a 90-second watch. SIGTERM produced the identical
+result over 60 seconds. On this platform the accounting clears completely on
+process exit by either path.
+
+Related and distinct: while a process remains alive, the CUDA caching allocator
+holds its pool indefinitely. 620MB stayed flat across a full 30-minute watch
+(0s / 60s / 300s / 900s / 1800s), with power settled at ~126W. The behaviour is
+binary rather than decaying -- held while the process lives, released completely
+on exit, with no time-based middle state.
 
 The VRAM residual finding was reported to MITRE on 2026-05-31.
 No CVE has been assigned yet. Status: submitted, pending assignment.
-Our self-assessed CVSS is 8.4; that score has not been reviewed by anyone else.
+No CVSS score is attached to this finding. An earlier self-assessed 8.4 was
+published before the data-recovery tests were run; it has been withdrawn, for
+the same reason no CVSS score is attached to any engine below -- CVSS scores
+vulnerabilities, and an accounting gap with no demonstrated confidentiality
+impact is not one.
 
 ---
 
@@ -553,6 +567,11 @@ live pipeline. See Alerting.
 ## Related
 
 Public repo: https://github.com/mikebains41-debug/ai-gpu-energy-optimizer-
+Both repositories describe the same VRAM residual finding and use the same
+characterization: an accounting and capacity-integrity gap, with no data
+recoverable. Earlier revisions of the other repository described it as data
+leakage with a self-assessed CVSS of 8.4. That wording predated the recovery
+tests and has been corrected there.
 
 ---
 
