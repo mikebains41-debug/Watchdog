@@ -9,6 +9,7 @@ from detection.memory_attacks import CacheSideChannelDetector, MIGPartitionDesyn
 from detection.llm_attacks import InferencePowerFingerprintDetector, AgentOrchestrationAnomalyDetector, PromptInjectionSideEffectDetector, AgentSessionVRAMRetentionDetector, InterAgentHandoffAnomalyDetector
 from detection.pcie_health import PCIeHealthDetector
 from detection.predictive_failure import FanWearDetector, CapacitorAgingDetector, PackageCrackingDetector
+from detection.fleet_health import FleetHealthDetector
 from detection.attestation import BootAttestation
 from detection.business_signals import CovertMiningDetector, BillingIntegrityDetector
 from detection.tamper_detection import PowerLimitTamperDetector
@@ -143,6 +144,7 @@ class FullDetectionPipeline:
         self.fan_wear = PerGPU(FanWearDetector)
         self.capacitor = PerGPU(CapacitorAgingDetector)
         self.package_crack = PerGPU(PackageCrackingDetector)
+        self.fleet_health = FleetHealthDetector()  # node-level on purpose: for health, neighbours are the reference
         self.nvlink = NVLinkContentionDetector()
         self.covert_mining = CovertMiningDetector()
         self.billing_integrity = BillingIntegrityDetector()
@@ -160,11 +162,11 @@ class FullDetectionPipeline:
                          self.agent_vram, self.inter_agent, self.pcie_health,
                          self.fan_wear, self.capacitor, self.package_crack, self.nvlink,
                          self.covert_mining, self.billing_integrity, self.power_tamper,
-                         self.pstate_honesty, self.pcie_mismatch, self.ecc_trend, self.vbios_integrity]
+                         self.pstate_honesty, self.pcie_mismatch, self.ecc_trend, self.vbios_integrity, self.fleet_health]
         BASE_ENGINE_COUNT = 4  # GhostPowerDetector, VRAMResidualDetector, PowerPeriodicityDetector, MultiGPUCorrelation
         ATTESTATION_COUNT = 1
         self.total_engine_count = BASE_ENGINE_COUNT + len(self.engines) + ATTESTATION_COUNT
-        _cert_engine_names = ([type(e).__name__ for e in self.engines]
+        _cert_engine_names = ([getattr(e, '_factory', type(e)).__name__ for e in self.engines]
                                + ['GhostPowerDetector', 'ResidentGhostPowerDetector', 'VRAMResidualDetector',
                                   'PowerPeriodicityDetector', 'MultiGPUCorrelation',
                                   'BootAttestation'])
