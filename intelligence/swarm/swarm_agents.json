@@ -1,0 +1,194 @@
+{
+  "schema": "1.0",
+  "updated": "2026-09-21",
+  "note": [
+    "Agent registry and voting weights for the Watchdog prediction swarm.",
+    "",
+    "WEIGHTS ARE NOT HAND-TUNED. Every non-zero weight below is TPR minus FPR",
+    "from a recorded qualification run. If a weight needs changing, re-run",
+    "scripts/swarm_qualification.py --json and regenerate this file. Editing a",
+    "weight by hand to make an outcome look better is the failure this file",
+    "exists to prevent.",
+    "",
+    "An agent that is not QUALIFIED carries weight 0.0, never a small weight.",
+    "A broken agent that votes is worse than one that abstains: it injects",
+    "noise into every decision it touches while looking like participation."
+  ],
+
+  "agents": {
+    "agent1": {
+      "class": "GhostPowerPredictor",
+      "module": "intelligence.swarm.agent1_ghost_power_predictor",
+      "kwargs": {"gpu_id": 0, "idle_floor_w": 80.36},
+      "status": "ACTIVE",
+      "weight": 0.965,
+      "weight_source": "validate_swarm_prediction.py --n-clean 200 --n-event 200 --seed 42",
+      "measured": {"tpr": 0.965, "fpr": 0.0},
+      "open_issue": [
+        "idle_floor_w is the COLD idle floor. On 2026-09-19 this detector",
+        "reported 44.5W and 48.1W above floor while nvidia-smi read 78.98W",
+        "five consecutive times, on genuinely idle hardware. The context-alive",
+        "state draws ~126W at 0% utilization, which is ~47W above the cold",
+        "floor and is this detector's exact firing condition.",
+        "Run swarm_qualification.py: if fpr_ctx_alive far exceeds fpr_cold_idle,",
+        "the floor is misconfigured and the fix is the floor, not the threshold."
+      ]
+    },
+
+    "agent2": {
+      "class": "CEIDegradationForecaster",
+      "module": "intelligence.swarm.agent2_cei_degradation_forecaster",
+      "kwargs": {"gpu_id": 0},
+      "status": "INACTIVE_MISSING_TELEMETRY",
+      "weight": 0.0,
+      "measured": {"tpr": 0.68, "fpr": 0.0},
+      "missing_fields": ["cei_flops_per_joule"],
+      "note": [
+        "The agent works. It is starved, not broken: 68% TPR on randomized",
+        "trials, and its own code refuses to proceed without a real CEI value",
+        "rather than guessing one.",
+        "cei_flops_per_joule cannot be derived from passive nvidia-smi under",
+        "any field name. intelligence/cei_benchmark.py exists to produce it",
+        "(timed matmul, known FLOP count, real power sampling) and has never",
+        "been run on hardware.",
+        "THIS IS THE HIGHEST-VALUE FIX IN THE SWARM: one pod session turns a",
+        "silent agent into a working one at 68% TPR."
+      ]
+    },
+
+    "agent3": {
+      "class": "ThermalEventPredictor",
+      "module": "intelligence.swarm.agent3_thermal_event_predictor",
+      "kwargs": {"gpu_id": 0, "gpu_arch": "H200"},
+      "status": "ACTIVE",
+      "weight": 0.625,
+      "weight_source": "validate_swarm_prediction_agents2to5.py, stated defaults",
+      "measured": {"tpr": 0.63, "fpr": 0.005}
+    },
+
+    "agent4": {
+      "class": "TenantIsolationRiskScorer",
+      "module": "intelligence.swarm.agent4_tenant_isolation_risk_scorer",
+      "kwargs": {"gpu_id": 0, "gpu_arch": "H200"},
+      "status": "INACTIVE_MISSING_TELEMETRY",
+      "weight": 0.0,
+      "measured": {"tpr": 0.245, "fpr": 0.0},
+      "missing_fields": ["memory_access_timing_ms"],
+      "decision": "2026-09-21: removed from the voting pool.",
+      "note": [
+        "Two independent reasons, either sufficient on its own.",
+        "",
+        "1. STARVED. One of its four weighted signals reads",
+        "   row['memory_access_timing_ms'], which nothing in agent/telemetry.py",
+        "   collects and which nvidia-smi does not expose. It does not crash:",
+        "   the missing signal safely computes to zero, which is worse, because",
+        "   the agent keeps voting with a permanently dead input.",
+        "",
+        "2. BELOW BAR. 24.5% TPR is its validated figure WITH that signal",
+        "   present. Real-world performance is necessarily lower.",
+        "",
+        "In a weighted-consensus system a 24.5% agent with a zeroed input does",
+        "not merely fail to help. It votes on every incident it sees.",
+        "",
+        "To reactivate: source memory_access_timing_ms (it would need a timing",
+        "probe, not a telemetry field), requalify at the same bar as the",
+        "others, and regenerate this file from the qualification run.",
+        "Until then it stays out of the pool and out of the weights."
+      ]
+    },
+
+    "agent5": {
+      "class": "EUAIActComplianceForecaster",
+      "module": "intelligence.swarm.agent5_eu_ai_act_compliance_forecaster",
+      "kwargs": {"gpu_id": 0},
+      "status": "INACTIVE_MISSING_TELEMETRY",
+      "weight": 0.0,
+      "measured": {"tpr": 0.54, "fpr": 0.0},
+      "missing_fields": ["cei_flops_per_joule"],
+      "resolved_fields": ["ghost_power_pct", "crash_count", "isolation_score"],
+      "note": [
+        "Was blocked on four fields. Three now close without a GPU:",
+        "swarm_derived_fields.py computes ghost_power_pct, crash_count and",
+        "isolation_score from telemetry already collected.",
+        "Only cei_flops_per_joule remains, and it is the same blocker as",
+        "agent2. One pod session unblocks both agents at once."
+      ]
+    },
+
+    "agent6": {
+      "class": "RowhammerPrecursorPredictor",
+      "module": "intelligence.swarm.agent6_rowhammer_precursor_predictor",
+      "kwargs": {"gpu_id": 0},
+      "status": "UNQUALIFIED",
+      "weight": 0.0,
+      "note": [
+        "Loaded by watchdog_daemon.py on 2026-09-19 and ran across 2236",
+        "samples with 0 alerts on clean hardware. That is a clean negative",
+        "control, not a qualification: no positive control has been run.",
+        "Reads ecc_corrected_total and ecc_uncorrectable_total, both confirmed",
+        "readable on H200 (0/0 across the full session).",
+        "Run swarm_qualification.py to produce a TPR before giving it weight."
+      ]
+    },
+
+    "agent7": {
+      "class": "CryptojackingOnsetPredictor",
+      "module": "intelligence.swarm.agent7_cryptojacking_onset_predictor",
+      "kwargs": {"gpu_id": 0},
+      "status": "UNQUALIFIED",
+      "weight": 0.0,
+      "note": [
+        "Same as agent6: ran clean in the 2026-09-19 daemon runs, no positive",
+        "control yet. Reads gpu_util, sm_clock_mhz, power_watts and",
+        "mem_bw_util_pct. The last is NOT in the 24 confirmed QUERY_FIELDS and",
+        "needs checking before this agent is trusted."
+      ]
+    },
+
+    "agent8": {
+      "class": "ModelExtractionPrecursorPredictor",
+      "module": "intelligence.swarm.agent8_model_extraction_precursor_predictor",
+      "kwargs": {"gpu_id": 0},
+      "status": "UNQUALIFIED",
+      "weight": 0.0,
+      "note": [
+        "Not loaded by the daemon on 2026-09-19 (it loaded agents 1, 6, 7).",
+        "Unqualified and unexercised on hardware."
+      ]
+    }
+  },
+
+  "consensus": {
+    "window_seconds": 60.0,
+    "threshold": 0.25,
+    "min_agents": 2,
+    "note": [
+      "min_agents 2 means a single agent never triggers a consensus event,",
+      "however certain it is. It can still raise its own alert through the",
+      "normal pipeline; it just cannot speak for the swarm.",
+      "",
+      "The threshold is a starting value, not a measured one. Tune it from",
+      "qualification runs once more than two agents are ACTIVE."
+    ]
+  },
+
+  "pool_status": {
+    "active": ["agent1", "agent3"],
+    "inactive_missing_telemetry": ["agent2", "agent4", "agent5"],
+    "unqualified": ["agent6", "agent7", "agent8"],
+    "summary": [
+      "2 of 8 agents are in the voting pool.",
+      "The README documents 5 agents; swarm_orchestrator.py imports 8.",
+      "Reconcile that before publishing any agent count.",
+      "",
+      "Sequence that actually moves this forward:",
+      "  1. Qualify agents 6, 7, 8. No GPU needed. Could take the pool 2 -> 5.",
+      "  2. Run cei_benchmark.py on hardware. Unblocks agents 2 and 5. -> 7.",
+      "  3. Fix agent1's floor. It is ACTIVE and false-positiving today.",
+      "  4. Only then consider new agents.",
+      "",
+      "Going 2 -> 7 with the agents already written beats going 5 -> 30 with",
+      "agents that are not."
+    ]
+  }
+}
