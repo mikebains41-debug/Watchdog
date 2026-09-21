@@ -246,6 +246,22 @@ class DMAAttackDetector:
         }
 
 
+def _sample_time(row):
+    """Epoch seconds for when this sample was TAKEN (row['iso_timestamp']),
+    not when it is being processed. Falls back to the wall clock only if the
+    row has no parseable timestamp. Found 2026-09-21: time.time() made results
+    depend on how fast the host processed rows, and let one poll's rows for
+    several GPUs look like a jump over time on one GPU."""
+    ts = row.get("iso_timestamp") if isinstance(row, dict) else None
+    if ts:
+        try:
+            from datetime import datetime
+            return datetime.fromisoformat(str(ts).replace("Z", "+00:00")).timestamp()
+        except (ValueError, TypeError):
+            pass
+    return time.time()
+
+
 class LaserInjectionDetector:
     """
     Detects a rapid GPU temperature change within a short window.
@@ -268,7 +284,7 @@ class LaserInjectionDetector:
         workload start/stop is common and expected; this is context, not
         an actionable alert. Alert 'type' left unchanged.
     """
-    def __init__(self, delta_threshold_c=5.0, time_window_s=0.5,
+    def __init__(self, delta_threshold_c=5.0, time_window_s=3.0,
                  require_consecutive=2, refire_after_s=60):
         self.delta_threshold_c = delta_threshold_c
         self.time_window_s = time_window_s
@@ -280,13 +296,14 @@ class LaserInjectionDetector:
         temp = _f(row, 'temperature.gpu')
         if temp is None:
             return None
-        ts = time.time()
+        ts = _sample_time(row)
         self.history.append({'temp': temp, 'ts': ts})
         window = [h for h in self.history if ts - h['ts'] <= self.time_window_s]
         if len(window) < 3:
             return None
         temps = [h['temp'] for h in window]
         delta = max(temps) - min(temps)
+        span = window[-1]['ts'] - window[0]['ts']
 
         if not self.state.should_emit(delta >= self.delta_threshold_c):
             return None
@@ -299,7 +316,7 @@ class LaserInjectionDetector:
             'current_temp_c': temp,
             'timestamp': row.get('iso_timestamp'),
             'message': (f"Temperature changed {delta:.1f}C within "
-                        f"{self.time_window_s}s -- consistent with a "
+                        f"{span:.1f}s -- consistent with a "
                         f"normal workload start/stop transient. Not "
                         f"evidence of physical fault injection, which "
                         f"cannot be detected from software telemetry "

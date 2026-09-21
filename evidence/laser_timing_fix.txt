@@ -1,0 +1,24 @@
+LaserInjectionDetector timing fix, 2026-09-21
+Reproduce: python3 scripts/repro_laser_timing.py (controlled clock; identical data processed at 1 Hz vs instantly)
+
+===== BEFORE (wall clock, 0.5s window) =====
+D1 real jump, processed at 1 Hz     : none (expect alert)
+D2 real jump, processed instantly   : [11.0] (expect alert)
+D3 steady +/-0.5C                   : none (expect none)
+D4a normal warm-up 1C/s, at 1 Hz    : none (expect none)
+D4b normal warm-up, instantly       : [6.0] (expect none)
+
+===== AFTER (sample timestamps, 3s window) =====
+D1 real jump, processed at 1 Hz     : [11.0] (expect alert)
+D2 real jump, processed instantly   : [11.0] (expect alert)
+D3 steady +/-0.5C                   : none (expect none)
+D4a normal warm-up 1C/s, at 1 Hz    : none (expect none)
+D4b normal warm-up, instantly       : none (expect none)
+
+Before: the verdict depended on how fast the host processed rows. At the real
+~1 reading per GPU per second, 3 readings never fit in 0.5s, so a real jump
+(D1) was missed; processed instantly, a normal warm-up (D4b) was a false alarm.
+After: readings are stamped with when the sample was taken, window 3s, so the
+same data gives the same answer at any processing speed.
+Regression: attack_injection_suite 40/40, test_hardware_attacks_remaining_fixes
+9/9, test_engines 17/17, multi-GPU contamination audit none.
