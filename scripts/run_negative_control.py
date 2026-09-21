@@ -78,6 +78,7 @@ def main():
 
     pipeline = DetectionPipeline(vram_strict=False)
     sampler = DeltaTimedSampler(lambda: sample_nvidia_smi(args.gpu))
+    fired = []          # (alert, the exact row that produced it)
 
     print(f"Negative control: {args.seconds}s on GPU {args.gpu}.")
     print("GPU must be genuinely idle for the entire run -- any workload "
@@ -89,7 +90,9 @@ def main():
         while time.time() - start < args.seconds:
             row = sampler.sample()
             row['iso_timestamp'] = time.strftime('%Y-%m-%dT%H:%M:%S')
-            pipeline.process(row)
+            alerts = pipeline.process(row) or []
+            for a in alerts:
+                fired.append({'alert': a, 'triggering_row': dict(row)})
             n += 1
             time.sleep(max(0, args.interval - 0.01))
     except KeyboardInterrupt:
@@ -101,6 +104,22 @@ def main():
     print("Sampling (actual measured rate, not requested):")
     print(sampler.stats())
     print("=" * 60)
+    if fired:
+        import json
+        out = 'negative_control_alerts.jsonl'
+        with open(out, 'w') as f:
+            for e in fired:
+                f.write(json.dumps(e, default=str) + "\n")
+        print(f"\n{len(fired)} alert(s) fired. Each is saved in {out} WITH the exact")
+        print("telemetry row that produced it -- power, util, memory, compute_apps --")
+        print("so it can be checked against its own sample, not a reading taken later.")
+        for e in fired[:3]:
+            a, r = e['alert'], e['triggering_row']
+            print("  %s on gpu %s: power=%s util=%s mem=%s" % (
+                a.get('type'), a.get('gpu'),
+                r.get('power.draw'), r.get('utilization.gpu'), r.get('memory.used')))
+    else:
+        print("\n0 alerts -- clean negative control.")
 
 
 if __name__ == '__main__':
