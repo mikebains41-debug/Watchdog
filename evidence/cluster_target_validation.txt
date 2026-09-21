@@ -1,0 +1,25 @@
+Cluster-action target validation, 2026-09-21
+Reproduce: python3 scripts/repro_cluster_target_validation.py
+BAD TARGETS (must all be REFUSED):
+  slurm_evict_job(None)        -> REFUSED_NO_TARGET: slurm_evict_job needs a job id -- ta
+  slurm_evict_job('')          -> REFUSED_NO_TARGET: slurm_evict_job needs a job id -- ta
+  slurm_evict_job('None')      -> REFUSED_NO_TARGET: slurm_evict_job needs a job id -- ta
+  slurm_evict_job('abc')       -> REFUSED_NO_TARGET: slurm_evict_job needs a job id -- jo
+  kubernetes_taint(None)       -> REFUSED_NO_TARGET: kubernetes_taint needs a node name -
+  kubernetes_taint('a b')      -> REFUSED_NO_TARGET: kubernetes_taint needs a node name -
+  nvlink_disable(0, None)      -> REFUSED_NO_TARGET: nvlink_disable needs a link index --
+  nvlink_disable(None, 3)      -> REFUSED_NO_TARGET: nvlink_disable needs a gpu index -- 
+VALID TARGETS (reach the tool; tool missing here is fine):
+  slurm_evict_job(99999)       -> SLURM_NOT_AVAILABLE: scancel not found
+  kubernetes_taint('node-1')   -> TAINT_FAILED: E0921 17:27:25.413611    7220 memcache.go
+  nvlink_disable(0, 3)         -> NVLINK_NOT_AVAILABLE: nvidia-smi not found
+
+VERDICT: PASS -- every bad target refused before subprocess, valid ones not
+
+Before: kubernetes_taint / slurm_evict_job / nvlink_disable passed their target
+straight to the subprocess with no check, so slurm_evict_job(None) built and ran
+`scancel None` -- on a real SLURM controller that reaches the cluster (found on
+the 4x H200 pod, 2026-09-19; scancel existed there and only DNS to the
+controller stopped it). Now _valid_target refuses None/empty/'None', non-numeric
+job or index ids, and node names with shell metacharacters, BEFORE any
+subprocess runs. All three remain human-gated in remediation/response.py.
