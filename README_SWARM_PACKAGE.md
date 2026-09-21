@@ -84,22 +84,24 @@ from measured runs.
 behaviour, so the scoring math is proven correct independently of whether any
 real agent performs well.
 
-## What the harness found while being built
+## Correction (2026-09-21)
 
-The ghost-power agent fired on **100% of clean trials** — then, once the
-corpus was split by idle state, on **0% of cold-idle and 100% of
-context-alive**.
+An earlier version of this section said the harness had reproduced the
+2026-09-19 GhostPowerDetector false positive. That was wrong. The "0% FPR
+cold-idle / 100% context-alive" result came from a stand-in stub used to
+test the harness, not from Watchdog's real GhostPowerPredictor. Against the
+real agent, agent1 measured 100% TPR and 0% FPR, with no difference between
+cold-idle and context-alive rows.
 
-That is last night's false positive, reproduced synthetically. A GPU holding
-a CUDA context draws ~126 W at 0% utilization; against the cold floor
-(80.36 W) that is ~47 W above floor at zero util, which is precisely
-GhostPowerDetector's firing condition. On 2026-09-19 it reported 44.5 W and
-48.1 W above floor while `nvidia-smi` read 78.98 W five consecutive times.
+The real 2026-09-19 false positive was in the reactive GhostPowerDetector
+(detection/), with a different signature: it reported power about 45W above
+a 78.4W floor on a GPU nvidia-smi read at 78.98W five times running. That
+power did not exist on that GPU, which points at the telemetry reaching the
+detector (stale or wrong-GPU row), not at the idle floor. Still open.
 
-**The fix is the floor, not the threshold.** Any negative-control corpus
-containing only cold-idle rows will score this detector as perfect. The
-harness now carries both states and reports FPR separately for each, printing
-`FLOOR MISCONFIGURED` when they diverge.
+The harness keeps its cold-idle / context-alive split as methodology: a
+cold-only negative-control corpus would hide a floor problem if one existed.
+It has not found one in a real agent.
 
 ## Sequence
 

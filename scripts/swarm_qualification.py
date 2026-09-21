@@ -114,9 +114,8 @@ def clean_row(rng, t_index=0, state=None):
     Both are clean. Neither is an attack. But a ghost-power detector
     configured with the COLD floor (78.4W) sees every ctx_alive sample as
     ~47W above floor at 0% utilization, which is its exact firing
-    condition. That is the false positive measured on real hardware on
-    2026-09-19: the detector reported 44.5W and 48.1W above floor while
-    nvidia-smi read 78.98W five consecutive times.
+    condition. No real Watchdog agent has shown this yet; the check is
+    kept because a cold-only corpus would hide it if one did.
 
     Any negative-control corpus that contains only cold-idle rows will
     score a broken detector as perfect. This one carries both, in a 50/50
@@ -435,7 +434,7 @@ def qualify(loaded, n_clean, n_event, warmup, seed, verbose=True, phantom=True):
                 print("           FPR cold-idle %5.1f%%  vs  ctx-alive %5.1f%%"
                       % (fpr_cold * 100, fpr_ctx * 100))
                 print("           FLOOR MISCONFIGURED: clean on a cold GPU, noisy on one")
-                print("           holding a context. This is the 2026-09-19 false positive.")
+                print("           holding a context.")
                 print("           Use the context-alive floor, not the cold floor.")
 
     if verbose:

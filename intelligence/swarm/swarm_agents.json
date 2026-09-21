@@ -14,35 +14,41 @@
     "A broken agent that votes is worse than one that abstains: it injects",
     "noise into every decision it touches while looking like participation."
   ],
-
   "agents": {
     "agent1": {
       "class": "GhostPowerPredictor",
       "module": "intelligence.swarm.agent1_ghost_power_predictor",
-      "kwargs": {"gpu_id": 0, "idle_floor_w": 80.36},
+      "kwargs": {
+        "gpu_id": 0,
+        "idle_floor_w": 80.36
+      },
       "status": "ACTIVE",
       "weight": 0.965,
       "weight_source": "validate_swarm_prediction.py --n-clean 200 --n-event 200 --seed 42",
-      "measured": {"tpr": 0.965, "fpr": 0.0},
+      "measured": {
+        "tpr": 0.965,
+        "fpr": 0.0
+      },
       "open_issue": [
-        "idle_floor_w is the COLD idle floor. On 2026-09-19 this detector",
-        "reported 44.5W and 48.1W above floor while nvidia-smi read 78.98W",
-        "five consecutive times, on genuinely idle hardware. The context-alive",
-        "state draws ~126W at 0% utilization, which is ~47W above the cold",
-        "floor and is this detector's exact firing condition.",
-        "Run swarm_qualification.py: if fpr_ctx_alive far exceeds fpr_cold_idle,",
-        "the floor is misconfigured and the fix is the floor, not the threshold."
+        "Earlier note here was wrong: it blamed the 2026-09-19 GhostPowerDetector false positive on this agent's cold idle floor. That came from a harness stub, not this agent. Measured phantom-free (evidence/swarm_qualification_nophantom.json): 100% TPR, 0% FPR, no cold vs context-alive difference.",
+        "The real 2026-09-19 false positive is in the reactive GhostPowerDetector (detection/): reported ~45W above floor on a GPU nvidia-smi read at 78.98W. Suspected stale or wrong-GPU telemetry, not a floor setting. Open."
       ]
     },
-
     "agent2": {
       "class": "CEIDegradationForecaster",
       "module": "intelligence.swarm.agent2_cei_degradation_forecaster",
-      "kwargs": {"gpu_id": 0},
+      "kwargs": {
+        "gpu_id": 0
+      },
       "status": "INACTIVE_MISSING_TELEMETRY",
       "weight": 0.0,
-      "measured": {"tpr": 0.68, "fpr": 0.0},
-      "missing_fields": ["cei_flops_per_joule"],
+      "measured": {
+        "tpr": 0.68,
+        "fpr": 0.0
+      },
+      "missing_fields": [
+        "cei_flops_per_joule"
+      ],
       "note": [
         "The agent works. It is starved, not broken: 68% TPR on randomized",
         "trials, and its own code refuses to proceed without a real CEI value",
@@ -55,25 +61,37 @@
         "silent agent into a working one at 68% TPR."
       ]
     },
-
     "agent3": {
       "class": "ThermalEventPredictor",
       "module": "intelligence.swarm.agent3_thermal_event_predictor",
-      "kwargs": {"gpu_id": 0, "gpu_arch": "H200"},
+      "kwargs": {
+        "gpu_id": 0,
+        "gpu_arch": "H200"
+      },
       "status": "ACTIVE",
       "weight": 0.625,
       "weight_source": "validate_swarm_prediction_agents2to5.py, stated defaults",
-      "measured": {"tpr": 0.63, "fpr": 0.005}
+      "measured": {
+        "tpr": 0.63,
+        "fpr": 0.005
+      }
     },
-
     "agent4": {
       "class": "TenantIsolationRiskScorer",
       "module": "intelligence.swarm.agent4_tenant_isolation_risk_scorer",
-      "kwargs": {"gpu_id": 0, "gpu_arch": "H200"},
+      "kwargs": {
+        "gpu_id": 0,
+        "gpu_arch": "H200"
+      },
       "status": "INACTIVE_MISSING_TELEMETRY",
       "weight": 0.0,
-      "measured": {"tpr": 0.245, "fpr": 0.0},
-      "missing_fields": ["memory_access_timing_ms"],
+      "measured": {
+        "tpr": 0.245,
+        "fpr": 0.0
+      },
+      "missing_fields": [
+        "memory_access_timing_ms"
+      ],
       "decision": "2026-09-21: removed from the voting pool.",
       "note": [
         "Two independent reasons, either sufficient on its own.",
@@ -96,16 +114,26 @@
         "Until then it stays out of the pool and out of the weights."
       ]
     },
-
     "agent5": {
       "class": "EUAIActComplianceForecaster",
       "module": "intelligence.swarm.agent5_eu_ai_act_compliance_forecaster",
-      "kwargs": {"gpu_id": 0},
+      "kwargs": {
+        "gpu_id": 0
+      },
       "status": "INACTIVE_MISSING_TELEMETRY",
       "weight": 0.0,
-      "measured": {"tpr": 0.54, "fpr": 0.0},
-      "missing_fields": ["cei_flops_per_joule"],
-      "resolved_fields": ["ghost_power_pct", "crash_count", "isolation_score"],
+      "measured": {
+        "tpr": 0.54,
+        "fpr": 0.0
+      },
+      "missing_fields": [
+        "cei_flops_per_joule"
+      ],
+      "resolved_fields": [
+        "ghost_power_pct",
+        "crash_count",
+        "isolation_score"
+      ],
       "note": [
         "Was blocked on four fields. Three now close without a GPU:",
         "swarm_derived_fields.py computes ghost_power_pct, crash_count and",
@@ -114,11 +142,12 @@
         "agent2. One pod session unblocks both agents at once."
       ]
     },
-
     "agent6": {
       "class": "RowhammerPrecursorPredictor",
       "module": "intelligence.swarm.agent6_rowhammer_precursor_predictor",
-      "kwargs": {"gpu_id": 0},
+      "kwargs": {
+        "gpu_id": 0
+      },
       "status": "UNQUALIFIED",
       "weight": 0.0,
       "note": [
@@ -130,11 +159,12 @@
         "Run swarm_qualification.py to produce a TPR before giving it weight."
       ]
     },
-
     "agent7": {
       "class": "CryptojackingOnsetPredictor",
       "module": "intelligence.swarm.agent7_cryptojacking_onset_predictor",
-      "kwargs": {"gpu_id": 0},
+      "kwargs": {
+        "gpu_id": 0
+      },
       "status": "UNQUALIFIED",
       "weight": 0.0,
       "note": [
@@ -144,11 +174,12 @@
         "needs checking before this agent is trusted."
       ]
     },
-
     "agent8": {
       "class": "ModelExtractionPrecursorPredictor",
       "module": "intelligence.swarm.agent8_model_extraction_precursor_predictor",
-      "kwargs": {"gpu_id": 0},
+      "kwargs": {
+        "gpu_id": 0
+      },
       "status": "UNQUALIFIED",
       "weight": 0.0,
       "note": [
@@ -157,7 +188,6 @@
       ]
     }
   },
-
   "consensus": {
     "window_seconds": 60.0,
     "threshold": 0.25,
@@ -171,11 +201,21 @@
       "qualification runs once more than two agents are ACTIVE."
     ]
   },
-
   "pool_status": {
-    "active": ["agent1", "agent3"],
-    "inactive_missing_telemetry": ["agent2", "agent4", "agent5"],
-    "unqualified": ["agent6", "agent7", "agent8"],
+    "active": [
+      "agent1",
+      "agent3"
+    ],
+    "inactive_missing_telemetry": [
+      "agent2",
+      "agent4",
+      "agent5"
+    ],
+    "unqualified": [
+      "agent6",
+      "agent7",
+      "agent8"
+    ],
     "summary": [
       "2 of 8 agents are in the voting pool.",
       "The README documents 5 agents; swarm_orchestrator.py imports 8.",
