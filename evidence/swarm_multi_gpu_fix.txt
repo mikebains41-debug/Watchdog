@@ -1,0 +1,26 @@
+Swarm multi-GPU fix, 2026-09-21
+Reproduce: python3 scripts/repro_swarm_multi_gpu.py
+GPU0 busy (650W, 95%), GPU1 idle (80W, 0%); each alone vs interleaved through one FullDetectionPipeline.
+
+===== BEFORE (one WatchdogSwarm built for GPU0, fed every GPU) =====
+GPU0 busy alone : silent
+GPU1 idle alone : silent
+mixed           : {('GHOST_POWER_PREDICTED', '0'): 1}
+FALSE WHEN MIXED (fires only mixed)   : [('GHOST_POWER_PREDICTED', '0')]
+MISSED WHEN MIXED (fires alone only)  : none
+
+===== AFTER (one WatchdogSwarm per GPU) =====
+GPU0 busy alone : silent
+GPU1 idle alone : silent
+mixed           : silent
+FALSE WHEN MIXED (fires only mixed)   : none
+MISSED WHEN MIXED (fires alone only)  : none
+POSITIVE CONTROL real precursor on GPU1, GPU0 busy : PASS (predicted on gpu ['1'])
+
+Before: GhostPowerPredictor predicted ghost power on GPU 0 -- the card running
+flat out -- because one swarm received both cards' rows and saw power
+alternating 650W / 80W, which scores as a steep fall. After: each GPU has its
+own swarm; the false prediction is gone, and a real wind-down on GPU1 is still
+predicted on GPU1 (positive control).
+Regression: attack_injection_suite 40/40, test_engines 17/17, ghost repro D
+still alerts on GPU 1, multi-GPU contamination audit none.

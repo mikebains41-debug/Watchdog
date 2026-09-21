@@ -41,6 +41,38 @@ from remediation.response import RemediationEngine
 from detection.engines import PerGPU
 
 
+class _PerGPUSwarm:
+    """One WatchdogSwarm per GPU, keyed by nvidia-smi index.
+
+    Found 2026-09-21: FullDetectionPipeline built ONE swarm for GPU0 and fed it
+    every GPU's rows. The swarm agents score trajectories over a window (power
+    falling, utilization dropping), so a busy GPU interleaved with an idle one
+    looked like a steep ramp on every sample. Anything other than ingest()
+    (summaries, the CEI path's agent2/agent5) is served by GPU0's swarm, which
+    is what the single swarm did before.
+    """
+    def __init__(self, gpu_arch='H200'):
+        self._arch = gpu_arch
+        self._by_gpu = {}
+
+    def for_gpu(self, key):
+        key = str(key)
+        s = self._by_gpu.get(key)
+        if s is None:
+            gid = int(key) if key.isdigit() else 0
+            s = WatchdogSwarm(gpu_id=gid, gpu_arch=self._arch)
+            self._by_gpu[key] = s
+        return s
+
+    def ingest(self, telemetry, key=0):
+        return self.for_gpu(key).ingest(telemetry)
+
+    def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError(name)
+        return getattr(self.for_gpu('0'), name)
+
+
 class FullDetectionPipeline:
     """
     Adds five previously-unwired detectors to the live pipeline tonight:
@@ -83,7 +115,7 @@ class FullDetectionPipeline:
         self.siem = SIEMRouter()
         self.cost_impact = CostImpactAggregator(self.ledger)
         self.vbios_integrity = VBIOSIntegrityDetector()
-        self.swarm = WatchdogSwarm(gpu_id=0, gpu_arch=gpu_arch)
+        self.swarm = _PerGPUSwarm(gpu_arch=gpu_arch)
         self.migration_advisor = MigrationRecommendationGenerator()
         self.cei_benchmark = CEIBenchmarkRunner()
         self.compliance_metrics = ComplianceMetricsTracker()
@@ -165,7 +197,7 @@ class FullDetectionPipeline:
                 self._handle_alert(alert)
         self.compliance_metrics.record_sample(row, self.base.ghost_power.baseline_w)
         swarm_telemetry = adapt_row_to_swarm_telemetry(row, residency_latency_ms=self._last_residency_latency_ms)
-        swarm_alerts = self.swarm.ingest(swarm_telemetry)
+        swarm_alerts = self.swarm.ingest(swarm_telemetry, key=row.get('index', row.get('uuid', 0)))
         if swarm_alerts:
             had_alert = True
         self._record_swarm_alerts(swarm_alerts)
