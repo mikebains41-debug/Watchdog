@@ -256,6 +256,100 @@ class MultiGPUCorrelation:
         }
 
 
+class ResidentGhostPowerDetector:
+    """Ghost power on a GPU that has a model LOADED (memory resident).
+
+    Found 2026-09-21 (scripts/repro_moe_multi_gpu.py): GhostPowerDetector only
+    learns its floor from GPUs with almost no memory in use, so a GPU that
+    always holds a model never gets a floor -- and a genuine 450 W ghost at 0%
+    utilisation on such a GPU went unidentified. In inference serving, GPUs
+    hold models almost all the time.
+
+    This detector learns each GPU's own LOADED-IDLE level (0% util, memory
+    resident) and flags power far above it. Normal loaded idle is energy use,
+    not a security event (Watchdog README negative control: "resident model,
+    process alive" must stay silent), so the margin is wide: the README's
+    measured cooldown tail sits ~22 W above loaded idle; the default margin is
+    60 W. It needs sustained excess (default 10 consecutive samples), because
+    cooldown tails decay in seconds and a real ghost persists.
+
+    Counts SAMPLES, not wall-clock time, so results do not depend on how fast
+    the host processes rows (the LaserInjectionDetector timing bug class).
+
+    Limitation, stated: a GPU that is already ghosting from its first idle
+    sample learns the ghost as normal -- the same limit as every learned
+    baseline. Floor is frozen once learned, for the same attack-resistance
+    reason as GhostPowerDetector.
+    """
+
+    def __init__(self, margin_w=60.0, min_samples=30, idle_mem_mb=500,
+                 require_consecutive=10, refire_after_samples=300):
+        self.margin_w = margin_w
+        self.min_samples = min_samples
+        self.idle_mem_mb = idle_mem_mb
+        self.require_consecutive = require_consecutive
+        self.refire_after_samples = refire_after_samples
+        self.samples = []
+        self.floor_w = None
+        self._run = 0
+        self._since_fire = None
+
+    @staticmethod
+    def _num(row, key):
+        v = row.get(key) if isinstance(row, dict) else None
+        try:
+            return None if v is None or v == "" else float(v)
+        except (TypeError, ValueError):
+            return None
+
+    def update(self, row):
+        power = self._num(row, 'power.draw')
+        util = self._num(row, 'utilization.gpu')
+        mem = self._num(row, 'memory.used')
+        if power is None or util is None or mem is None:
+            return None
+        if self._since_fire is not None:
+            self._since_fire += 1
+        resident_idle = (util == 0 and mem >= self.idle_mem_mb)
+        if self.floor_w is None:
+            if resident_idle:
+                self.samples.append(power)
+                if len(self.samples) >= self.min_samples:
+                    s = sorted(self.samples)
+                    self.floor_w = s[len(s) // 2]
+            return None
+        delta = power - self.floor_w
+        if resident_idle and delta > self.margin_w:
+            self._run += 1
+        else:
+            self._run = 0
+        if self._run < self.require_consecutive:
+            return None
+        if self._since_fire is not None and self._since_fire < self.refire_after_samples:
+            return None
+        self._since_fire = 0
+        return {
+            'type': 'GHOST_POWER_RESIDENT',
+            'severity': 'WARNING' if delta < 150 else 'CRITICAL',
+            'gpu': row.get('index'),
+            'power_w': round(power, 2),
+            'loaded_idle_floor_w': round(self.floor_w, 2),
+            'delta_w': round(delta, 2),
+            'utilization': util,
+            'memory_used_mb': mem,
+            'sustained_samples': self._run,
+            'floor_samples': len(self.samples),
+            'timestamp': row.get('iso_timestamp'),
+            'message': ("%.0f W at 0%% utilisation with a model loaded: %.0f W above this "
+                        "GPU's own loaded-idle level (%.0f W), sustained for %d samples. "
+                        "Normal loaded idle is energy use; this is far beyond it."
+                        % (power, delta, self.floor_w, self._run)),
+            'cannot_distinguish': ["clocks stuck high after a job",
+                                   "a process holding the GPU without reporting utilisation",
+                                   "a power-management or firmware fault"],
+        }
+
+
 class PerGPU:
     """One independent detector instance per GPU, keyed by uuid (else index).
 
@@ -324,6 +418,7 @@ class DetectionPipeline:
     def __init__(self, on_alert=None, vram_strict=True):
         self.on_alert = on_alert
         self.ghost_power = PerGPU(GhostPowerDetector)
+        self.resident_ghost = PerGPU(ResidentGhostPowerDetector)
         self.vram_residual = VRAMResidualDetector(strict=vram_strict)
         self.periodicity = PerGPU(PowerPeriodicityDetector)
         self.correlation = MultiGPUCorrelation()
@@ -335,7 +430,7 @@ class DetectionPipeline:
 
     @property
     def engines(self):
-        return [self.ghost_power, self.vram_residual, self.periodicity]
+        return [self.ghost_power, self.resident_ghost, self.vram_residual, self.periodicity]
 
     def process(self, row):
         """GPU telemetry row (power/util/mem) -- from nvidia-smi. Does NOT

@@ -165,13 +165,14 @@ class FullDetectionPipeline:
         ATTESTATION_COUNT = 1
         self.total_engine_count = BASE_ENGINE_COUNT + len(self.engines) + ATTESTATION_COUNT
         _cert_engine_names = ([type(e).__name__ for e in self.engines]
-                               + ['GhostPowerDetector', 'VRAMResidualDetector',
+                               + ['GhostPowerDetector', 'ResidentGhostPowerDetector', 'VRAMResidualDetector',
                                   'PowerPeriodicityDetector', 'MultiGPUCorrelation',
                                   'BootAttestation'])
         self.cert_gen = CleanRunCertificate(self.ledger, _cert_engine_names,
                                              clean_window_samples=clean_window_samples)
 
     def process(self, row):
+        self.__dict__.setdefault('_last_row_by_gpu', {})[str(row.get('index', 0))] = row
         base_alerts = self.base.process(row)
         self._record_base_alerts(base_alerts)
         had_alert = bool(base_alerts)
@@ -249,6 +250,7 @@ class FullDetectionPipeline:
         for self.base's alerts.
         """
         for alert in alerts:
+            alert = self._reclassify_resident_prediction(alert)
             self.alert_count += 1
             alert = enrich_alert(alert)
             alert = enrich_with_cluster_metadata(alert)
@@ -271,6 +273,40 @@ class FullDetectionPipeline:
                     print(f"[{recommendation['severity']}] {recommendation['type']} — {recommendation['message']}")
                     self.siem.route(recommendation)
                     if self.on_alert: self.on_alert(recommendation)
+
+    def _reclassify_resident_prediction(self, alert):
+        """Found 2026-09-21 (scripts/repro_moe_multi_gpu.py): GhostPowerPredictor
+        fired on every GPU in ordinary bursty inference serving -- a batch ends,
+        power falls to loaded idle, utilisation hits 0, memory stays resident.
+        The README lists 'resident model, process alive' as a negative control
+        that must stay silent. Loaded idle is energy use (the context tax), not
+        a security event, so on a GPU with a model resident the prediction is
+        reported as INFO energy information. Genuine ghost power on a loaded
+        GPU is caught reactively by ResidentGhostPowerDetector
+        (GHOST_POWER_RESIDENT). On GPUs with no model resident the prediction
+        is unchanged."""
+        if not isinstance(alert, dict) or alert.get('type') != 'GHOST_POWER_PREDICTED':
+            return alert
+        row = getattr(self, '_last_row_by_gpu', {}).get(str(alert.get('gpu', 0)))
+        mem = row.get('memory.used') if isinstance(row, dict) else None
+        try:
+            resident = mem is not None and float(mem) >= 500
+        except (TypeError, ValueError):
+            resident = False
+        if not resident:
+            return alert
+        out = dict(alert)
+        out['type'] = 'IDLE_RESIDENT_ENERGY'
+        out['severity'] = 'INFO'
+        out['reclassified_from'] = 'GHOST_POWER_PREDICTED'
+        out['memory_used_mb'] = mem
+        out['message'] = ("GPU%s is heading into idle with a model loaded (%s MB resident): "
+                          "energy use, not a security alert. Genuine ghost power on a loaded "
+                          "GPU is flagged separately as GHOST_POWER_RESIDENT."
+                          % (alert.get('gpu'), mem))
+        out['recommended_action'] = ("Efficiency report: consider unloading or consolidating "
+                                     "idle models.")
+        return out
 
     def run_cei_benchmark(self, duration_s=10):
         """
@@ -326,6 +362,16 @@ class FullDetectionPipeline:
             self.fleet.ingest(enriched, node_id=enriched.get('gpu', 0))
             self.ledger.append('ALERT', enriched)
             self.siem.route(enriched)
+            # FIXED 2026-09-21: the docstring above assumes base alerts reach
+            # on_alert through DetectionPipeline._emit(), but self.base is built
+            # with on_alert=None, so they never did. GHOST_POWER and the other
+            # core-engine alerts reached SIEM/ledger/fleet but not on_alert.
+            # Found by scripts/repro_moe_multi_gpu.py: GHOST_POWER_RESIDENT fired
+            # inside self.base and never reached the caller. Deduped the same way
+            # as swarm alerts; not re-printed, because _emit() already prints.
+            dedup_result = self.state_mgr.process(enriched)
+            if dedup_result in ('NEW', 'REOPENED') and self.on_alert:
+                self.on_alert(enriched)
 
     def _handle_alert(self, alert):
         """

@@ -150,6 +150,9 @@ def main():
           % (GHOST_GPU, new7 or "none"))
     print("    ghost-specific detection: %s" % ("CAUGHT" if ghost7 else
           "MISSED -- any ghost alert on GPU %d also fires without the ghost" % GHOST_GPU))
+    energy = lambda c: sum(v for k, v in c.items() if k[0] == 'IDLE_RESIDENT_ENERGY')
+    print("  reclassified to energy INFO (loaded idle, not a security alert): S2 %d, S3 %d, S4 %d"
+          % (energy(res["S2"]), energy(res["S3"]), energy(res["S4"])))
     moe_only = {k: v for k, v in res["S3"].items() if k[0] not in {t for t, _ in res["S2"]}}
     print("  MoE-specific alerts (in S3, not in S2): %s" % (moe_only or "none"))
     print("\nSynthetic behaviour only. NVLink traffic is not modelled (its fields are not in"

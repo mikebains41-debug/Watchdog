@@ -1,0 +1,28 @@
+MoE / multi-GPU serving check -- SYNTHETIC, 8 GPUs, 400 s at 1 Hz
+S1 steady dense          : {('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('LASER_INJECTION', '3'): 1, ('LASER_INJECTION', '4'): 1, ('LASER_INJECTION', '5'): 1, ('LASER_INJECTION', '6'): 1, ('LASER_INJECTION', '7'): 1, ('PACKAGE_CRACK_PREDICTED', '3'): 1}
+S2 bursty dense          : {('PACKAGE_CRACK_PREDICTED', '3'): 1, ('PROMPT_INJECTION_SIDEEFFECT', '4'): 1, ('IDLE_RESIDENT_ENERGY', '0'): 1, ('IDLE_RESIDENT_ENERGY', '1'): 1, ('IDLE_RESIDENT_ENERGY', '2'): 1, ('IDLE_RESIDENT_ENERGY', '3'): 1, ('IDLE_RESIDENT_ENERGY', '4'): 1, ('IDLE_RESIDENT_ENERGY', '5'): 1, ('IDLE_RESIDENT_ENERGY', '6'): 1, ('IDLE_RESIDENT_ENERGY', '7'): 1, ('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('LASER_INJECTION', '3'): 1, ('LASER_INJECTION', '4'): 1, ('LASER_INJECTION', '5'): 1, ('LASER_INJECTION', '6'): 1, ('LASER_INJECTION', '7'): 1, ('POWER_PERIODICITY', '0'): 1, ('POWER_PERIODICITY', '3'): 1, ('MULTI_GPU_CORRELATION', 'None'): 1, ('POWER_PERIODICITY', '1'): 1, ('POWER_PERIODICITY', '2'): 1, ('POWER_PERIODICITY', '4'): 1, ('POWER_PERIODICITY', '5'): 1, ('POWER_PERIODICITY', '7'): 1, ('POWER_PERIODICITY', '6'): 1}
+S3 bursty MoE            : {('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('PROMPT_INJECTION_SIDEEFFECT', '2'): 1, ('PACKAGE_CRACK_PREDICTED', '3'): 1, ('IDLE_RESIDENT_ENERGY', '0'): 1, ('IDLE_RESIDENT_ENERGY', '1'): 1, ('IDLE_RESIDENT_ENERGY', '2'): 1, ('IDLE_RESIDENT_ENERGY', '3'): 1, ('IDLE_RESIDENT_ENERGY', '4'): 1, ('IDLE_RESIDENT_ENERGY', '5'): 1, ('IDLE_RESIDENT_ENERGY', '6'): 1, ('IDLE_RESIDENT_ENERGY', '7'): 1, ('LASER_INJECTION', '3'): 1, ('CAPACITOR_AGING_PREDICTED', '3'): 1, ('POWER_PERIODICITY', '0'): 1, ('POWER_PERIODICITY', '1'): 1, ('MULTI_GPU_CORRELATION', 'None'): 1, ('POWER_PERIODICITY', '3'): 1, ('POWER_PERIODICITY', '4'): 1, ('POWER_PERIODICITY', '5'): 1, ('POWER_PERIODICITY', '2'): 1, ('POWER_PERIODICITY', '7'): 1, ('POWER_PERIODICITY', '6'): 1}
+S4 MoE + ghost on GPU7   : {('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('PROMPT_INJECTION_SIDEEFFECT', '2'): 1, ('PACKAGE_CRACK_PREDICTED', '3'): 1, ('IDLE_RESIDENT_ENERGY', '0'): 1, ('IDLE_RESIDENT_ENERGY', '1'): 1, ('IDLE_RESIDENT_ENERGY', '2'): 1, ('IDLE_RESIDENT_ENERGY', '3'): 1, ('IDLE_RESIDENT_ENERGY', '4'): 1, ('IDLE_RESIDENT_ENERGY', '5'): 1, ('IDLE_RESIDENT_ENERGY', '6'): 1, ('IDLE_RESIDENT_ENERGY', '7'): 1, ('LASER_INJECTION', '3'): 1, ('CAPACITOR_AGING_PREDICTED', '3'): 1, ('LASER_INJECTION', '7'): 1, ('GHOST_POWER_RESIDENT', '7'): 1, ('TENANT_ISOLATION_RISK', '7'): 1, ('MIGRATION_RECOMMENDED', '7'): 1, ('POWER_PERIODICITY', '7'): 1, ('POWER_PERIODICITY', '0'): 1, ('MULTI_GPU_CORRELATION', 'None'): 1, ('POWER_PERIODICITY', '1'): 1, ('POWER_PERIODICITY', '2'): 1, ('POWER_PERIODICITY', '3'): 1, ('POWER_PERIODICITY', '4'): 1, ('POWER_PERIODICITY', '5'): 1, ('POWER_PERIODICITY', '6'): 1}
+
+CHECKS
+  negative control -- resident model idle must stay silent (S2/S3 ghost alerts): none -> PASS
+  positive control -- alerts on GPU 7 that appear ONLY with the ghost (S4 minus S3): {('LASER_INJECTION', '7'): 1, ('GHOST_POWER_RESIDENT', '7'): 1, ('TENANT_ISOLATION_RISK', '7'): 1, ('MIGRATION_RECOMMENDED', '7'): 1}
+    ghost-specific detection: CAUGHT
+  reclassified to energy INFO (loaded idle, not a security alert): S2 8, S3 8, S4 8
+  MoE-specific alerts (in S3, not in S2): {('CAPACITOR_AGING_PREDICTED', '3'): 1}
+
+Synthetic behaviour only. NVLink traffic is not modelled (its fields are not in QUERY_FIELDS); NVLinkContentionDetector is not exercised by this check.
+
+AFTER FIX (2026-09-21)
+- Negative control PASS: no ghost alerts during normal bursty serving (S2, S3).
+- Positive control CAUGHT: GHOST_POWER_RESIDENT on GPU 7 appears only with the
+  450 W ghost (standalone: fires 10 samples after onset, 327 W over a learned
+  126 W loaded-idle level).
+- GhostPowerPredictor alerts on GPUs with a model loaded are reported as
+  IDLE_RESIDENT_ENERGY (INFO): energy use, not a security alert. Counted above.
+- Routing bug fixed: core-engine alerts (GHOST_POWER etc.) never reached
+  on_alert -- i.e. alert_mgr, remediation, and the API -- because self.base is
+  built with on_alert=None. Remediation now receives them; its gates still apply.
+- Newly visible, open: POWER_PERIODICITY fires on every GPU in bursty serving.
+  Severity and whether it should stay silent here not yet checked.
+- Synthetic only. H200-like figures. Needs real multi-GPU hardware to confirm.
