@@ -256,12 +256,72 @@ class MultiGPUCorrelation:
         }
 
 
+class PerGPU:
+    """One independent detector instance per GPU, keyed by uuid (else index).
+
+    Found 2026-09-21: DetectionPipeline fed every GPU's rows to ONE instance
+    of each engine. GhostPowerDetector then kept one learned floor and one
+    consecutive-hit counter for all GPUs, so a GPU with no floor of its own
+    was judged against another GPU's floor, and a genuine ghost on one GPU
+    was silenced whenever a clean GPU's rows were interleaved (reproduced in
+    scripts/repro_ghost_multi_gpu.py). PowerPeriodicityDetector likewise
+    searched one power history built from several GPUs interleaved.
+
+    With a single GPU this behaves exactly as the bare detector did.
+    Attribute reads (e.g. baseline_w in stats) go to the first GPU seen;
+    attribute writes apply to every instance, present and future.
+    """
+
+    def __init__(self, factory):
+        object.__setattr__(self, "_factory", factory)
+        object.__setattr__(self, "_by_gpu", {})
+        object.__setattr__(self, "_overrides", {})
+        object.__setattr__(self, "_template", factory())
+
+    def _key(self, row):
+        k = row.get("uuid") or row.get("index")
+        return "default" if k in (None, "") else str(k)
+
+    def for_row(self, row):
+        k = self._key(row)
+        inst = self._by_gpu.get(k)
+        if inst is None:
+            inst = self._factory()
+            for name, value in self._overrides.items():
+                setattr(inst, name, value)
+            self._by_gpu[k] = inst
+        return inst
+
+    def update(self, row):
+        return self.for_row(row).update(row)
+
+    @property
+    def per_gpu(self):
+        return dict(self._by_gpu)
+
+    def __getattr__(self, name):
+        d = object.__getattribute__(self, "__dict__")
+        if "_by_gpu" not in d:
+            raise AttributeError(name)
+        target = next(iter(d["_by_gpu"].values()), None) or d["_template"]
+        return getattr(target, name)
+
+    def __setattr__(self, name, value):
+        if name.startswith("_"):
+            object.__setattr__(self, name, value)
+            return
+        self._overrides[name] = value
+        setattr(self._template, name, value)
+        for inst in self._by_gpu.values():
+            setattr(inst, name, value)
+
+
 class DetectionPipeline:
     def __init__(self, on_alert=None, vram_strict=True):
         self.on_alert = on_alert
-        self.ghost_power = GhostPowerDetector()
+        self.ghost_power = PerGPU(GhostPowerDetector)
         self.vram_residual = VRAMResidualDetector(strict=vram_strict)
-        self.periodicity = PowerPeriodicityDetector()
+        self.periodicity = PerGPU(PowerPeriodicityDetector)
         self.correlation = MultiGPUCorrelation()
         self.throughput_contention = ThroughputContentionDetector()
         self.alert_count = 0

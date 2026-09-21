@@ -1,3 +1,25 @@
-A positive control, one GPU      : [(0, 47.6)] (expect alert)
-B GPU1 vs GPU0's floor           : [(1, 47.6)] (BUG if alert)
-C real ghost on GPU1, GPU0 clean : none (BUG if none)
+GhostPowerDetector multi-GPU bug -- found, reproduced and fixed 2026-09-21
+Reproduce: python3 scripts/repro_ghost_multi_gpu.py
+
+ORIGINAL CODE (one detector instance fed every GPU):
+A positive control, one GPU          : [(0, 47.6)]
+B GPU1 no floor, vs GPU0's floor     : [(1, 47.6)]   <- judged against another GPU's floor
+C GPU1 ghosting from first sample    : none
+D both cold, then GPU1 ghosts        : none          <- MISSED DETECTION
+
+WITH PerGPU FIX (one detector instance per GPU, keyed by uuid):
+A positive control, one GPU          : [(0, 47.6)]
+B GPU1 no floor, vs GPU0's floor     : none
+C GPU1 ghosting from first sample    : none          <- needs a seeded per-model floor
+D both cold, then GPU1 ghosts        : [(1, 47.6)]   <- now caught
+
+Cause: DetectionPipeline passed every GPU's rows to ONE GhostPowerDetector,
+which kept one learned floor and one consecutive-hit counter for all GPUs.
+A clean GPU's rows reset the counter, so a real ghost on the next GPU was
+never reported. PowerPeriodicityDetector had the same structure (one power
+history across interleaved GPUs) and is wrapped the same way.
+
+After fix: tests/test_engines.py 17/17, tests/attack_injection_suite.py 40/40.
+Unaffected: the 2026-09-19 negative-control alerts, which read GPU0 only.
+Open: C -- a GPU holding a context from startup never sees a clean sample, so
+it cannot learn its own floor. Needs a measured cold floor per GPU model.
