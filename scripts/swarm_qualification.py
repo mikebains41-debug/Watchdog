@@ -45,6 +45,7 @@ import os
 import json
 import math
 import random
+import zlib
 import sys
 from datetime import datetime, timezone
 
@@ -82,6 +83,8 @@ AGENT_SPECS = [
 ]
 
 # H200 baseline, measured 2026-09-19 on 4x H200 SXM (RunPod, driver 570.124.06).
+SUSTAIN = 30   # trajectory length; must exceed the largest agent window (20)
+
 BASE = {
     "idle_floor_w": 78.4,
     "ctx_alive_w": 126.0,
@@ -135,6 +138,9 @@ def clean_row(rng, t_index=0, state=None):
         "mem_clock_mhz": BASE["mem_clock"],
         "temp_c": BASE["temp_idle"] + rng.gauss(0, 0.6),
         "memory_used_mb": 620.0 + rng.gauss(0, 2),
+        "vram_used_mb": 620.0 + rng.gauss(0, 2),
+        "inference_req_per_s": max(0.0, rng.gauss(2.0, 0.5)),
+        "avg_req_compute_ms": max(1.0, rng.gauss(40.0, 5.0)),
         "ecc_corrected_total": 0,
         "ecc_uncorrectable_total": 0,
         "mem_bw_util_pct": max(0.0, rng.gauss(2.0, 1.0)),
@@ -145,76 +151,120 @@ def clean_row(rng, t_index=0, state=None):
     }
 
 
-def inject(row, agent_key, severity, rng):
-    """Apply an agent-appropriate precursor pattern at a given severity.
+def inject(row, agent_key, severity, rng, progress=1.0, phantom=True):
+    """Apply an agent-appropriate PRECURSOR TRAJECTORY.
 
-    severity in [0,1]. Low severity is the hard case and is deliberately
-    included: an agent that only fires on severity 1.0 is not useful.
-    Returns (row, injected_bool). injected_bool is False where no honest
-    synthetic pattern exists for that agent.
+    These agents are PREDICTORS, not detectors. They score a transition
+    toward an event, not the event itself. GhostPowerPredictor weights
+    "power dropping more than 50W across the window" at 0.30 and
+    "utilization falling toward zero" at 0.20 — half its total weight is on
+    movement. Feeding it a flat, already-ghosted GPU scores 0.50 against an
+    0.82 threshold and fires nothing, which is exactly what a steady-state
+    injection produced.
+
+    progress runs 0.0 -> 1.0 across the sustained window, so each row is a
+    point on a trajectory rather than a repeat of the same state.
+
+    severity in [0,1] scales how pronounced the trajectory is. Low severity
+    is deliberately included: an agent that only fires at 1.0 is not useful.
+
+    phantom=False withholds fields that production telemetry does not
+    actually supply (currently memory_access_timing_ms). Use it to measure
+    what an agent does in deployment rather than in a harness that feeds it
+    a field it will never receive.
+
+    Returns (row, injected_bool).
     """
     r = dict(row)
     s = max(0.0, min(1.0, severity))
+    g = max(0.0, min(1.0, progress))
 
-    if agent_key == "agent1":                       # ghost power
-        r["power_watts"] = BASE["idle_floor_w"] + 15.0 + (120.0 * s)
-        r["gpu_util"] = 0.0
-        r["sm_clock_mhz"] = BASE["sm_clock_idle"] + (40.0 * s)
+    if agent_key == "agent1":
+        # Ghost power: workload winding down. Power and utilization fall
+        # together; the memory clock does NOT, which is the signature.
+        util_start, util_end = 95.0, 0.0
+        pw_start = BASE["active_w"] * (0.55 + 0.45 * s)
+        pw_end = BASE["idle_floor_w"] + 15.0 + (110.0 * s)
+        r["gpu_util"] = max(0.0, util_start + (util_end - util_start) * g)
+        r["power_watts"] = pw_start + (pw_end - pw_start) * g
+        r["sm_clock_mhz"] = BASE["sm_clock_active"] + (BASE["sm_clock_idle"] - BASE["sm_clock_active"]) * g
+        r["mem_clock_mhz"] = BASE["mem_clock"]          # locked: the tell
+        r["temp_c"] = BASE["temp_active"] - 10.0 * g
         return r, True
 
-    if agent_key == "agent3":                       # thermal event
-        r["temp_c"] = BASE["temp_active"] + ((BASE["temp_throttle"] - BASE["temp_active"]) * s) + rng.gauss(0, 0.4)
-        r["power_watts"] = BASE["active_w"] * (0.6 + 0.4 * s)
-        r["gpu_util"] = 60.0 + 40.0 * s
+    if agent_key == "agent3":
+        # Thermal: temperature climbing toward the throttle point.
+        t_start = BASE["temp_active"]
+        t_end = BASE["temp_throttle"] - 1.0 + (1.0 * s)
+        r["temp_c"] = t_start + (t_end - t_start) * g + rng.gauss(0, 0.25)
+        r["power_watts"] = BASE["active_w"] * (0.70 + 0.28 * g)
+        r["gpu_util"] = 80.0 + 19.0 * g
         r["sm_clock_mhz"] = BASE["sm_clock_active"]
-        r["fan_pct"] = 60.0 + 40.0 * s
+        r["fan_pct"] = 55.0 + 44.0 * g
         return r, True
 
-    if agent_key == "agent6":                       # rowhammer / ECC break
-        r["ecc_corrected_total"] = int(1 + 40 * s)
-        r["ecc_uncorrectable_total"] = 1 if s > 0.85 else 0
-        r["mem_bw_util_pct"] = 40.0 + 55.0 * s
+    if agent_key == "agent6":
+        # ECC counters are cumulative, so this one needs accumulation rather
+        # than a ramp. It qualified at 100% under the flat model for exactly
+        # that reason.
+        r["ecc_corrected_total"] = int(1 + 60 * s * g)
+        r["ecc_uncorrectable_total"] = 1 if (s > 0.85 and g > 0.8) else 0
+        r["mem_bw_util_pct"] = 35.0 + 60.0 * s * g
         return r, True
 
-    if agent_key == "agent7":                       # cryptojacking onset
-        r["gpu_util"] = 92.0 + 7.0 * s
-        r["sm_clock_mhz"] = BASE["sm_clock_active"]
-        r["power_watts"] = BASE["active_w"] * (0.80 + 0.18 * s)
-        r["mem_bw_util_pct"] = max(0.0, 12.0 - 8.0 * s)   # compute-heavy, mem-light
+    if agent_key == "agent7":
+        # Cryptojacking onset: utilization ramping UP to a sustained plateau,
+        # memory bandwidth staying low. Compute-heavy, memory-light.
+        r["gpu_util"] = 4.0 + (93.0 + 5.0 * s) * g
+        r["sm_clock_mhz"] = BASE["sm_clock_idle"] + (BASE["sm_clock_active"] - BASE["sm_clock_idle"]) * g
+        r["power_watts"] = BASE["ctx_alive_w"] + (BASE["active_w"] * (0.78 + 0.2 * s) - BASE["ctx_alive_w"]) * g
+        r["mem_bw_util_pct"] = max(0.5, 12.0 - 9.0 * s * g)
+        r["temp_c"] = BASE["temp_idle"] + (BASE["temp_active"] - BASE["temp_idle"]) * g
         return r, True
 
-    if agent_key == "agent8":                       # model extraction precursor
-        r["mem_bw_util_pct"] = 70.0 + 28.0 * s
-        r["gpu_util"] = max(0.0, 6.0 - 5.0 * s)           # bulk read, no compute
-        r["memory_used_mb"] = 620.0 + 40000.0 * s
-        r["pcie_tx_mb_s"] = 400.0 + 6000.0 * s
-        r["power_watts"] = BASE["ctx_alive_w"] + 60.0 * s
+    if agent_key == "agent8":
+        # Model extraction: request rate climbing while per-request compute
+        # collapses. Many trivial queries is the extraction signature.
+        r["inference_req_per_s"] = 2.0 + (280.0 * s) * g
+        r["avg_req_compute_ms"] = max(1.0, 40.0 - (36.0 * s) * g)
+        r["vram_used_mb"] = 620.0 + (30000.0 * s) * g
+        r["memory_used_mb"] = r["vram_used_mb"]
+        r["pcie_tx_mb_s"] = 5.0 + (5000.0 * s) * g
+        r["power_watts"] = BASE["ctx_alive_w"] + (70.0 * s) * g
+        r["mem_bw_util_pct"] = 20.0 + 70.0 * s * g
         return r, True
 
-    if agent_key == "agent4":                       # tenant isolation
-        # The agent's dominant signal is memory_access_timing_ms, which
-        # nothing in agent/telemetry.py collects. Supply it here ONLY so the
-        # harness can distinguish "agent is inaccurate" from "agent is
-        # starved". Production rows will not contain this field.
-        r["memory_access_timing_ms"] = 0.35 + 3.0 * s
-        r["memory_used_mb"] = 620.0 + 8000.0 * s
-        r["mem_bw_util_pct"] = 30.0 + 50.0 * s
+    if agent_key == "agent4":
+        # Tenant isolation: VRAM residual climbing.
+        r["vram_used_mb"] = 629.0 + (9000.0 * s) * g
+        r["memory_used_mb"] = r["vram_used_mb"]
+        r["mem_bw_util_pct"] = 25.0 + 55.0 * s * g
+        r["power_watts"] = BASE["ctx_alive_w"] + 40.0 * s * g
+        r["gpu_util"] = max(0.0, 3.0 - 2.0 * g)
+        if phantom:
+            # memory_access_timing_ms is the agent's dominant weighted signal
+            # and NOTHING in agent/telemetry.py collects it. Supplying it
+            # here measures the agent in a condition that cannot occur in
+            # deployment. Run with --no-phantom to see the real figure.
+            r["memory_access_timing_ms"] = 0.30 + 3.2 * s * g
         return r, True
 
-    if agent_key == "agent2":                       # CEI degradation
+    if agent_key == "agent2":
         # Requires cei_flops_per_joule, which no passive nvidia-smi field
-        # provides. intelligence/cei_benchmark.py exists to produce it but
-        # has never been run on hardware.
-        r["cei_flops_per_joule"] = 9.70e11 * (1.0 - 0.6 * s)
+        # provides under any name. intelligence/cei_benchmark.py exists to
+        # produce it and has never been run on hardware.
+        if phantom:
+            r["cei_flops_per_joule"] = 9.70e11 * (1.0 - 0.65 * s * g)
         r["power_watts"] = BASE["active_w"]
         r["gpu_util"] = 95.0
         return r, True
 
-    if agent_key == "agent5":                       # EU AI Act compliance
-        r["cei_flops_per_joule"] = 9.70e11 * (1.0 - 0.5 * s)
-        r["ghost_power_pct"] = 5.0 + 25.0 * s
-        r["crash_count"] = int(3 * s)
-        r["isolation_score"] = 1.0 - 0.7 * s
+    if agent_key == "agent5":
+        if phantom:
+            r["cei_flops_per_joule"] = 9.70e11 * (1.0 - 0.55 * s * g)
+        r["ghost_power_pct"] = 4.0 + 28.0 * s * g
+        r["crash_count"] = int(3 * s * g)
+        r["isolation_score"] = 1.0 - 0.75 * s * g
         return r, True
 
     return r, False
@@ -289,7 +339,7 @@ def run_trial(agent, rows):
     return fired
 
 
-def qualify(loaded, n_clean, n_event, warmup, seed, verbose=True):
+def qualify(loaded, n_clean, n_event, warmup, seed, verbose=True, phantom=True):
     """Per-agent TPR/FPR plus silence detection."""
     results = {}
     if verbose:
@@ -299,7 +349,10 @@ def qualify(loaded, n_clean, n_event, warmup, seed, verbose=True):
         print("=" * 72)
 
     for key, cls_name, _inst, cls, kwargs in loaded:
-        rng = random.Random(seed + hash(key) % 100000)
+        rng = random.Random(seed + zlib.crc32(key.encode()) % 100000)
+        # zlib.crc32, not hash(): Python randomizes string hashing per
+        # process unless PYTHONHASHSEED is set, which made identical
+        # invocations produce different trial data and different TPRs.
         errors = 0
 
         # --- clean trials: agent must stay silent -------------------------
@@ -330,13 +383,16 @@ def qualify(loaded, n_clean, n_event, warmup, seed, verbose=True):
             sev = rng.uniform(0.15, 1.0)     # randomized per trial
             severities.append(sev)
             rows = [clean_row(rng, i) for i in range(warmup)]
-            ev, ok = inject(clean_row(rng, warmup), key, sev, rng)
+            ev, ok = inject(clean_row(rng, warmup), key, sev, rng, 0.0, phantom)
             if not ok:
                 injectable = False
                 break
-            # sustain the pattern: most agents need several consistent samples
-            rows += [inject(clean_row(rng, warmup + j), key, sev, rng)[0]
-                     for j in range(6)]
+            # Ramp across the window. RAMP_WINDOW is 10-20 depending on the
+            # agent, and each scores the trend across its own window, so the
+            # trajectory must be long enough to fill the largest of them.
+            rows += [inject(clean_row(rng, warmup + j), key, sev, rng,
+                            (j + 1) / float(SUSTAIN), phantom)[0]
+                     for j in range(SUSTAIN)]
             r = run_trial(agent, rows)
             if r is None:
                 errors += 1
@@ -395,7 +451,7 @@ def qualify(loaded, n_clean, n_event, warmup, seed, verbose=True):
 # Pairwise agreement
 # --------------------------------------------------------------------------
 
-def pairwise(loaded, results, n_trials, warmup, seed, threshold=0.95, verbose=True):
+def pairwise(loaded, results, n_trials, warmup, seed, threshold=0.95, verbose=True, phantom=True):
     """Do two agents fire on the same trials? Above threshold they are
     functionally one agent and should not both carry weight in a vote."""
     live = [(k, c, cl, kw) for k, c, _i, cl, kw in loaded
@@ -462,7 +518,7 @@ def pairwise(loaded, results, n_trials, warmup, seed, threshold=0.95, verbose=Tr
 # Ensemble vs best single — THE PASS/FAIL TEST
 # --------------------------------------------------------------------------
 
-def ensemble_test(loaded, results, n_clean, n_event, warmup, seed, verbose=True):
+def ensemble_test(loaded, results, n_clean, n_event, warmup, seed, verbose=True, phantom=True):
     """Weighted consensus vs. the single best agent, same corpus.
 
     Weights come from measured TPR, never hand-tuned. An agent below the
@@ -493,8 +549,9 @@ def ensemble_test(loaded, results, n_clean, n_event, warmup, seed, verbose=True)
         if is_event:
             src = live[rng.randrange(len(live))][0]
             sev = rng.uniform(0.2, 1.0)
-            rows += [inject(clean_row(rng, warmup + j), src, sev, rng)[0]
-                     for j in range(6)]
+            rows += [inject(clean_row(rng, warmup + j), src, sev, rng,
+                            (j + 1) / float(SUSTAIN), phantom)[0]
+                     for j in range(SUSTAIN)]
         return rows
 
     corpus = [(build(False), False) for _ in range(n_clean)] + \
@@ -553,11 +610,15 @@ def main():
     ap.add_argument("--n-clean", type=int, default=200)
     ap.add_argument("--n-event", type=int, default=200)
     ap.add_argument("--n-pairwise", type=int, default=120)
-    ap.add_argument("--warmup", type=int, default=12,
+    ap.add_argument("--warmup", type=int, default=25,
                     help="clean samples before injection, so agents learn a baseline")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--dup-threshold", type=float, default=0.95)
     ap.add_argument("--discover-only", action="store_true")
+    ap.add_argument("--no-phantom", action="store_true",
+                help="withhold fields production telemetry does not supply "
+                     "(memory_access_timing_ms, cei_flops_per_joule). This is "
+                     "the deployment-truthful measurement.")
     ap.add_argument("--json", type=str, default=None)
     a = ap.parse_args()
 
@@ -575,10 +636,13 @@ def main():
     if a.discover_only:
         return 0
 
-    results = qualify(loaded, a.n_clean, a.n_event, a.warmup, a.seed)
+    phantom = not a.no_phantom
+    if not phantom:
+        print("  --no-phantom: withholding memory_access_timing_ms and\n  cei_flops_per_joule. Agents depending on them will read as\n  STRUCTURALLY_SILENT, which is what they are in deployment.\n")
+    results = qualify(loaded, a.n_clean, a.n_event, a.warmup, a.seed, phantom=phantom)
     matrix, dupes = pairwise(loaded, results, a.n_pairwise, a.warmup,
-                             a.seed, a.dup_threshold)
-    ens = ensemble_test(loaded, results, a.n_clean, a.n_event, a.warmup, a.seed)
+                             a.seed, a.dup_threshold, phantom=phantom)
+    ens = ensemble_test(loaded, results, a.n_clean, a.n_event, a.warmup, a.seed, phantom=phantom)
 
     print("=" * 72)
     print("SUMMARY")
@@ -601,7 +665,7 @@ def main():
     if a.json:
         blob = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "seed": a.seed, "warmup": a.warmup,
+            "seed": a.seed, "warmup": a.warmup, "phantom_fields": phantom,
             "n_clean": a.n_clean, "n_event": a.n_event,
             "loaded": [k for k, _, _, _, _ in loaded],
             "failed": [{"agent": k, "class": c, "code": code, "detail": d}

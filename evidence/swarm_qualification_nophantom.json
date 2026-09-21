@@ -1,0 +1,158 @@
+{
+  "timestamp": "2026-09-21T01:48:47.486956+00:00",
+  "seed": 42,
+  "warmup": 25,
+  "phantom_fields": false,
+  "n_clean": 200,
+  "n_event": 200,
+  "loaded": [
+    "agent1",
+    "agent2",
+    "agent3",
+    "agent4",
+    "agent5",
+    "agent6",
+    "agent7",
+    "agent8"
+  ],
+  "failed": [],
+  "per_agent": {
+    "agent1": {
+      "class": "GhostPowerPredictor",
+      "status": "QUALIFIED",
+      "tpr": 1.0,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    },
+    "agent2": {
+      "class": "CEIDegradationForecaster",
+      "status": "STRUCTURALLY_SILENT",
+      "tpr": 0.0,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    },
+    "agent3": {
+      "class": "ThermalEventPredictor",
+      "status": "QUALIFIED",
+      "tpr": 1.0,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    },
+    "agent4": {
+      "class": "TenantIsolationRiskScorer",
+      "status": "QUALIFIED",
+      "tpr": 0.335,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    },
+    "agent5": {
+      "class": "EUAIActComplianceForecaster",
+      "status": "STRUCTURALLY_SILENT",
+      "tpr": 0.0,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    },
+    "agent6": {
+      "class": "RowhammerPrecursorPredictor",
+      "status": "QUALIFIED",
+      "tpr": 1.0,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    },
+    "agent7": {
+      "class": "CryptojackingOnsetPredictor",
+      "status": "STRUCTURALLY_SILENT",
+      "tpr": 0.0,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    },
+    "agent8": {
+      "class": "ModelExtractionPrecursorPredictor",
+      "status": "QUALIFIED",
+      "tpr": 0.395,
+      "fpr": 0.0,
+      "errors": 0,
+      "fpr_cold_idle": 0.0,
+      "fpr_ctx_alive": 0.0,
+      "floor_misconfigured": false,
+      "n_clean": 200,
+      "n_event": 200
+    }
+  },
+  "pairwise": {
+    "agent1|agent3": 0.92,
+    "agent1|agent4": 0.89,
+    "agent1|agent6": 0.92,
+    "agent1|agent8": 1.0,
+    "agent3|agent4": 0.81,
+    "agent3|agent6": 0.84,
+    "agent3|agent8": 0.92,
+    "agent4|agent6": 0.81,
+    "agent4|agent8": 0.89,
+    "agent6|agent8": 0.92
+  },
+  "duplicates": [
+    {
+      "a": "agent1",
+      "b": "agent8",
+      "agreement": 1.0
+    }
+  ],
+  "ensemble": {
+    "ensemble": {
+      "tpr": 0.65,
+      "fpr": 0.0,
+      "score": 0.65
+    },
+    "best_single": {
+      "tpr": 0.24,
+      "fpr": 0.0,
+      "score": 0.24
+    },
+    "best_key": "agent1",
+    "weights": {
+      "agent1": 1.0,
+      "agent3": 1.0,
+      "agent4": 0.335,
+      "agent6": 1.0,
+      "agent8": 0.395
+    },
+    "verdict": "ENSEMBLE_WINS"
+  },
+  "disclaimer": "Synthetic randomized trials. Proves the scoring logic generalizes across randomized severity. Does NOT prove any precursor pattern precedes a real event on real hardware."
+}
