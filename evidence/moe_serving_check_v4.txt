@@ -1,0 +1,14 @@
+MoE / multi-GPU serving check -- SYNTHETIC, 8 GPUs, 400 s at 1 Hz
+S1 steady dense          : {('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('LASER_INJECTION', '3'): 1, ('LASER_INJECTION', '4'): 1, ('LASER_INJECTION', '5'): 1, ('LASER_INJECTION', '6'): 1, ('LASER_INJECTION', '7'): 1}
+S2 bursty dense          : {('IDLE_RESIDENT_ENERGY', '0'): 1, ('IDLE_RESIDENT_ENERGY', '1'): 1, ('IDLE_RESIDENT_ENERGY', '2'): 1, ('IDLE_RESIDENT_ENERGY', '3'): 1, ('IDLE_RESIDENT_ENERGY', '4'): 1, ('IDLE_RESIDENT_ENERGY', '5'): 1, ('IDLE_RESIDENT_ENERGY', '6'): 1, ('IDLE_RESIDENT_ENERGY', '7'): 1, ('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('LASER_INJECTION', '3'): 1, ('LASER_INJECTION', '4'): 1, ('LASER_INJECTION', '5'): 1, ('LASER_INJECTION', '6'): 1, ('LASER_INJECTION', '7'): 1}
+S3 bursty MoE            : {('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('IDLE_RESIDENT_ENERGY', '0'): 1, ('IDLE_RESIDENT_ENERGY', '1'): 1, ('IDLE_RESIDENT_ENERGY', '2'): 1, ('IDLE_RESIDENT_ENERGY', '3'): 1, ('IDLE_RESIDENT_ENERGY', '4'): 1, ('IDLE_RESIDENT_ENERGY', '5'): 1, ('IDLE_RESIDENT_ENERGY', '6'): 1, ('IDLE_RESIDENT_ENERGY', '7'): 1, ('LASER_INJECTION', '3'): 1}
+S4 MoE + ghost on GPU7   : {('LASER_INJECTION', '0'): 1, ('LASER_INJECTION', '1'): 1, ('LASER_INJECTION', '2'): 1, ('IDLE_RESIDENT_ENERGY', '0'): 1, ('IDLE_RESIDENT_ENERGY', '1'): 1, ('IDLE_RESIDENT_ENERGY', '2'): 1, ('IDLE_RESIDENT_ENERGY', '3'): 1, ('IDLE_RESIDENT_ENERGY', '4'): 1, ('IDLE_RESIDENT_ENERGY', '5'): 1, ('IDLE_RESIDENT_ENERGY', '6'): 1, ('IDLE_RESIDENT_ENERGY', '7'): 1, ('LASER_INJECTION', '3'): 1, ('LASER_INJECTION', '7'): 1, ('GHOST_POWER_RESIDENT', '7'): 1, ('TENANT_ISOLATION_RISK', '7'): 1, ('MIGRATION_RECOMMENDED', '7'): 1}
+
+CHECKS
+  negative control -- resident model idle must stay silent (S2/S3 ghost alerts): none -> PASS
+  positive control -- alerts on GPU 7 that appear ONLY with the ghost (S4 minus S3): {('LASER_INJECTION', '7'): 1, ('GHOST_POWER_RESIDENT', '7'): 1, ('TENANT_ISOLATION_RISK', '7'): 1, ('MIGRATION_RECOMMENDED', '7'): 1}
+    ghost-specific detection: CAUGHT
+  reclassified to energy INFO (loaded idle, not a security alert): S2 8, S3 8, S4 8
+  MoE-specific alerts (in S3, not in S2): none
+
+Synthetic behaviour only. NVLink traffic is not modelled (its fields are not in QUERY_FIELDS); NVLinkContentionDetector is not exercised by this check.

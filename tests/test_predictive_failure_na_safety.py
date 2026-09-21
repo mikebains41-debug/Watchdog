@@ -130,15 +130,29 @@ def test_capacitor_aging_positive_control_unchanged():
 
 
 def test_package_cracking_positive_control_unchanged():
+    # REWRITTEN 2026-09-21: the old 'positive control' here was a single
+    # 70 -> 85 C step -- one warm-up -- which is exactly the false alarm the
+    # detector was redesigned to stop raising. Now real repeated cycling must
+    # fire, and that same single warm-up must not.
+    d = PackageCrackingDetector(window=600, cycles_threshold=5)
+    first = None
+    for i in range(200):
+        temp = 70 if (i // 10) % 2 == 0 else 50   # 20 C swings, ~10 full cycles
+        r = d.update(row(**{'temperature.gpu': temp, 'utilization.gpu': 70}))
+        if r and first is None:
+            first = r
+    check("PackageCrackingDetector: fires on repeated real thermal cycling "
+          "(THERMAL_CYCLING_EXPOSURE, INFO)",
+          first is not None and first.get('type') == 'THERMAL_CYCLING_EXPOSURE'
+          and first.get('severity') == 'INFO')
     d = PackageCrackingDetector(window=30)
     fired = False
     for i in range(30):
-        temp = 70 if i < 15 else 85  # >8C delta among high-util samples
-        r = d.update(row(**{'temperature.gpu': temp, 'utilization.gpu': 70}))
-        if r:
+        temp = 70 if i < 15 else 85   # the OLD positive control: one warm-up
+        if d.update(row(**{'temperature.gpu': temp, 'utilization.gpu': 70})):
             fired = True
-    check("PackageCrackingDetector: still fires correctly on real "
-          "temp delta under load (regression)", fired)
+    check("PackageCrackingDetector: a single warm-up (70->85 C) does NOT fire "
+          "(the old false alarm)", not fired)
 
 
 def test_fan_wear_negative_control_unchanged():
