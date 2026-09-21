@@ -25,6 +25,9 @@ is code that exists and is tested, waiting on hardware to exercise it.
       (format is NVIDIA-documented but unconfirmed against a real device)
 - [ ] Verify per-link `link_index` attribution on real NVLink hardware
 - [ ] Verify ECCErrorTrendDetector against real ECC counters
+      (2026-09-21: given a deterministic multi-GPU test and a cross-GPU
+      contamination fix, commit 1c07da7; real-counter validation still
+      needs hardware)
 - [ ] Verify VBIOSIntegrityDetector against a real VBIOS version string
 - [ ] Repeat the throughput contention measurement 3x for a real number
       (currently one unrepeated data point: 372.32 -> 336.96 iter/sec)
@@ -52,14 +55,15 @@ Done:
 
 Open:
 
-- [ ] Wire `alerting/email_alerter.py` into the live pipeline. Its
-      previously-documented hardcoded-CVE bug is already gone; what
-      remains is a hardcoded default recipient address any real
-      deployment must override.
-- [ ] Wire `intelligence/threat_intel.py` in. Its correlation logic is
-      intact and honestly reports zero matches. Populating KNOWN_IOCS
-      needs real sourced entries with citations -- the previous
-      fabricated set was removed and must not be regenerated from memory.
+- [x] Email alerting resolved: `alerting/email_alerter.py` was REMOVED
+      (kept only as a local, gitignored .bak). Alert delivery goes through
+      `alerting/siem.py`. No wiring outstanding.
+- [x] `intelligence/threat_intel.py` is live as the base class of
+      `intelligence/threat_intel_airgap.py` (AirGappedThreatIntel). Its
+      correlation logic is intact and honestly reports zero matches.
+      KNOWN_IOCS stays empty until real sourced entries with citations
+      exist; the previous fabricated set was removed and MUST NOT be
+      regenerated from memory.
 - [ ] Wire the six forensics modules, each with its own guard condition
       rather than a blanket wire-in:
       - `safe_harbor_ledger.py` refuses without WATCHDOG_HARBOR_KEY, so
@@ -88,6 +92,52 @@ No code required. Nothing here is a bug.
       monitoring is wanted (off by default; it spawns a subprocess per GPU)
 - [ ] Generate and distribute an API key on first run (auto-generated,
       shown once, never displayed again)
+
+---
+
+---
+
+## Fixed 2026-09-21 (multi-GPU + timing bugs, found by testing the way
+## production runs -- every GPU through one pipeline, not one at a time)
+
+These were not on any list above because they had not been found yet.
+Each was reproduced before and after on the real code, with a repro
+script committed alongside. None required hardware.
+
+- [x] GhostPowerDetector kept one baseline + one consecutive-hit counter
+      for all GPUs, so a real ghost on one GPU was MISSED when a clean
+      GPU's rows interleaved. PerGPU wrapper. commit bfc9bbb
+      (scripts/repro_ghost_multi_gpu.py)
+- [x] ECCErrorTrendDetector + LaserInjectionDetector false-alarmed on a
+      healthy card because they compared it against a different card
+      (steady ECC 12 next to 0 read as a trend; a temperature gap between
+      cards read as a jump). PerGPU. commit 1c07da7
+      (scripts/audit_multi_gpu_contamination.py)
+- [x] LaserInjectionDetector timed its window with the host wall clock and
+      needed 3 samples in 0.5s -- blind at real ~1Hz sampling, false alarm
+      when processed fast. Now uses each sample's own timestamp, 3s window.
+      commit 84f378b (scripts/repro_laser_timing.py)
+- [x] The prediction swarm was built once for GPU0 and fed every GPU, so a
+      busy card interleaved with an idle one was predicted to be ghosting.
+      One swarm per GPU. commit aae8e2a (scripts/repro_swarm_multi_gpu.py)
+- [x] run_negative_control.py discarded the alerts pipeline.process()
+      returned, so an alert could not be checked against its own sample
+      (the 2026-09-19 unexplained alerts). It now records each alert WITH
+      its triggering row. commit 613d865
+- [x] Cluster actions (kubernetes_taint/slurm_evict_job/nvlink_disable)
+      shelled out with NO target validation, so slurm_evict_job(None) ran
+      `scancel None`. Now refused before any subprocess. commit 27eed7f
+      (scripts/repro_cluster_target_validation.py). Note: this is the
+      target-safety fix; whether these ACTIONS fire end-to-end is still
+      Section B (needs a cluster), and the automation POLICY is unchanged
+      (see Recorded decision below).
+
+Withdrawn same day: an earlier claim that the qualification harness had
+reproduced the 2026-09-19 GhostPowerDetector false positive. That result
+came from a stand-in stub, not the real agent (100% TPR / 0% FPR on both
+idle states). The real 2026-09-19 false positive remains unexplained --
+most likely our own test activity on GPU0 during that run -- and is not a
+demonstrated detector false positive. commit 669f1fb
 
 ---
 
