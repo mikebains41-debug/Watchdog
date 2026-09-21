@@ -38,6 +38,9 @@ from alerting.state import AlertStateManager
 from alerting.siem import SIEMRouter
 from remediation.response import RemediationEngine
 
+from detection.engines import PerGPU
+
+
 class FullDetectionPipeline:
     """
     Adds five previously-unwired detectors to the live pipeline tonight:
@@ -95,7 +98,7 @@ class FullDetectionPipeline:
         self.clock_glitch = ClockGlitchDetector()
         self.voltage_glitch = VoltageGlitchDetector()
         self.dma = DMAAttackDetector()
-        self.laser = LaserInjectionDetector()
+        self.laser = PerGPU(LaserInjectionDetector)
         self.cache_sc = CacheSideChannelDetector()
         self.mig_desync = MIGPartitionDesyncDetector()
         self.seq_vram = SequentialVRAMReadDetector()
@@ -114,7 +117,7 @@ class FullDetectionPipeline:
         self.power_tamper = PowerLimitTamperDetector()
         self.pstate_honesty = PStateHonestyDetector()
         self.pcie_mismatch = PCIeBandwidthMismatchDetector()
-        self.ecc_trend = ECCErrorTrendDetector()
+        self.ecc_trend = PerGPU(ECCErrorTrendDetector)
         self.hashrate_correlation = HashrateCorrelationDetector()  # NOT in self.engines -- see class docstring
         self.attestation = BootAttestation()
         self.attest_checked = False

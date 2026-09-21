@@ -279,8 +279,12 @@ class PerGPU:
         object.__setattr__(self, "_template", factory())
 
     def _key(self, row):
-        k = row.get("uuid") or row.get("index")
-        return "default" if k in (None, "") else str(k)
+        if isinstance(row, dict):
+            for f in ("uuid", "gpu_uuid", "index", "gpu_index", "gpu"):
+                k = row.get(f)
+                if k not in (None, ""):
+                    return str(k)
+        return "default"
 
     def for_row(self, row):
         k = self._key(row)

@@ -1,0 +1,58 @@
+Cross-GPU contamination audit -- FullDetectionPipeline, 2026-09-21
+Reproduce: python3 scripts/audit_multi_gpu_contamination.py
+Two GPUs, each steady and healthy alone but different (ECC 0 vs 12, 45C vs 55C, etc).
+Each run uses a throwaway alert-state + ledger folder, so runs are deterministic.
+
+===== BEFORE (original code) =====
+GPU0 alone : silent
+GPU1 alone : silent
+mixed      : {('LASER_INJECTION', '1'): 1, ('ECC_CORRECTABLE_TREND', '1'): 1}
+
+CROSS-GPU CONTAMINATION (fires only when GPUs are mixed):
+  ECC_CORRECTABLE_TREND                    gpu=1  x1
+  LASER_INJECTION                          gpu=1  x1
+
+POSITIVE CONTROLS (mixed GPUs, real event on GPU1 only):
+  ECC errors rising on GPU1    GPU1 alone PASS  (ECC_CORRECTABLE_TREND on gpu ['1'])
+  ECC errors rising on GPU1    mixed      PASS  (ECC_CORRECTABLE_TREND on gpu ['1'])
+  temperature jump on GPU1     GPU1 alone PASS  (LASER_INJECTION on gpu ['1'])
+  temperature jump on GPU1     mixed      PASS  (LASER_INJECTION on gpu ['1'])
+
+===== AFTER (ECCErrorTrendDetector + LaserInjectionDetector wrapped in PerGPU) =====
+GPU0 alone : silent
+GPU1 alone : silent
+mixed      : silent
+
+CROSS-GPU CONTAMINATION (fires only when GPUs are mixed):
+  none
+
+POSITIVE CONTROLS (mixed GPUs, real event on GPU1 only):
+  ECC errors rising on GPU1    GPU1 alone PASS  (ECC_CORRECTABLE_TREND on gpu ['1'])
+  ECC errors rising on GPU1    mixed      PASS  (ECC_CORRECTABLE_TREND on gpu ['1'])
+  temperature jump on GPU1     GPU1 alone PASS  (LASER_INJECTION on gpu ['1'])
+  temperature jump on GPU1     mixed      PASS  (LASER_INJECTION on gpu ['1'])
+
+Cause: one instance of each engine received every GPU's rows. The ECC detector
+compares the oldest and newest of its last 50 readings, so GPU0 (0) and GPU1 (12)
+interleaved read as a rise of 12. The laser detector looks at the temperature
+spread inside a 0.5s window, and one nvidia-smi poll delivers every GPU's row
+within milliseconds, so it measured the spread ACROSS cards as if it were a jump
+over time on one card.
+
+Regression after fix: ghost repro D still alerts on GPU 1; test_engines 17/17;
+attack_injection_suite 40/40; test_ecc_error_trend_detector 4/4.
+
+OPEN -- LaserInjectionDetector design flaw, not fixed here: it timestamps rows
+with time.time() at processing, not the sample's own time, and needs 3 readings
+within 0.5s. Real sampling is about 1 reading per GPU per second, so a per-GPU
+instance will rarely or never fire on real hardware. Before this fix it could
+only fire there by comparing different cards. Needs sample timestamps and a
+window matched to the achieved sampling rate. The LASER_INJECTION alert seen on
+the 4-GPU H200 pod on 2026-09-19 is consistent with the cross-card mechanism
+above; not proven.
+
+Harness note: an earlier version of this audit wrote synthetic alerts into the
+real watchdog_data/audit_ledger.jsonl and alert_state.json on the dev phone
+(gitignored, never pushed). Both archived as *.bak-audit-2026-09-21, not edited
+-- editing a hash chain is the tampering it exists to detect. Persisted alert
+dedup state also made that version's results flicker between runs.
