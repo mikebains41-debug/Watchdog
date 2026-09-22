@@ -600,10 +600,17 @@ accounting residual (~1520MB), so the residual is exit-path independent.
 NVLinkContentionDetector: previously never fired on any real hardware. This
 session found and fixed three separate bugs preventing it from ever receiving
 real data (a stale enable flag, silently dropped CSV columns, and a deprecated
-CLI flag causing silent sampling failure). Now confirmed firing correctly on a
-real, deliberately induced cross-GPU transfer. This is the strongest confirmation
-in the project to date of a detector built on cited real-world attack research
-(Spy-in-the-GPU-box, NVBleed, SideLink) actually working end-to-end.
+CLI flag causing silent sampling failure). 
+
+CORRECTION (2026-09-21): this paragraph previously said the detector was then
+"confirmed firing correctly on a real, deliberately induced cross-GPU transfer"
+and called it "the strongest confirmation in the project to date". That is not
+supported. The one NVLINK_CONTENTION alert on record (nvlink_final_test_b200_1,
+61,542,977,904 KB/s) came from code that compared cumulative NVLink counters
+instead of computing a rate; commit 8ba9c69 (30 July) identified it as counter
+drift, not throughput, and fixed the rate calculation. In the four retests run
+after that fix the detector did not fire. It is NOT confirmed firing correctly
+on real hardware. See B200_FINDINGS_REPORT.md section 1.
 
 Five more detectors were tested against genuine induced workloads rather than
 synthetic test harnesses this session: three fired correctly on real events, one

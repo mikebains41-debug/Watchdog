@@ -9,7 +9,21 @@ restate the earlier H200/Vast.ai findings -- see EVIDENCE.md and README.md for t
 
 ---
 
-## 1. NVLink covert-channel detector -- found broken, fixed, confirmed firing
+## 1. NVLink covert-channel detector -- found broken, fixed; NOT confirmed firing (corrected 2026-09-21)
+
+> **CORRECTION (2026-09-21).** The alert shown in this section (61,542,977,904
+> KB/s) came from the pre-fix code, which compared cumulative NVLink counters
+> instead of computing a rate. Commit 8ba9c69 (30 July 2026) identified it as
+> counter drift, not throughput -- a figure that could appear on an idle GPU
+> given enough runtime -- and stated these NVLink claims must be re-validated on
+> real hardware before being trusted or sent to anyone. The four retests after
+> that fix (nvlink_retest_v1-v4) recorded no NVLINK_CONTENTION alert. The three
+> integration bugs described below were real and are fixed; the detector firing
+> correctly is NOT confirmed. Also open, and needing a controlled test before any
+> threshold means anything: whether B200 NVLink counters behave as the KiB units
+> nvidia-smi labels them, and whether a fresh pod's counters start at zero. The
+> original text is kept below for traceability.
+
 
 NVLinkContentionDetector is built on real published research: "Spy in the GPU-box"
 (Dutta et al., ISCA 2023), NVBleed (Zhang et al., arXiv 2025), and SideLink (2026) --

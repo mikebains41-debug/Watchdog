@@ -15,6 +15,10 @@ testing (2026-09-21):
   varied power deliberately, so a fire shows workload ripple, not capacitor ageing.
 - GHOST_POWER_PREDICTED: fires on ordinary busy-to-idle transitions with a model
   loaded; now IDLE_RESIDENT_ENERGY (INFO) on loaded GPUs, commit 7abc65b.
+- NVLINK_CONTENTION: the one alert on record (nvlink_final_test_b200_1,
+  61,542,977,904 KB/s) came from pre-fix code comparing cumulative counters;
+  commit 8ba9c69 identified it as counter drift. No NVLINK_CONTENTION alert in the
+  four post-fix retests. Not confirmed firing correctly.
 
 Measurements in these runs (contention loss, idle power at 0% utilisation, VRAM
 recovery attempts) are unaffected by this note.
