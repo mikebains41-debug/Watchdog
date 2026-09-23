@@ -16,11 +16,20 @@ import argparse
 import glob
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from wd_benchmark_tests import TESTS, GROUP_ORDER, title  # noqa: E402
+from wd_benchmark_tests import TESTS, GROUP_ORDER, VERDICTS, title  # noqa: E402
+try:
+    from wd_benchmark_tests_ext import EXT_TESTS
+    TESTS.update(EXT_TESTS)
+    for _t, _v in EXT_TESTS.items():
+        if _v[1] not in GROUP_ORDER:
+            GROUP_ORDER.append(_v[1])
+except ImportError:
+    pass
 
 # worse verdict wins when a provider has several runs of one test
 RANK = {"FAIL": 5, "BLOCKED": 4, "ERROR": 3, "NA": 2, "PASS": 1, "-": 0}
@@ -30,6 +39,7 @@ def load(dirpath):
     """provider -> test_id -> list of verdicts."""
     data = {}
     files = sorted(glob.glob(os.path.join(dirpath, "benchmark_*.json")) +
+                   glob.glob(os.path.join(dirpath, "benchmark2_*.json")) +
                    glob.glob(os.path.join(dirpath, "handover_*.json")))
     for f in files:
         try:
@@ -37,9 +47,21 @@ def load(dirpath):
         except (ValueError, OSError):
             continue
         prov = doc.get("provider", os.path.basename(f).split("_")[1] if "_" in os.path.basename(f) else "?")
+        # DEFENSE (adversarial review 2026-09-23, finding #2): result files are
+        # untrusted input to a PUBLISHED table. A forged file could inject a fake
+        # provider column or a fake PASS. Validate every row against the registry
+        # and REJECT the whole file loudly rather than render a poisoned claim.
+        if not isinstance(prov, str) or not re.fullmatch(r"[A-Za-z0-9_.\-]{1,32}", prov):
+            print("REJECTED %s: bad provider name %r" % (f, prov), file=sys.stderr); continue
+        rows = doc.get("results", [])
+        bad = [r for r in rows if not isinstance(r, dict)
+               or r.get("test_id") not in TESTS or r.get("verdict") not in VERDICTS]
+        if bad:
+            print("REJECTED %s: %d row(s) with unknown test_id or verdict -- forged or corrupt"
+                  % (f, len(bad)), file=sys.stderr); continue
         d = data.setdefault(prov, {})
-        # provider_probe.py results
-        for r in doc.get("results", []):
+        # provider_probe.py results (now validated)
+        for r in rows:
             d.setdefault(r["test_id"], []).append(r["verdict"])
         # handover_capture.py -> HH-01 leftover files
         lo = doc.get("leftovers")
