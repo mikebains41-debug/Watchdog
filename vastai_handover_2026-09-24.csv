@@ -1,0 +1,7 @@
+date,provider,gpu,host,instance,finding_id,item,detail,value,age_days,attributable_to_prev_tenant,has_content,proven,contents_opened
+2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file,/home/user/.condarc,273 B,16.4,yes,yes,yes,no
+2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file,/home/user/.ssh/authorized_keys,0 B,0.0,yes,no,yes,no
+2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file,/home/ubuntu/.ssh/authorized_keys,0 B,0.0,yes,no,yes,no
+2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file_uncertain,/home/user/.bashrc,4896 B,0.0,unknown,yes,no,no
+2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,provider_script_not_tenant,/root/onstart.sh,13 B,0.0,no,yes,no,no
+2026-09-24,vastai,H200,dfa5e32169cd,52332336,F2,nvlink_counter_not_reset,previous tenant NVLink traffic across 36 counters,1065509220356 KiB (~1.09 PB),,yes,yes,yes,no
