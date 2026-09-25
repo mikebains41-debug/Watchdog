@@ -1,0 +1,11 @@
+SWARM ON NORMAL SERVING -- negative controls, SYNTHETIC, 8 GPUs x 400 s each
+GPUs an agent fired on (of 8), raw alert count before dedup in brackets
+
+agent / alert                                              S1 steady  S2 bursty  S3 MoE    
+GhostPowerPredictor GHOST_POWER_PREDICTED                  0/8 (0)    8/8 (8)    8/8 (8)   
+
+FALSE POSITIVES ON NORMAL SERVING: GhostPowerPredictor
+Every agent not listed raised no alert in any scenario. Agents that need fields
+nothing collects (CEI: agent2, agent5) cannot fire here -- untested, not passing.
+In the live pipeline, GhostPowerPredictor alerts on GPUs with a model loaded are
+reclassified to IDLE_RESIDENT_ENERGY (INFO) after this layer (commit 7abc65b).
