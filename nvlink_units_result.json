@@ -1,0 +1,49 @@
+{
+  "started_utc": "2026-09-25T03:32:21.604894+00:00",
+  "gpu_count": 2,
+  "gpu0": "NVIDIA H200",
+  "gpu1": "NVIDIA H200",
+  "peer_access": true,
+  "unit_trials": [
+    {
+      "copy_mib": 256,
+      "bytes_moved": 268435456,
+      "counter_delta_per_gpu": {
+        "0": 262144.0,
+        "1": 262143.0
+      },
+      "counter_delta_total": 524287.0,
+      "units_per_byte": 0.0019531212747097015,
+      "reads_as": "KiB (counter ~ bytes/1024)"
+    },
+    {
+      "copy_mib": 1024,
+      "bytes_moved": 1073741824,
+      "counter_delta_per_gpu": {
+        "0": 1048574.0,
+        "1": 1048578.0
+      },
+      "counter_delta_total": 2097152.0,
+      "units_per_byte": 0.001953125,
+      "reads_as": "KiB (counter ~ bytes/1024)"
+    },
+    {
+      "copy_mib": 4096,
+      "bytes_moved": 4294967296,
+      "counter_delta_per_gpu": {
+        "0": 4194302.0,
+        "1": 4194303.0
+      },
+      "counter_delta_total": 8388605.0,
+      "units_per_byte": 0.001953124301508069,
+      "reads_as": "KiB (counter ~ bytes/1024)"
+    }
+  ],
+  "cross_gpu_residual": {
+    "gpu1_mb_before": 526.0,
+    "gpu1_mb_during_gpu0_work": 526.0,
+    "gpu1_mb_after": 526.0,
+    "increase_mb": 0.0
+  },
+  "finished_utc": "2026-09-25T03:32:31.947206+00:00"
+}
