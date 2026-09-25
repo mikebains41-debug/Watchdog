@@ -1,0 +1,5 @@
+RESIDENT GHOST POSITIVE CONTROL -- 2x H200 pod 36479, Fri Sep 25 06:43:44 UTC 2026
+floor learned 117.25W (loaded-idle, model resident, 0% util, ~4.6GB)
+phase 2: clock-pin (nvidia-smi -lgc) blocked without privileges; power held 117.4-117.7W at 0% util across 45 samples
+delta <1W vs 60W margin; GHOST_POWER_RESIDENT correctly did NOT fire
+CONCLUSION: ghost could not be induced on a cloud pod; detector behaved correctly. Positive control needs bare-metal or clock-control rights. NOT a detector failure.
