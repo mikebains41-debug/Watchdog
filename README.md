@@ -64,7 +64,7 @@ impact is not one.
 
 ---
 
-## Detection engines (41 automatic + 2 separate)
+## Detection engines
 
 Four foundational engines, detailed below. Twenty-five more were added
 since, covering hardware attacks, memory attacks, LLM/agent attacks, PCIe
