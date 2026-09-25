@@ -1,7 +1,14 @@
-date,provider,gpu,host,instance,finding_id,item,detail,value,age_days,attributable_to_prev_tenant,has_content,proven,contents_opened
-2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file,/home/user/.condarc,273 B,16.4,yes,yes,yes,no
-2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file,/home/user/.ssh/authorized_keys,0 B,0.0,yes,no,yes,no
-2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file,/home/ubuntu/.ssh/authorized_keys,0 B,0.0,yes,no,yes,no
-2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,leftover_file_uncertain,/home/user/.bashrc,4896 B,0.0,unknown,yes,no,no
-2026-09-24,vastai,H200,dfa5e32169cd,52332336,F1,provider_script_not_tenant,/root/onstart.sh,13 B,0.0,no,yes,no,no
-2026-09-24,vastai,H200,dfa5e32169cd,52332336,F2,nvlink_counter_not_reset,previous tenant NVLink traffic across 36 counters,1065509220356 KiB (~1.09 PB),,yes,yes,yes,no
+date,provider,datacenter,machine_id,host,instance,test_id,test,verdict,detail,attributable_to_prev_tenant,contents_opened
+2026-09-24,vastai,214845,51172,dfa5e32169cd,52332336,HH-01,leftover_file_condarc,FAIL,.condarc 273B 16.4 days old,yes,no
+2026-09-24,vastai,214845,51172,dfa5e32169cd,52332336,HH-03,nvlink_counter_not_reset,FAIL,1065509220356 KiB (~1.09 PB) across 36 counters,yes,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HH-01,leftover_file_condarc,FAIL,.condarc 273B 17.4 days old (same machine),yes,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HH-03,nvlink_counter_not_reset,FAIL,1065509220356 KiB (~1.09 PB) identical to prior day,yes,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HH-04,live_context_at_handover,FAIL,~1131 MB in use before workload,yes,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HH-08,gpu_state_pinned,FAIL,application clock pinned by prior tenant,yes,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HH-09,disk_log_residue,FAIL,previous tenant home dir readable,yes,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HS-02,container_escape_surface,FAIL,host firmware/kernel-log paths mounted into container,n/a,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HS-08,provider_agent_reachable,FAIL,host-management port reachable from tenant,n/a,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HS-04,baked_in_credentials,FALSE_POSITIVE,JUPYTER_TOKEN is Vast's own Jupyter token,n/a,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HH-02,vram_zeroed_at_handover,PASS,512MB fresh alloc read back all zero,n/a,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,HS-05,cloud_metadata_reachable,PASS,169.254.169.254:80 not reachable,n/a,no
+2026-09-25,vastai,214845,51172,7ff12d1760d2,52509247,BH-03,gpu_as_advertised,PASS,H200 matches listing,n/a,no
