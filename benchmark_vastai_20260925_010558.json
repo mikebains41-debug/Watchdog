@@ -1,0 +1,133 @@
+{
+  "provider": "vastai",
+  "host": "7ff12d1760d2",
+  "advertised_gpu": "H200",
+  "captured_utc": "2026-09-25T01:05:58.280843+00:00",
+  "boundary": "own-instance only; no probe reads another tenant's memory, files or traffic",
+  "results": [
+    {
+      "test_id": "HH-02",
+      "title": "VRAM Zeroed at Handover",
+      "group": "Handover Hygiene",
+      "checks": "a fresh GPU allocation read back -- all zero, or previous contents",
+      "verdict": "PASS",
+      "detail": "512 MB fresh allocation read back entirely zero",
+      "evidence": {
+        "bytes_checked": 536870912,
+        "nonzero_bytes": 0
+      }
+    },
+    {
+      "test_id": "HH-03",
+      "title": "GPU Counter Reset",
+      "group": "Handover Hygiene",
+      "checks": "NVLink / PCIe / ECC counters at zero, or carrying prior activity",
+      "verdict": "ERROR",
+      "detail": "nvidia-smi query failed: ",
+      "evidence": {}
+    },
+    {
+      "test_id": "HH-04",
+      "title": "Live Context at Handover",
+      "group": "Handover Hygiene",
+      "checks": "memory in use, power above idle, or boosted clocks before any work",
+      "verdict": "FAIL",
+      "detail": "GPU not clean at handover -- a previous context may still be resident: memory.used=1131MB, compute apps present: 346169, 1122 MiB",
+      "evidence": {
+        "rows": [
+          [
+            "1131",
+            "0",
+            "84.87",
+            "1980",
+            "1980"
+          ]
+        ]
+      }
+    },
+    {
+      "test_id": "HH-05",
+      "title": "GPU Reset Available",
+      "group": "Handover Hygiene",
+      "checks": "whether nvidia-smi --gpu-reset runs and clears the accounting gap",
+      "verdict": "PASS",
+      "detail": "GPU reset appears permitted (invalid-index probe returned no permission error). Confirm for real, attended, on an idle GPU: nvidia-smi --gpu-reset -i 0",
+      "evidence": {
+        "probe_output": "No devices found.",
+        "supported": true
+      }
+    },
+    {
+      "test_id": "HS-01",
+      "title": "Kernel vs KEV",
+      "group": "Host Security",
+      "checks": "running kernel against known-exploited-vulnerability list",
+      "verdict": "BLOCKED",
+      "detail": "running kernel: 6.8.0-117-generic #117~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu May  7 22:17:46 UTC. Compare against CISA KEV kernel LPEs by hand or with a live feed. Version-string matching only: distributions backport fixes without changing the version, so this flags machines to check by hand, it does not prove exploitability.",
+      "evidence": {
+        "kernel": "6.8.0-117-generic #117~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu May  7 22:17:46 UTC",
+        "os_release": "PRETTY_NAME=\"Ubuntu 24.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.4 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+        "kev_slice": [
+          "CVE-2026-31431",
+          "CVE-2024-1086",
+          "CVE-2023-32233",
+          "CVE-2022-0847",
+          "CVE-2021-4034"
+        ]
+      }
+    },
+    {
+      "test_id": "HS-02",
+      "title": "Container Escape Surface",
+      "group": "Host Security",
+      "checks": "docker socket, dangerous capabilities, host paths mounted in",
+      "verdict": "FAIL",
+      "detail": "container-escape surface present: host firmware/kernel-log paths mounted",
+      "evidence": {
+        "cap_eff": "00000000a80405fb"
+      }
+    },
+    {
+      "test_id": "HS-03",
+      "title": "Namespace Isolation",
+      "group": "Host Security",
+      "checks": "visibility of host processes / other tenants / host network",
+      "verdict": "PASS",
+      "detail": "process view looks contained (39 processes, no host daemons)",
+      "evidence": {
+        "process_count": 39
+      }
+    },
+    {
+      "test_id": "HS-04",
+      "title": "Baked-in Credentials",
+      "group": "Host Security",
+      "checks": "keys or tokens left in the base image handed to you",
+      "verdict": "FAIL",
+      "detail": "credentials present in the handed-over image/env: env var JUPYTER_TOKEN set (looks secret-like); env var OPEN_BUTTON_TOKEN set (looks secret-like); env var CONTAINER_API_KEY set (looks secret-like)",
+      "evidence": {}
+    },
+    {
+      "test_id": "HS-05",
+      "title": "Cloud Metadata Reachable",
+      "group": "Host Security",
+      "checks": "cloud metadata endpoint reachable from inside the instance",
+      "verdict": "PASS",
+      "detail": "cloud metadata endpoint 169.254.169.254:80 not reachable",
+      "evidence": {}
+    },
+    {
+      "test_id": "BH-03",
+      "title": "GPU Generation as Advertised",
+      "group": "Billing Honesty",
+      "checks": "the GPU present matches the generation the listing sold",
+      "verdict": "PASS",
+      "detail": "all GPUs match advertised 'H200': ['NVIDIA H200']",
+      "evidence": {
+        "gpus": [
+          "NVIDIA H200"
+        ]
+      }
+    }
+  ]
+}
