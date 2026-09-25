@@ -1,4 +1,5 @@
 import sys
+import sys, os; sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts"))
 sys.path.insert(0, ".")
 from pue_auditor import audit
 P, F = [], []
