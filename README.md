@@ -69,8 +69,9 @@ impact is not one.
 Four foundational engines, detailed below. Twenty-five more were added
 since, covering hardware attacks, memory attacks, LLM/agent attacks, PCIe
 health, predictive failure, boot attestation, business/fleet signals, and
-hardware/firmware integrity — listed by category further down. All 29 run
-automatically on every telemetry sample via FullDetectionPipeline. Two more
+hardware/firmware integrity — listed by category further down. They run
+automatically on every telemetry sample via FullDetectionPipeline (30 engines
+total; `total_engine_count` returns 30). Two more
 are wired separately, because each needs data GPU telemetry alone cannot
 provide: ThroughputContentionDetector needs externally-reported workload
 throughput (iterations/sec), reached via a dedicated /throughput API
@@ -94,8 +95,15 @@ tests/test_engines.py. Current status: 17/17 passing.
 - PowerPeriodicityDetector: periodic structure in power draw, detected via
   autocorrelation. Requires power.draw. Severity WARNING.
 
+- ResidentGhostPowerDetector: ghost power on a GPU with a model loaded --
+  learns each GPU's own loaded-idle floor and flags sustained power far
+  above it at 0% utilization. Added 2026-09-21 to catch ghost power in
+  inference serving, where a resident model means the cold-idle floor never
+  applies. Severity WARNING, CRITICAL above 150W delta.
+
 - MultiGPUCorrelation: anomalies co-occurring across GPUs. Severity INFO
-  only, not an attack signal.
+  only, not an attack signal. Counted among the additional engines, not the
+  four foundational.
 
 Notes on what these engines deliberately do not claim:
 
@@ -401,7 +409,7 @@ to hardware attestation, not a substitute for it.
 
 detection/fleet_aggregation.py rolls up alerts across any number of nodes
 into a single view ("N of M nodes currently affected by alert type X"),
-covering all 41 automatic engines including the original four — which
+covering all 30 automatic engines including the foundational ones — which
 initially bypassed both the ledger and the fleet rollup, since
 DetectionPipeline.process()'s return value was being computed and
 silently discarded; both now consume it directly. alerting/state.py
@@ -559,8 +567,6 @@ the patent's general claims. It does not affect the more specific
 memory-clock mechanistic finding, or Watchdog's own detection capability,
 which stand independently of the patent's outcome.
 
-Email alerting and threat-intelligence correlation remain unwired from the
-live pipeline. See Alerting.
 
 ---
 
