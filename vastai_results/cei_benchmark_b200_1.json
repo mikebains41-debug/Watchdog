@@ -1,0 +1,9 @@
+{
+  "cei_flops_per_joule": 70056339787.26888,
+  "total_flops": 474576706338816,
+  "iterations": 3453,
+  "elapsed_s": 10.000754356384277,
+  "mean_power_w": 677.3703999999999,
+  "power_sample_count": 50,
+  "matrix_size": 4096
+}

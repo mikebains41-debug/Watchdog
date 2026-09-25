@@ -1,0 +1,193 @@
+{
+  "provider": "vastai",
+  "host": "7ff12d1760d2",
+  "captured_utc": "2026-09-25T01:06:03.501649+00:00",
+  "round": 2,
+  "boundary": "own-instance only; HS-07 never reads credentials; SC-01 is config-only, never observes a neighbour",
+  "results": [
+    {
+      "test_id": "HH-06",
+      "title": "Host RAM Scrubbed",
+      "group": "Handover Hygiene",
+      "checks": "a fresh host-memory allocation read back -- zero, or previous contents",
+      "verdict": "PASS",
+      "detail": "256 MB host allocation sampled every 64 KB -- all zero",
+      "evidence": {
+        "samples": 4096,
+        "citations": [
+          [
+            "Same clearing principle as LeftoverLocals, applied to host RAM",
+            "https://arxiv.org/html/2401.16603v1"
+          ]
+        ]
+      }
+    },
+    {
+      "test_id": "HH-07",
+      "title": "Shared Memory / IPC Residue",
+      "group": "Handover Hygiene",
+      "checks": "leftover /dev/shm files, SysV shm segments, semaphores, message queues",
+      "verdict": "PASS",
+      "detail": "no foreign /dev/shm files or SysV IPC segments",
+      "evidence": {}
+    },
+    {
+      "test_id": "HH-08",
+      "title": "GPU State at Handover",
+      "group": "Handover Hygiene",
+      "checks": "MIG left configured, ECC disabled, persistence, clocks/power pinned by prior tenant",
+      "verdict": "FAIL",
+      "detail": "GPU left in a non-default state at handover: application clock pinned at [Requested functionality has been deprecated]",
+      "evidence": {
+        "rows": [
+          [
+            "Disabled",
+            "Enabled",
+            "Enabled",
+            "[Requested functionality has been deprecated]",
+            "700.00 W",
+            "700.00 W"
+          ]
+        ]
+      }
+    },
+    {
+      "test_id": "HH-09",
+      "title": "Disk & Log Residue",
+      "group": "Handover Hygiene",
+      "checks": "readable shell history, journald/auth logs, prior tenant's home dirs",
+      "verdict": "FAIL",
+      "detail": "disk/log residue readable at handover: readable home dir /home/ubuntu; readable home dir /home/user",
+      "evidence": {}
+    },
+    {
+      "test_id": "HH-10",
+      "title": "Network Trace Residue",
+      "group": "Handover Hygiene",
+      "checks": "DNS cache, ARP table, known_hosts entries from the previous tenant",
+      "verdict": "PASS",
+      "detail": "no notable ARP/known_hosts/DNS-cache residue",
+      "evidence": {}
+    },
+    {
+      "test_id": "HH-11",
+      "title": "GPU Local-Memory Residue (LeftoverLocals class)",
+      "group": "Handover Hygiene",
+      "checks": "GPU shared/local memory readable across kernels -- the CVE-2023-4969 mechanism",
+      "verdict": "BLOCKED",
+      "detail": "GPU local-memory dump needs a custom CUDA/OpenCL kernel (not expressible in torch). NVIDIA was confirmed NOT affected by CVE-2023-4969; a dedicated kernel probe is the real test. GPU seen: NVIDIA H200",
+      "evidence": {
+        "citations": [
+          [
+            "LeftoverLocals: GPU local memory not cleared between kernels; ~5.5MB/invocation on affected GPUs",
+            "https://kb.cert.org/vuls/id/446598"
+          ],
+          [
+            "NVIDIA not affected by CVE-2023-4969 -- a non-zero read on NVIDIA would be new",
+            "https://leftoverlocals.com/"
+          ]
+        ]
+      }
+    },
+    {
+      "test_id": "HS-06",
+      "title": "Container Toolkit Version (NVIDIAScape)",
+      "group": "Host Security",
+      "checks": "NVIDIA Container Toolkit version vs the CVE-2025-23266 / CVE-2024-0132 patched line",
+      "verdict": "BLOCKED",
+      "detail": "NVIDIA Container Toolkit not found inside the container (may run on the host only)",
+      "evidence": {
+        "citations": [
+          [
+            "NVIDIAScape CVE-2025-23266 (CVSS 9.0), toolkit <=1.17.7 / GPU Operator <=25.3.0 (Wiz)",
+            "https://www.wiz.io/blog/nvidia-ai-vulnerability-cve-2025-23266-nvidiascape"
+          ],
+          [
+            "Earlier NVIDIA Container Toolkit escape CVE-2024-0132 (Wiz deep dive)",
+            "https://github.com/winmin/awesome-vm-escape"
+          ]
+        ]
+      }
+    },
+    {
+      "test_id": "HS-07",
+      "title": "Metadata IMDS Version",
+      "group": "Host Security",
+      "checks": "which cloud-metadata version is exposed: v1 (SSRF-open) vs v2-only vs blocked",
+      "verdict": "PASS",
+      "detail": "cloud metadata endpoint 169.254.169.254:80 not reachable",
+      "evidence": {
+        "citations": [
+          [
+            "Capital One 2019: SSRF -> IMDSv1 -> IAM creds -> 100M records; IMDSv2 requires a token",
+            "https://securitylabs.datadoghq.com/articles/misconfiguration-spotlight-imds/"
+          ]
+        ]
+      }
+    },
+    {
+      "test_id": "HS-08",
+      "title": "Provider Agent Reachable",
+      "group": "Host Security",
+      "checks": "the marketplace's host-management daemon socket/API reachable from the container",
+      "verdict": "FAIL",
+      "detail": "host-management surface reachable from inside the tenant: open management port 127.0.0.1:8080",
+      "evidence": {}
+    },
+    {
+      "test_id": "HS-09",
+      "title": "VBIOS / Firmware Integrity",
+      "group": "Host Security",
+      "checks": "GPU VBIOS version present and matching an expected value at handover",
+      "verdict": "BLOCKED",
+      "detail": "VBIOS present: ['96.00.A1.00.01']. Provide --expect-vbios to check against a known-good value; build a per-GPU-model expected table over time.",
+      "evidence": {
+        "vbios": [
+          "96.00.A1.00.01"
+        ],
+        "citations": [
+          [
+            "VBIOS/BMC firmware as a GPU attack vector (arXiv 2507.02770)",
+            "https://arxiv.org/html/2507.02770"
+          ]
+        ]
+      }
+    },
+    {
+      "test_id": "HS-10",
+      "title": "Network Egress Openness",
+      "group": "Host Security",
+      "checks": "what the container can reach outbound -- wide-open egress is an exfiltration path",
+      "verdict": "BLOCKED",
+      "detail": "outbound reachable: DNS (1.1.1.1:53), HTTPS (1.1.1.1:443), HTTPS-alt (8.8.8.8:443), SSH (github.com:22) (open egress; note for the report)",
+      "evidence": {
+        "open": [
+          "DNS (1.1.1.1:53)",
+          "HTTPS (1.1.1.1:443)",
+          "HTTPS-alt (8.8.8.8:443)",
+          "SSH (github.com:22)"
+        ]
+      }
+    },
+    {
+      "test_id": "SC-01",
+      "title": "Co-Tenant Side-Channel Exposure (config only)",
+      "group": "Side-Channel Exposure",
+      "checks": "is the machine arranged (shared GPU, MPS, no MIG isolation) so a co-tenant COULD be observed",
+      "verdict": "BLOCKED",
+      "detail": "machine is arranged so a co-tenant COULD in principle be observed via shared-GPU side channels: compute mode 'Default' (multiple processes can share the GPU); no MIG isolation. This is a configuration finding only; Watchdog does not observe other tenants.",
+      "evidence": {
+        "factors": [
+          "compute mode 'Default' (multiple processes can share the GPU)",
+          "no MIG isolation"
+        ],
+        "citations": [
+          [
+            "GPU side/covert channels: Spy-in-the-GPU-box / NVBleed / SideLink -- shared-hardware observation",
+            "https://leftoverlocals.com/"
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-09-20T00:55:15.919699",
+  "gpu": "NVIDIA H200",
+  "bare_idle_w": 78.76,
+  "hypothesis_confirmed": false,
+  "results": [
+    {
+      "precision": "fp32",
+      "supported": true,
+      "context_idle_w": 122.5,
+      "active_w": 660.22,
+      "iters": 1721,
+      "elapsed_s": 36.94903893396258,
+      "total_flops": 1892259511402496,
+      "achieved_flops_per_s": 51212685525716.91,
+      "cei_flops_per_joule": 77569121695.36958,
+      "ghost_power_w": 43.739999999999995,
+      "ghost_share_pct": 6.6250643724819
+    },
+    {
+      "precision": "tf32",
+      "supported": true,
+      "context_idle_w": 128.16,
+      "active_w": 692.24,
+      "iters": 5312,
+      "elapsed_s": 16.602009423077106,
+      "total_flops": 5840605766746112,
+      "achieved_flops_per_s": 351801135507582.56,
+      "cei_flops_per_joule": 508206887073.24426,
+      "ghost_power_w": 49.39999999999999,
+      "ghost_share_pct": 7.136253322547093
+    },
+    {
+      "precision": "bf16",
+      "supported": true,
+      "context_idle_w": 127.7,
+      "active_w": 692.16,
+      "iters": 9669,
+      "elapsed_s": 15.840681090950966,
+      "total_flops": 10631177928966144,
+      "achieved_flops_per_s": 671131365370346.0,
+      "cei_flops_per_joule": 969618824217.444,
+      "ghost_power_w": 48.94,
+      "ghost_share_pct": 7.070619509939899
+    },
+    {
+      "precision": "fp16",
+      "supported": true,
+      "context_idle_w": 128.09,
+      "active_w": 691.92,
+      "iters": 9366,
+      "elapsed_s": 15.863606303930283,
+      "total_flops": 10298025905750016,
+      "achieved_flops_per_s": 649160456232365.8,
+      "cei_flops_per_joule": 938201607458.0383,
+      "ghost_power_w": 49.33,
+      "ghost_share_pct": 7.129436929124755
+    },
+    {
+      "precision": "fp8",
+      "supported": false,
+      "context_idle_w": 128.09,
+      "reason": "runtime error: TypeError('_scaled_mm() missing 2 required positional argument: \"scale_a\", \"scale_b\"')",
+      "ghost_power_w": null,
+      "ghost_share_pct": null
+    },
+    {
+      "precision": "int8",
+      "supported": true,
+      "context_idle_w": 124.79,
+      "active_w": 355.71,
+      "iters": 2777,
+      "elapsed_s": 23.730722449719906,
+      "total_flops": 3053343790333952,
+      "achieved_flops_per_s": 128666280464208.56,
+      "cei_flops_per_joule": 361716793073.5953,
+      "ghost_power_w": 46.03,
+      "ghost_share_pct": 12.940316549998595
+    },
+    {
+      "precision": "fp4",
+      "supported": false,
+      "reason": "dtype/library not available in this environment",
+      "ghost_power_w": null,
+      "ghost_share_pct": null
+    }
+  ]
+}
