@@ -1,0 +1,164 @@
+{
+  "captured_utc": "2026-09-25T03:23:16.359057+00:00",
+  "host": "34bdef9f7a49",
+  "user": "root",
+  "uid": 0,
+  "kernel": "5.15.0-1076-nvidia",
+  "uptime_s": 10909731.46,
+  "gpus": [
+    {
+      "index": "0",
+      "uuid": "GPU-a68e7409-a2d9-6cda-ab36-6932bfea352c",
+      "name": "NVIDIA H200",
+      "driver_version": "570.86.15",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.used": "1 MiB",
+      "memory.total": "143771 MiB",
+      "utilization.gpu": "0 %",
+      "power.draw": "76.29 W",
+      "temperature.gpu": "41",
+      "clocks.sm": "345 MHz",
+      "clocks.mem": "3201 MHz",
+      "ecc.errors.corrected.volatile.total": "0",
+      "ecc.errors.uncorrected.volatile.total": "0",
+      "persistence_mode": "Enabled",
+      "compute_mode": "Default"
+    },
+    {
+      "index": "1",
+      "uuid": "GPU-1dcee11e-2854-678c-5b09-a2e0242d932d",
+      "name": "NVIDIA H200",
+      "driver_version": "570.86.15",
+      "vbios_version": "96.00.CF.00.02",
+      "memory.used": "1 MiB",
+      "memory.total": "143771 MiB",
+      "utilization.gpu": "0 %",
+      "power.draw": "79.56 W",
+      "temperature.gpu": "43",
+      "clocks.sm": "345 MHz",
+      "clocks.mem": "3201 MHz",
+      "ecc.errors.corrected.volatile.total": "0",
+      "ecc.errors.uncorrected.volatile.total": "0",
+      "persistence_mode": "Enabled",
+      "compute_mode": "Default"
+    }
+  ],
+  "gpu_query_error": "",
+  "nvlink": {
+    "available": true,
+    "links_seen": 72,
+    "total_counter_kib": 25379029542330.0,
+    "raw": "GPU 0: NVIDIA H200 (UUID: GPU-a68e7409-a2d9-6cda-ab36-6932bfea352c)\n\t Link 0: Data Tx: 361263334086 KiB\n\t Link 0: Data Rx: 346952722189 KiB\n\t Link 1: Data Tx: 361576586304 KiB\n\t Link 1: Data Rx: 346961754839 KiB\n\t Link 2: Data Tx: 378981250764 KiB\n\t Link 2: Data Rx: 346192631283 KiB\n\t Link 3: Data Tx: 367171594579 KiB\n\t Link 3: Data Rx: 346021355778 KiB\n\t Link 4: Data Tx: 372804267757 KiB\n\t Link 4: Data Rx: 346274492320 KiB\n\t Link 5: Data Tx: 372797748662 KiB\n\t Link 5: Data Rx: 346276261056 KiB\n\t Link 6: Data Tx: 381199697381 KiB\n\t Link 6: Data Rx: 357616202557 KiB\n\t Link 7: Data Tx: 381673998330 KiB\n\t Link 7: Data Rx: 357793740170 KiB\n\t Link 8: Data Tx: 380471287366 KiB\n\t Link 8: Data Rx: 348739895957 KiB\n\t Link 9: Data Tx: 351021856499 KiB\n\t Link 9: Data Rx: 349077781068 KiB\n\t Link 10: Data Tx: 351281157580 KiB\n\t Link 10: Data Rx: 345573414811 KiB\n\t Link 11: Data Tx: 356730148067 KiB\n\t Link 11: Data Rx: 348397651430 KiB\n\t Link 12: Data Tx: 347391164306 KiB\n\t Link 12: Data Rx: 347472180779 KiB\n\t Link 13: Data Tx: 347418175650 KiB\n\t Link 13: Data Rx: 347477663365 KiB\n\t Link 14: Data Tx: 364815320607 KiB\n\t Link 14: Data Rx: 357815622927 KiB\n\t Link 15: Data Tx: 388456925451 KiB\n\t Link 15: Data Rx: 360163214429 KiB\n\t Link 16: Data Tx: 370592033813 KiB\n\t Link 16: Data Rx: 348114465235 KiB\n\t Link 17: Data Tx: 371166384656 KiB\n\t Link 17: Data Rx: 348125505000 KiB\nGPU 1: NVIDIA H200 (UUID: GPU-1dcee11e-2854-678c-5b09-a2e0242d932d)\n\t Link 0: Data Tx: 367504864005 KiB\n\t Link 0: Data Rx: 337802277216 KiB\n\t Link 1: Data Tx: 379873773204 KiB\n\t Link 1: Data Rx: 336687090202 KiB\n\t Link 2: Data Tx: 354558097553 KiB\n\t Link 2: Data Rx: 346536853905 KiB\n\t Link 3: Data Tx: 366360908823 KiB\n\t Link 3: Data Rx: 346388396394 KiB\n\t Link 4: Data Tx: 336051739479 KiB\n\t Link 4: Data Rx: 338361533428 KiB\n\t Link 5: Data Tx: 347192056618 KiB\n\t Link 5: Data Rx: 336886230515 KiB\n\t Link 6: Data Tx: 355221376318 KiB\n\t Link 6: Data Rx: 336325933632 KiB\n\t Link 7: Data Tx: 355803746767 KiB\n\t Link 7: Data Rx: 336329815559 KiB\n\t Link 8: Data Tx: 341275490945 KiB\n\t Link 8: Data Rx: 335582986651 KiB\n\t Link 9: Data Tx: 341268061731 KiB\n\t Link 9: Data Rx: 335581259233 KiB\n\t Link 10: Data Tx: 350290971480 KiB\n\t Link 10: Data Rx: 335357997067 KiB\n\t Link 11: Data Tx: 337863426256 KiB\n\t Link 11: Data Rx: 335157889483 KiB\n\t Link 12: Data Tx: 348431588268 KiB\n\t Link 12: Data Rx: 336126524893 KiB\n\t Link 13: Data Tx: 348767498138 KiB\n\t Link 13: Data Rx: 336125104993 KiB\n\t Link 14: Data Tx: 366891210118 KiB\n\t Link 14: Data Rx: 335632321283 KiB\n\t Link 15: Data Tx: 366404965093 KiB\n\t Link 15: Data Rx: 335634689787 KiB\n\t Link 16: Data Tx: 359178502685 KiB\n\t Link 16: Data Rx: 347253136493 KiB\n\t Link 17: Data Tx: 359185152750 KiB\n\t Link 17: Data Rx: 347276584314 KiB",
+    "error": ""
+  },
+  "foreign_gpu_processes": [],
+  "leftovers": {
+    "count": 10,
+    "files_scanned": 1208,
+    "capped": false,
+    "files": [
+      {
+        "path": "/root/onstart.sh",
+        "bytes": 13,
+        "uid": 119,
+        "owner": "119",
+        "mtime": "2026-09-25T03:19:42+00:00",
+        "age_days": 0.0,
+        "likely_image_default": false,
+        "mode": "0o644"
+      },
+      {
+        "path": "/home/ubuntu/.bash_logout",
+        "bytes": 220,
+        "uid": 1000,
+        "owner": "ubuntu",
+        "mtime": "2024-03-31T08:41:03+00:00",
+        "age_days": 907.8,
+        "likely_image_default": true,
+        "mode": "0o644"
+      },
+      {
+        "path": "/home/ubuntu/.bashrc",
+        "bytes": 3771,
+        "uid": 1000,
+        "owner": "ubuntu",
+        "mtime": "2024-03-31T08:41:03+00:00",
+        "age_days": 907.8,
+        "likely_image_default": true,
+        "mode": "0o644"
+      },
+      {
+        "path": "/home/ubuntu/.profile",
+        "bytes": 807,
+        "uid": 1000,
+        "owner": "ubuntu",
+        "mtime": "2024-03-31T08:41:03+00:00",
+        "age_days": 907.8,
+        "likely_image_default": true,
+        "mode": "0o644"
+      },
+      {
+        "path": "/home/ubuntu/.ssh/authorized_keys",
+        "bytes": 0,
+        "uid": 1000,
+        "owner": "ubuntu",
+        "mtime": "2026-09-25T03:19:59.491803+00:00",
+        "age_days": 0.0,
+        "likely_image_default": false,
+        "mode": "0o600"
+      },
+      {
+        "path": "/home/user/.bash_logout",
+        "bytes": 220,
+        "uid": 1001,
+        "owner": "user",
+        "mtime": "2024-03-31T08:41:03+00:00",
+        "age_days": 907.8,
+        "likely_image_default": true,
+        "mode": "0o644"
+      },
+      {
+        "path": "/home/user/.bashrc",
+        "bytes": 4896,
+        "uid": 1001,
+        "owner": "user",
+        "mtime": "2026-09-25T03:19:59.475805+00:00",
+        "age_days": 0.0,
+        "likely_image_default": false,
+        "mode": "0o644"
+      },
+      {
+        "path": "/home/user/.profile",
+        "bytes": 807,
+        "uid": 1001,
+        "owner": "user",
+        "mtime": "2024-03-31T08:41:03+00:00",
+        "age_days": 907.8,
+        "likely_image_default": true,
+        "mode": "0o644"
+      },
+      {
+        "path": "/home/user/.condarc",
+        "bytes": 273,
+        "uid": 1001,
+        "owner": "user",
+        "mtime": "2026-09-07T15:30:04+00:00",
+        "age_days": 17.5,
+        "likely_image_default": false,
+        "mode": "0o664"
+      },
+      {
+        "path": "/home/user/.ssh/authorized_keys",
+        "bytes": 0,
+        "uid": 1001,
+        "owner": "user",
+        "mtime": "2026-09-25T03:19:59.499803+00:00",
+        "age_days": 0.0,
+        "likely_image_default": false,
+        "mode": "0o600"
+      }
+    ]
+  },
+  "capture_seconds": 0.3,
+  "note": "Leftovers recorded as metadata only -- contents never opened or hashed. Run before any workload; afterwards the state is your own."
+}
